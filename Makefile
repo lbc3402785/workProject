@@ -243,6 +243,7 @@ Makefile: my3dmm.pro D:\Qt\5.13.0\msvc2017_64\mkspecs\win32-msvc\qmake.conf D:\Q
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\resolve_config.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exclusive_builds_post.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\default_post.prf \
+		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\console.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\resources.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qtquickcompiler.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\precompile_header.prf \
@@ -251,14 +252,12 @@ Makefile: my3dmm.pro D:\Qt\5.13.0\msvc2017_64\mkspecs\win32-msvc\qmake.conf D:\Q
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\moc.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qmake_use.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\file_copies.prf \
-		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\windows.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\testcase_targets.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exceptions.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\yacc.prf \
 		D:\Qt\5.13.0\msvc2017_64\mkspecs\features\lex.prf \
 		my3dmm.pro \
-		D:\Qt\5.13.0\msvc2017_64\lib\Qt5Core.prl \
-		D:\Qt\5.13.0\msvc2017_64\lib\qtmain.prl
+		D:\Qt\5.13.0\msvc2017_64\lib\Qt5Core.prl
 	$(QMAKE) -o Makefile my3dmm.pro -spec win32-msvc "CONFIG+=qtquickcompiler"
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\spec_pre.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\common\angle.conf:
@@ -426,6 +425,7 @@ D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\default_pre.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\resolve_config.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exclusive_builds_post.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\default_post.prf:
+D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\console.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\resources.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qtquickcompiler.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\precompile_header.prf:
@@ -434,14 +434,12 @@ D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qt.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\moc.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qmake_use.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\file_copies.prf:
-D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\windows.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\testcase_targets.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exceptions.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\yacc.prf:
 D:\Qt\5.13.0\msvc2017_64\mkspecs\features\lex.prf:
 my3dmm.pro:
 D:\Qt\5.13.0\msvc2017_64\lib\Qt5Core.prl:
-D:\Qt\5.13.0\msvc2017_64\lib\qtmain.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile my3dmm.pro -spec win32-msvc "CONFIG+=qtquickcompiler"
 

@@ -157,9 +157,9 @@ class FaceModel
 {
 public:
 	MatF SM;
-    MatF SB;//204x199
+    MatF SB;//204x199 PCA BASIS
     MatF EM;
-    MatF EB;//204x100
+    MatF EB;//204x100 PCA BASIS
 
 	MatI TRI;
 	MatI TRIUV;

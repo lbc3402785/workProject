@@ -27,7 +27,7 @@ void readfolder(boost::filesystem::path& imageDir,std::vector<std::string>& resu
         //cout << iter->path().string() << endl;
       } else {
         //cout << "is a file" << endl;
-        //cout << iter->path().string() << endl;
+        //std::cout << iter->path().string() << std::endl;
         result.emplace_back(iter->path().string());
       }
     }
@@ -60,6 +60,7 @@ void loadImages(std::vector<std::string>& imageFiles,std::vector<cv::Mat>& image
         MatF KP;
         bool success = KeypointDetectgion(image, KP);
         if(success){
+            std::cout<<imageFile<<std::endl;
             images.emplace_back(image);
             landMarks.emplace_back(KP);
         }
@@ -97,10 +98,6 @@ int main(int argc, char *argv[])
     std::vector<MatF> blendShapeXs;
     std::vector<MatF> fittedImagePoints;
     MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,fittedImagePoints);
-    torch::Tensor t1=torch::rand({2,2});
-    torch::Tensor t2=torch::rand({2,2});
 
-     torch::cat({t1,t2},1);
-    std::cout<<t<<std::endl;
     return 0;
 }
