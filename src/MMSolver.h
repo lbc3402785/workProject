@@ -215,13 +215,13 @@ public:
 
 	MatF Generate(MatF SX, MatF EX)
 	{
-        MatF FaceS = SB * SX;
-        MatF S = Reshape(FaceS, 3);
+//        MatF FaceS = SB * SX;
+//        MatF S = Reshape(FaceS, 3);
 
         MatF FaceE = EB * EX;
         MatF E = Reshape(FaceE, 3);
 
-        GeneratedFace =  Face + S + E;
+        GeneratedFace =  Face/* + S*/ + E;
 		return GeneratedFace;
 	}
 };
@@ -302,13 +302,14 @@ public:
 		//MatF rotated = (model_points + Ax) * R;
 	}
 
-	ProjectionParameters SolveProjection(MatF image_points, MatF model_points)
+    ProjectionParameters SolveProjection(MatF image_points, MatF model_points)
 	{
 		//########## Mean should be subtracted from model_points ############
-
+//        std::cout<<"image_points:"<<image_points<<std::endl;
+//        std::cout<<"model_points:"<<model_points<<std::endl;
 		Matrix<float, 1, Eigen::Dynamic> Mean = GetMean(model_points);
 		model_points.rowwise() -= Mean;
-		
+
 
 		using Eigen::Matrix;
 		int N = image_points.rows();
@@ -441,9 +442,8 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMSolver &MMS, MatF &KP)
 {
 
 	auto params = MMS.params;
-	auto Face2 = MMS.FMFull.Generate(MMS.SX, MMS.EX);
+    auto Face2 = MMS.FMFull.Generate(MMS.SX, MMS.EX);
 	MatF projected = Projection(params, Face2);
-
 	auto image = orig.clone();
 	auto image2 = orig.clone();
 
@@ -466,13 +466,12 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMSolver &MMS, MatF &KP)
 	}
 
 
-	auto Face = MMS.FM.Generate(MMS.SX, MMS.EX);
+    auto Face = MMS.FM.Generate(MMS.SX, MMS.EX);
 	projected = Projection(params, Face);
-
 	for (size_t i = 0; i < projected.rows(); i++)
 	{
 		auto x = projected(i, 0);
-		auto y = projected(i, 1);
+        auto y = projected(i, 1);
         circle(image, cv::Point(x, y), 2, cv::Scalar(255, 0, 0, 255), -1, CV_AA);
 	}
 
@@ -482,7 +481,7 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMSolver &MMS, MatF &KP)
 		{
 			int i2 = MMS.SkipList[i];
 			auto x = projected(i2, 0);
-			auto y = projected(i2, 1);
+            auto y = projected(i2, 1);
             circle(image, cv::Point(x, y), 6, cv::Scalar(255, 0, 0, 255), 1, CV_AA);
 		}
 	}

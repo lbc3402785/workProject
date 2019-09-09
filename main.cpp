@@ -66,6 +66,24 @@ void loadImages(std::vector<std::string>& imageFiles,std::vector<cv::Mat>& image
         }
     }
 }
+void testMajor()
+{
+//    Eigen::Matrix<float, 5,3, Eigen::ColMajor> aa(5,3);
+//    aa(0,0)=0.3;
+//    aa(0,1)=4.1;
+//    aa(1,0)=3.5;
+//    aa(1,1)=7.3;
+//    aa(1,2)=8.9;
+//    aa(2,1)=0.2;
+//    aa(2,2)=0.3;
+//    aa(3,1)=7.2;
+//    aa(4,2)=6.3;
+//    std::cout<<aa.row(2)<<std::endl;
+//    std::cout<<"-------"<<std::endl;
+    Eigen::Matrix<float, 2,3, Eigen::RowMajor> t;
+    t.row(1)=Eigen::Vector3f(1.0,2.0,3.0);
+    std::cout<<t.row(1)<<std::endl;
+}
 int main(int argc, char *argv[])
 {
     if(argc<3){
@@ -98,6 +116,6 @@ int main(int argc, char *argv[])
     std::vector<MatF> blendShapeXs;
     std::vector<MatF> fittedImagePoints;
     MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,fittedImagePoints);
-
+    //testMajor();
     return 0;
 }

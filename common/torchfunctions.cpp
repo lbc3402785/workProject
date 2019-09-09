@@ -196,7 +196,6 @@ at::Tensor TorchFunctions::computeFaceNormals(at::Tensor &model, at::Tensor &f)
     at::Tensor i0=f.select(1,0);
     at::Tensor i1=f.select(1,1);
     at::Tensor i2=f.select(1,2);
-    std::cout<<"i2:"<<i2.sizes()<<std::endl;
     at::Tensor v1=torch::index_select(model,0,i0);//fnumx3x1
     at::Tensor v2=torch::index_select(model,0,i1);//fnumx3x1
     at::Tensor v3=torch::index_select(model,0,i2);//fnumx3x1

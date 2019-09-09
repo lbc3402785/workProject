@@ -19,8 +19,8 @@ public:
 private:
     static void selectContour(ContourLandmarks& contour,float& yawAngle,torch::Tensor &modelContourMask,float frontalRangeThreshold = 7.5f);
     static std::tuple<torch::Tensor, torch::Tensor> getNearestContourCorrespondences(ProjectionParameters& param,MatF &modelPoint,MatF &landMark,torch::Tensor &modelContourMask);
-    static void findOccludingEdgeCorrespondences(MatF& mesh,FaceModel& fmFull,ProjectionParameters& param,MatF& landMark,torch::Tensor& occluding2DIndex,
-                                                 float distanceThreshold = 64.0f);
+    static std::pair<std::vector<Eigen::Vector2f>,std::vector<int>>  findOccludingEdgeCorrespondences(MatF& mesh,FaceModel& fmFull,ProjectionParameters& param,MatF& landMark,torch::Tensor& occluding2DIndex,
+                                                 float distanceThreshold = 16.0f);
     static std::vector<int> boundary3DIndex(MatF& proMesh,FaceModel& fmFull,torch::Tensor&faceNormals,bool performSelfOcclusionCheck = true);
     static torch::Tensor computeFaceNormal(MatF& mesh,MatI& TRI);
 };
