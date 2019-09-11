@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QTime>
-KNNSearch::KNNSearch(float *data,int rows,int cols):rows(rows),cols(cols)
+KNNSearch::KNNSearch(float *data,int64_t rows,int64_t cols):rows(rows),cols(cols)
 {
    dataset.resize(rows*cols);
    memcpy(dataset.data(),data,sizeof(float)*rows*cols);
@@ -13,9 +13,11 @@ KNNSearch::KNNSearch(float *data,int rows,int cols):rows(rows),cols(cols)
 //   std::cout<<"kdtree construct!"<<std::endl;
 }
 
-void KNNSearch::search(float *dst, int dstRows, int dstCols)
+void KNNSearch::search(float *dst, int64_t dstRows, int64_t dstCols)
 {
     assert(dstCols==this->cols);
+    srcIndex.clear();
+    distances.clear();
     srcIndex.resize(dstRows);
     std::vector<int> tempIndex(dstRows,0);
     std::vector<float> tempDistances(dstRows,0.0);

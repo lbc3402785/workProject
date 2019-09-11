@@ -254,7 +254,7 @@ cnpy::npz_t cnpy::npz_load(std::string fname) {
 
         //erase the lagging .npy        
         varname.erase(varname.end()-4,varname.end());
-
+        //std::cout<<"varname:"<<varname<<std::endl;
         //read in the extra field
         uint16_t extra_field_len = *(uint16_t*) &local_header[28];
         if(extra_field_len > 0) {

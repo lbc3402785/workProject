@@ -19,18 +19,18 @@ MultiFitting::MultiFitting()
 
 }
 
-void MultiFitting::fitShapeAndPose(std::vector<cv::Mat>& images,ContourLandmarks& contour,MMSolver& PyMMS,std::vector<MatF>& landMarks,MatF &shapeX,
-                                   std::vector<MatF> &blendShapeXs, std::vector<MatF> &fittedImagePoints,int iterNum)
+std::vector<ProjectionParameters> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>& images,ContourLandmarks& contour,MMSolver& PyMMS,std::vector<MatF>& landMarks,MatF &shapeX,
+                                   std::vector<MatF> &blendShapeXs,int iterNum)
 {
     int imageNum = static_cast<int>(landMarks.size());
     //std::cout<<"imageNum:"<<imageNum<<std::endl;
     std::vector<ProjectionParameters> params;
-    std::vector<MatF> currentModelPoints;
     std::vector<MatF> currentMeshes;
     params.reserve(imageNum);
     blendShapeXs.reserve(imageNum);
     currentMeshes.reserve(imageNum);
-    float Lambdas[4] = { 100.0, 30.0, 10.0, 5.0 };
+    float eLambdas[8] = { 100.0, 100.0, 50.0, 50.0 , 50.0 , 50.0 , 50.0 , 50.0 };
+    float Lambdas[8] = { 50.0, 100.0, 200.0, 300.0 , 400.0 , 500.0 , 600.0 , 700.0 };
     torch::Tensor modelMask=torch::ones((int64)landMarks[0].rows(),at::TensorOptions().dtype(torch::kByte));
     torch::Tensor leftContourIds=torch::from_blob(contour.leftContour.data(),{(int64)contour.leftContour.size()},at::TensorOptions().dtype(torch::kLong));
     torch::Tensor leftValue=torch::zeros(leftContourIds.size(0),at::TensorOptions().dtype(torch::kByte));
@@ -40,117 +40,151 @@ void MultiFitting::fitShapeAndPose(std::vector<cv::Mat>& images,ContourLandmarks
     modelMask.index_put_(rightContourIds,rightValue);
     torch::Tensor allModelMask=modelMask.expand({imageNum,modelMask.size(0)}).contiguous();
     torch::Tensor fixModelMask=allModelMask.clone();
-//    std::cout<<allModelMask.sizes()<<std::endl;
+    std::vector<torch::Tensor> landMarkTs;
+    std::vector<torch::Tensor> modelMarkTs;
+    std::vector<torch::Tensor> meshTs;
+    std::vector<float> angles(imageNum,0.0f);
     for(int i=0;i<imageNum;i++){
        torch::Tensor imagePoints=EigenToTorch::EigenMatrixToTorchTensor(landMarks[i]);
+       landMarkTs.emplace_back(imagePoints);
        torch::Tensor modelPoints=EigenToTorch::EigenMatrixToTorchTensor(PyMMS.FM.Face);
        torch::Tensor selectIds=modelMask.nonzero();
        torch::Tensor relia2D=imagePoints.index_select(0,selectIds.squeeze(-1));
-//       std::cout<<"relia2D:"<<relia2D.sizes()<<std::endl;
        torch::Tensor relia3D=modelPoints.index_select(0,selectIds.squeeze(-1));
        MatF select2D=EigenToTorch::TorchTensorToEigenMatrix(relia2D);
        MatF select3D=EigenToTorch::TorchTensorToEigenMatrix(relia3D);
-       //ProjectionParameters param=PyMMS.SolveProjection(landMarks[i],PyMMS.FM.Face);
        std::cout<<"1111111111111"<<std::endl;
-       //select2D.col(1).array()=images[i].rows- select2D.col(1).array();
        ProjectionParameters param=PyMMS.SolveProjection(select2D,select3D);
-       std::cout<<"--------------"<<std::endl;
-       std::cout<<"param.R:"<<param.R<<std::endl;
-       std::cout<<"param.s:"<<param.s<<std::endl;
-       std::cout<<"param.tx,param.ty:"<<param.tx<<","<<param.ty<<std::endl;
        params.emplace_back(param);
-       MatF currentEX=PyMMS.SolveShape(param,landMarks[i],PyMMS.FM.Face,PyMMS.FM.EB,1.0f);
+       MatF currentEX=PyMMS.SolveShape(param,landMarks[i],PyMMS.FM.Face,PyMMS.FM.EB,20.0f);
        blendShapeXs.emplace_back(currentEX);
        MatF FaceS = PyMMS.FM.EB * currentEX;
        MatF FaceFullS = PyMMS.FMFull.EB * currentEX;
        MatF S=Reshape(FaceS,3);
        MatF FullS=Reshape(FaceFullS,3);
        MatF currentModelPoint =PyMMS.FM.Face+S;
+       modelPoints=EigenToTorch::EigenMatrixToTorchTensor(currentModelPoint);
+       modelMarkTs.emplace_back(modelPoints);
        MatF currentMesh =PyMMS.FMFull.Face+FullS;
-       currentModelPoints.emplace_back(currentModelPoint);
        currentMeshes.emplace_back(currentMesh);
-//       PyMMS.params=param;
-//       cv::Mat m=MMSDraw(images[i],PyMMS,landMarks[i]);
-//       cv::imshow("aa",m);
-//       cv::waitKey();
+       meshTs.emplace_back(EigenToTorch::EigenMatrixToTorchTensor(currentMesh));
     }
-    std::vector<MatF> allImagePoints;
-    std::vector<MatF> allModelPoints;
+    std::vector<torch::Tensor> visdual2Ds,visdual3Ds;
+    visdual2Ds.resize(imageNum);
+    visdual3Ds.resize(imageNum);
+    std::vector<torch::Tensor> bound2Ds,bound3Ds;
+    bound2Ds.resize(imageNum);
+    bound3Ds.resize(imageNum);
+    std::vector<bool> addition(imageNum,false);
     for(int iter=0;iter<iterNum;iter++){
+        std::vector<MatF> imageMarks;
+        std::vector<MatF> modelMarks;
         allModelMask=fixModelMask.clone();
         for(int j=0;j<imageNum;j++){
             torch::Tensor mask2D=allModelMask.select(0,j).clone();
             torch::Tensor innerIndices=allModelMask.select(0,j).nonzero();
-//            std::cout<<innerIndices<<std::endl;
-            auto yawAngle =glm::degrees(glm::eulerAngles(GlmFunctions::RotationToQuat(params[j].R))[1]);
+            angles[j]=glm::eulerAngles(GlmFunctions::RotationToQuat(params[j].R))[1];
+            auto yawAngle =glm::degrees(angles[j]);
             std::cout<<"yawAngle:"<<yawAngle<<std::endl<<std::flush;
             torch::Tensor visual2DIndex;
             torch::Tensor visual3DIndex;
-            std::tie(visual2DIndex,visual3DIndex)=getContourCorrespondences(params[j],contour,currentModelPoints[j],landMarks[j],yawAngle);
-//            std::cout<<"visual2DIndex type:"<<visual2DIndex.sizes()<<" "<<visual2DIndex.type()<<std::endl<<std::flush;
-//            std::cout<<"visual3DIndex type:"<<visual3DIndex.sizes()<<" "<<visual3DIndex.type()<<std::endl<<std::flush;
-//            std::cout<<"innerIndices type:"<<innerIndices.sizes()<<" "<<innerIndices.type()<<std::endl<<std::flush;
-            torch::Tensor current2DIndex=torch::cat({innerIndices.clone(),visual2DIndex},0);
-            torch::Tensor current3DIndex=torch::cat({innerIndices.clone(),visual3DIndex},0);
-//             std::cout<<"current2DIndex:"<<current2DIndex.sizes()<<std::endl<<std::flush;
-//             std::cout<<"current3DIndex:"<<current3DIndex.sizes()<<std::endl<<std::flush;
-            std::vector<Eigen::Vector2f> imagePoints;
-            std::vector<Eigen::Vector3f> modelPoints;
-            std::cout<<"current2DIndex.size(0):"<<current2DIndex.size(0)<<std::endl<<std::flush;
-            for(int64_t ci=0;ci<current2DIndex.size(0);ci++)
-            {
-//                std::cout<<"ci: "<<ci<<std::endl<<std::flush;
-                int i2D=current2DIndex[ci][0].item().toLong();
-                int i3D=current3DIndex[ci][0].item().toLong();
-                imagePoints.push_back(landMarks[j].row(i2D));
-                modelPoints.push_back(currentModelPoints[j].row(i3D));
-            }
+            std::tie(visual2DIndex,visual3DIndex)=getContourCorrespondences(params[j],contour,modelMarkTs[j],landMarkTs[j],yawAngle);
+            visual2DIndex=torch::cat({innerIndices.clone(),visual2DIndex},0);
+            visual3DIndex=torch::cat({innerIndices.clone(),visual3DIndex},0);
+
+            visdual2Ds[j]=visual2DIndex;
+            visdual3Ds[j]=visual3DIndex;
+            torch::Tensor imagePointsT=landMarkTs[j].index_select(0,visual2DIndex.squeeze(-1));
+            torch::Tensor modelPointsT=modelMarkTs[j].index_select(0,visual3DIndex.squeeze(-1));
+//            std::cout<<"imagePointsT.sizes():"<<imagePointsT.sizes()<<std::endl<<std::flush;
+
             torch::Tensor value=torch::ones(visual2DIndex.size(0),at::TensorOptions().dtype(torch::kByte));
             mask2D.index_put_(visual2DIndex.squeeze(-1),value);
             torch::Tensor occluding2DIndex=(1-mask2D).nonzero();
             std::vector<Eigen::Vector2f> boundImagePoints;
             std::vector<int> boundModelIndexes;
-            std::tie(boundImagePoints,boundModelIndexes)=findOccludingEdgeCorrespondences(currentMeshes[j],PyMMS.FMFull,params[j],landMarks[j],occluding2DIndex);
-            std::vector<Eigen::Vector3f> boundModelPoints;
-            for(size_t bi=0;bi<boundModelIndexes.size();bi++)
-            {
-                boundModelPoints.push_back(currentMeshes[j].row(boundModelIndexes[bi]));
+            //**************************************************
+            if(occluding2DIndex.size(0)>0){
+               // std::cout<<"occluding2DIndex:"<<occluding2DIndex<<std::endl;
+               auto correspond=findOccludingEdgeCorrespondences(currentMeshes[j],PyMMS.FMFull,params[j],landMarkTs[j],occluding2DIndex);
+               std::cout<<j<<"++++++++++++++++++++++++"<<std::endl<<std::flush;
+                if(correspond.first.size(0)>0)
+                {
+                    std::cout<<j<<" correspond.first.sizes():"<<correspond.first.sizes()<<std::endl;
+                     std::cout<<j<<" correspond.second.sizes():"<<correspond.second.sizes()<<std::endl;
+                    torch::Tensor additionImagePointsT=landMarkTs[j].index_select(0,correspond.first);
+                    torch::Tensor additionModelPointsT=meshTs[j].index_select(0,correspond.second);
+                    imagePointsT=torch::cat({imagePointsT,additionImagePointsT},0);
+                    modelPointsT=torch::cat({modelPointsT,additionModelPointsT},0);
+                    bound2Ds[j]=correspond.first;
+                    bound3Ds[j]=correspond.second;
+                    addition[j]=true;
+                }else{
+                    addition[j]=false;
+                }
+            }else{
+                addition[j]=false;
             }
-            std::cout<<"boundImagePoints.size():"<<boundImagePoints.size()<<std::endl<<std::flush;
-            imagePoints=concat(imagePoints,boundImagePoints);
-            modelPoints=concat(modelPoints,boundModelPoints);
-            MatF imagePointsMat;
-            imagePointsMat.resize(imagePoints.size(),2);
-            MatF modelPointsMat;
-            modelPointsMat.resize(imagePoints.size(),3);
-            for(size_t mi=0;mi<imagePoints.size();mi++)
-            {
-                imagePointsMat.row(mi)=imagePoints[mi];
-                modelPointsMat.row(mi)=modelPoints[mi];
-            }
-            std::cout<<"2222222"<<std::endl<<std::flush;
-            //imagePointsMat.col(1).array()=images[j].rows- imagePointsMat.col(1).array();
-            ProjectionParameters param=PyMMS.SolveProjection(imagePointsMat,modelPointsMat);
-            std::cout<<"============"<<std::endl;
-            std::cout<<"param.R:"<<param.R<<std::endl;
-            std::cout<<"param.s:"<<param.s<<std::endl;
-            std::cout<<"param.tx,param.ty:"<<param.tx<<","<<param.ty<<std::endl;
+            //**************************************************
+            imageMarks.emplace_back(EigenToTorch::TorchTensorToEigenMatrix(imagePointsT));
+            modelMarks.emplace_back(EigenToTorch::TorchTensorToEigenMatrix(modelPointsT));
+            ProjectionParameters param=PyMMS.SolveProjection(EigenToTorch::TorchTensorToEigenMatrix(imagePointsT),EigenToTorch::TorchTensorToEigenMatrix(modelPointsT));
             params[j]=param;
-                   PyMMS.params=param;
-                   PyMMS.EX=blendShapeXs[j];
-                   cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
-                   cv::imshow("aa",m);
-                   cv::waitKey();
+
+        }
+        //fitting shape
+        shapeX=PyMMS.SolveMultiShape(params,imageMarks,modelMarks,angles,PyMMS.FM.SB,Lambdas[iter]);
+        //std::cout<<"shapeX:"<<shapeX<<std::endl;
+        std::ofstream out("shape.txt");
+        for(int k=0;k<shapeX.rows();k++)
+        {
+            for(int l=0;l<shapeX.cols();l++)
+            {
+                out<<shapeX(k,l)<<" ";
+            }
+            out<<std::endl;
+        }
+        out.close();
+
+        for(int j=0;j<imageNum;j++)
+        {
+            MatF FaceS = PyMMS.FM.SB * shapeX;
+            MatF FaceFullS = PyMMS.FMFull.SB * shapeX;
+            MatF S=Reshape(FaceS,3);
+            MatF FullS=Reshape(FaceFullS,3);
+            MatF currentModelPoint =PyMMS.FM.Face+S;
+            torch::Tensor modelPoints=EigenToTorch::EigenMatrixToTorchTensor(currentModelPoint);
+            modelMarkTs[j]=(modelPoints);
+            MatF currentMesh =PyMMS.FMFull.Face+FullS;
+            meshTs[j]=EigenToTorch::EigenMatrixToTorchTensor(currentMesh);
+            torch::Tensor modelPointsT=modelMarkTs[j].index_select(0,visdual3Ds[j].squeeze(-1));
+            if(addition[j]){
+                torch::Tensor additionModelPointsT=meshTs[j].index_select(0,bound3Ds[j]);
+                modelPointsT=torch::cat({modelPointsT,additionModelPointsT},0);
+            }
+            blendShapeXs[j]=PyMMS.SolveShape(params[j],imageMarks[j],EigenToTorch::TorchTensorToEigenMatrix(modelPointsT),PyMMS.FM.EB,eLambdas[iter]);
+            //if(iter%2==0){
+//                string name=std::to_string(j);
+//                PyMMS.params=params[j];
+//                PyMMS.EX=blendShapeXs[j];
+//                PyMMS.SX=shapeX;
+//                cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
+//                cv::imwrite(name+".jpg",m);
+//                cv::imshow(name,m);
+//                cv::waitKey();
+            //}
+
         }
     }
+    return params;
 }
 
-std::tuple<torch::Tensor, torch::Tensor> MultiFitting::getContourCorrespondences(ProjectionParameters& param,ContourLandmarks &contour, MatF &modelPoint, MatF &landMark, float &yawAngle)
+std::tuple<torch::Tensor, torch::Tensor> MultiFitting::getContourCorrespondences(ProjectionParameters& param,ContourLandmarks &contour, torch::Tensor &modelMarkT, torch::Tensor &landMarkT, float &yawAngle)
 {
-    torch::Tensor modelContourMask=torch::zeros((int64)landMark.rows(),at::TensorOptions().dtype(torch::kByte));
+    torch::Tensor modelContourMask=torch::zeros(landMarkT.size(0),at::TensorOptions().dtype(torch::kByte));
     selectContour(contour,yawAngle,modelContourMask);
     std::cout<<"selectContour done!"<<std::endl<<std::flush;
-    return getNearestContourCorrespondences(param,modelPoint,landMark,modelContourMask);
+    return getNearestContourCorrespondences(param,modelMarkT,landMarkT,modelContourMask);
 }
 
 void MultiFitting::selectContour(ContourLandmarks &contour, float &yawAngle,torch::Tensor &modelContourMask, float frontalRangeThreshold)
@@ -172,87 +206,87 @@ void MultiFitting::selectContour(ContourLandmarks &contour, float &yawAngle,torc
     }
 }
 
-std::tuple<torch::Tensor, torch::Tensor> MultiFitting::getNearestContourCorrespondences(ProjectionParameters &param, MatF &modelPoint,MatF &landMark, at::Tensor &modelContourMask)
+std::tuple<torch::Tensor, torch::Tensor> MultiFitting::getNearestContourCorrespondences(ProjectionParameters &param, torch::Tensor &modelMarkT,torch::Tensor &landMarkT, at::Tensor &modelContourMask)
 {
-   //std::cout<<"getNearestContourCorrespondences"<<std::endl;
    at::Tensor indexes=modelContourMask.nonzero();
-   MatF projected=Projection(param,modelPoint);
-   std::cout<<"projected:"<<projected.rows()<<" "<<projected.cols()<<std::endl<<std::flush;
+   MatF projected=Projection(param,EigenToTorch::TorchTensorToEigenMatrix(modelMarkT));
+   at::Tensor projectedT=EigenToTorch::EigenMatrixToTorchTensor(projected);
    torch::Tensor corIndex=torch::zeros({indexes.size(0),1},torch::dtype(torch::kLong));
-   std::cout<<"begin for:"<<std::endl<<std::flush;
    for(int i=0;i<indexes.size(0);i++){
-       int index=indexes[i].item().toLong();
-       Eigen::Vector2f imagePoint=landMark.row(index);
-       std::vector<float> distances2d;
-       for(int j=0;j<modelPoint.rows();j++){
-           Eigen::Vector2f proModelPoint=projected.row(j);
-           const double dist = (proModelPoint - imagePoint).norm();
-           distances2d.emplace_back(dist);
-       }
-       const auto minEle = std::min_element(begin(distances2d), end(distances2d));
-       const auto minEleIdx = std::distance(begin(distances2d), minEle);
-       const Eigen::Vector4f closest(modelPoint.row(minEleIdx)[0],modelPoint.row(minEleIdx)[1],modelPoint.row(minEleIdx)[2],1);
-       corIndex[i]=minEleIdx;
+       long long index=indexes[i].item().toLong();
+       torch::Tensor dist=projectedT.sub(landMarkT[index]).norm(2,1);
+       corIndex[i]=std::get<1>(dist.min(0,true));
    }
-   std::cout<<"getNearestContourCorrespondences done"<<std::endl<<std::flush;
+//   std::cout<<"getNearestContourCorrespondences done"<<std::endl<<std::flush;
    return std::make_tuple(std::move(indexes),std::move(corIndex));
 }
 
-std::pair<std::vector<Eigen::Vector2f>,std::vector<int>> MultiFitting::findOccludingEdgeCorrespondences(MatF &mesh, FaceModel &fmFull, ProjectionParameters &param, MatF &landMark, at::Tensor &occluding2DIndex, float distanceThreshold)
+std::pair<torch::Tensor,torch::Tensor> MultiFitting::findOccludingEdgeCorrespondences(MatF &mesh, FaceModel &fmFull, ProjectionParameters &param, torch::Tensor &landMarkT, at::Tensor &occluding2DIndex, float distanceThreshold)
 {
 //    std::cout<<"===============:"<<occluding2DIndex<<std::endl;
     if(occluding2DIndex.size(0)==0){
         return {};
     }
-    //std::cout<<"occluding2DIndex:"<<occluding2DIndex<<std::endl;
+
     MatF rotated=Rotation(param,mesh);
 //    std::cout<<"rotated:"<<rotated.rows()<<std::endl;
-    torch::Tensor rotatedFaceNormals=computeFaceNormal(rotated,fmFull.TRI);
+    torch::Tensor rotatedFaceNormals=computeFaceNormal(rotated,fmFull.TRI);//Mx3x1
     MatF projected=Projection(param,mesh);
 //    std::cout<<"rotatedFaceNormals:"<<rotatedFaceNormals.sizes()<<std::endl;
     std::vector<int> boundaries=boundary3DIndex(projected,fmFull,rotatedFaceNormals,true);
-//    std::cout<<"boundaries:"<<boundaries.size()<<std::endl;
-    torch::Tensor landMarkPts=EigenToTorch::EigenMatrixToTorchTensor(landMark);
-    torch::Tensor occludinglandMarkPts=landMarkPts.index_select(0,occluding2DIndex.squeeze(-1));
+    torch::Tensor boundT=torch::from_blob(boundaries.data(),boundaries.size(),torch::TensorOptions().dtype(torch::kInt)).toType(torch::kLong);
+    torch::Tensor projectedT=EigenToTorch::EigenMatrixToTorchTensor(projected);
+    torch::Tensor occludinglandMarkPts=landMarkT.index_select(0,occluding2DIndex.squeeze(-1));
     KNNSearch tree(occludinglandMarkPts.data<float>(),occludinglandMarkPts.sizes()[0],2);
     std::vector<Eigen::Vector2f> imagePoints;
     std::vector<int> select3DIndexes;
-    for(size_t i=0;i<boundaries.size();i++){
-      Eigen::Vector2f pro3D=projected.row(boundaries[i]);
-      tree.search(pro3D.data(),1,2);
-      if(tree.distances[0]<distanceThreshold*param.s){
-          float x=occludinglandMarkPts[tree.srcIndex[0]][0].item().toFloat();
-          float y=occludinglandMarkPts[tree.srcIndex[0]][1].item().toFloat();
-          imagePoints.emplace_back(Eigen::Vector2f(x,y));
-          select3DIndexes.emplace_back(boundaries[i]);
-      }
-    }
-    return std::make_pair(imagePoints,select3DIndexes);
+    torch::Tensor dst=projectedT.index_select(0,boundT);
+    tree.search(dst.data<float>(),dst.size(0),dst.size(1));
+    torch::Tensor distanceT=torch::from_blob(tree.distances.data(),tree.distances.size());
+    torch::Tensor maskT=distanceT.lt(distanceThreshold*param.s);
+    torch::Tensor srcIndexT=torch::from_blob(tree.srcIndex.data(),tree.srcIndex.size(),torch::TensorOptions().dtype(torch::kInt)).toType(torch::kLong);
 
+    torch::Tensor select2DIndexesT=srcIndexT.masked_select(maskT);
+    torch::Tensor bound2DIndexesT=occluding2DIndex.index_select(0,select2DIndexesT).squeeze(-1);
+    //std::cout<<"bound2DIndexesT:"<<bound2DIndexesT<<std::endl;
+    torch::Tensor bound3DIndexesT=boundT.masked_select(maskT);
+     //std::cout<<"bound3DIndexesT:"<<bound3DIndexesT<<std::endl;
+    return std::make_pair(bound2DIndexesT,bound3DIndexesT);
 }
 /**
  * @brief MultiFitting::boundary3DIndex
  * @param mesh
  * @param fmFull
- * @param faceNormals   fnumx3x1
+ * @param faceNormals   Mx3x1
  * @return
  */
 std::vector<int> MultiFitting::boundary3DIndex(MatF &proMesh, FaceModel &fmFull,torch::Tensor&faceNormals,bool performSelfOcclusionCheck)
 {
-    auto Ev=fmFull.Ev;
-    auto Ef=fmFull.Ef;
-    std::vector<int> edgeIdxs;
-    std::vector<int> bound3DIndexes;
-    for (size_t i = 0; i < Ef.rows(); i++){
-        torch::Tensor fn1=faceNormals.select(0,Ef(i,0));
-        torch::Tensor fn2=faceNormals.select(0,Ef(i,1));
-        torch::Tensor r=torch::dot(fn1.squeeze(-1),fn2.squeeze(-1));
-        if(r.item().toFloat()<0){
-            edgeIdxs.push_back(i);
-            bound3DIndexes.push_back(Ev(i,0));
-            bound3DIndexes.push_back(Ev(i,1));
-        }
+    torch::Tensor Ev=torch::from_blob(fmFull.Ev.data(),{fmFull.Ev.rows(),fmFull.Ev.cols()},torch::TensorOptions().dtype(torch::kInt));//NX2
+//    std::cout<<"Ev.sizes():"<<Ev.sizes()<<std::endl;
+    torch::Tensor Ef=torch::from_blob(fmFull.Ef.data(),{fmFull.Ef.rows(),fmFull.Ef.cols()},torch::TensorOptions().dtype(torch::kInt)).toType(torch::kLong);//NX2
+    torch::Tensor if0=Ef.select(1,0);
+    torch::Tensor if1=Ef.select(1,1);
+    torch::Tensor check=if0.ge(0).nonzero();
+
+    if0=if0.index_select(0,check.squeeze(-1));
+    if1=if1.index_select(0,check.squeeze(-1));
+    Ev=Ev.index_select(0,check.squeeze(-1));
+    if(if1.lt(0).size(0)>0){
+        check=if1.ge(0).nonzero();
+        if0=if0.index_select(0,check.squeeze(-1));
+        if1=if1.index_select(0,check.squeeze(-1));
+        Ev=Ev.index_select(0,check.squeeze(-1));
     }
+
+    torch::Tensor fn0=faceNormals.squeeze(-1).index_select(0,if0);//Nx3 N>=M
+    torch::Tensor fn1=faceNormals.squeeze(-1).index_select(0,if1);//Nx3 N>=M
+    torch::Tensor r=torch::mul(fn0,fn1).sum(1);//Nx1 float
+    torch::Tensor boundE=r.lt(0).nonzero();//Kx1 klong
+    if(boundE.size(0)==0)return std::vector<int>();
+    torch::Tensor boundV=Ev.index_select(0,boundE.squeeze(-1)).view(-1);
+    std::vector<int> bound3DIndexes(boundV.data<int>(),boundV.data<int>()+boundV.size(0));
+
     // Remove duplicate vertex id's (std::unique works only on sorted sequences):
     std::sort(begin(bound3DIndexes), end(bound3DIndexes));
     bound3DIndexes.erase(std::unique(begin(bound3DIndexes), end(bound3DIndexes)),
@@ -305,7 +339,7 @@ std::vector<int> MultiFitting::boundary3DIndex(MatF &proMesh, FaceModel &fmFull,
  * @brief MultiFitting::computeFaceNormal
  * @param mesh  Nx3
  * @param faces Mx3
- * @return
+ * @return      Mx3x1
  */
 at::Tensor MultiFitting::computeFaceNormal(MatF &mesh, MatI &TRI)
 {

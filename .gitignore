@@ -6,3 +6,6 @@
 *.pro
 *.pro.*
 Makefile*
+*.jpg
+*.png
+*.obj
