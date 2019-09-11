@@ -17,7 +17,7 @@ public:
                                 std::vector<MatF> &blendShapeXs,int iterNum=4);
     static std::tuple<torch::Tensor, torch::Tensor> getContourCorrespondences(ProjectionParameters& param,ContourLandmarks& contour,torch::Tensor &modelMarkT,torch::Tensor& landMarkT,float& yawAngle);
 
-
+    static void render(std::vector<cv::Mat>& images,std::vector<ProjectionParameters> params,MatF &shapeX,MatF &blendShapeX,ContourLandmarks &contour,MMSolver& PyMMS);
 private:
     static void selectContour(ContourLandmarks& contour,float& yawAngle,torch::Tensor &modelContourMask,float frontalRangeThreshold = 7.5f);
     static std::tuple<torch::Tensor, torch::Tensor> getNearestContourCorrespondences(ProjectionParameters& param,torch::Tensor &modelMarkT,torch::Tensor &landMarkT,torch::Tensor &modelContourMask);

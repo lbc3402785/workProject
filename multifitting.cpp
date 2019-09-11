@@ -118,12 +118,12 @@ std::vector<ProjectionParameters> MultiFitting::fitShapeAndPose(std::vector<cv::
 
             blendShapeXs[j]=PyMMS.SolveShape(params[j],imageMarks[j],EigenToTorch::TorchTensorToEigenMatrix(modelPointsT),PyMMS.FM.EB,eLambdas[iter]);
             //if(iter%2==0){
-//                string name=std::to_string(j);
-//                PyMMS.params=params[j];
-//                PyMMS.EX=blendShapeXs[j];
-//                PyMMS.SX=shapeX;
-//                cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
-//                cv::imwrite(name+".jpg",m);
+                string name=std::to_string(j);
+                PyMMS.params=params[j];
+                PyMMS.EX=blendShapeXs[j];
+                PyMMS.SX=shapeX;
+                cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
+                cv::imwrite(name+".jpg",m);
 //                cv::imshow(name,m);
 //                cv::waitKey();
             //}
@@ -139,6 +139,58 @@ std::tuple<torch::Tensor, torch::Tensor> MultiFitting::getContourCorrespondences
     selectContour(contour,yawAngle,modelContourMask);
 //    std::cout<<"selectContour done!"<<std::endl<<std::flush;
     return getNearestContourCorrespondences(param,modelMarkT,landMarkT,modelContourMask);
+}
+void saveModel(MatF& Face,FaceModel&FM,std::string filename)
+{
+    std::stringstream ss;
+    auto TRI = FM.TRI;
+    {
+        std::stringstream ss;
+
+        int N = Face.rows();
+        auto TRIUV = FM.TRIUV;
+        for (size_t i = 0; i < N; i++)
+        {
+            ss << "v " << Face(i, 0) << " " << Face(i, 1) << " " << Face(i, 2) << endl;
+        }
+
+
+        N = TRI.rows();
+        for (size_t i = 0; i < N; i++)
+        {
+            ss << "f " << TRI(i, 0) + 1 << "/" << TRIUV(i, 0) + 1 << " "
+               << TRI(i, 1) + 1 << "/" << TRIUV(i, 1) + 1 << " "
+               << TRI(i, 2) + 1 << "/" << TRIUV(i, 2) + 1 << " "
+               << endl;
+        }
+
+
+        std::string input = ss.str();
+
+        std::ofstream out(filename + ".obj", std::ofstream::out);
+        out << input;
+        out.close();
+    }
+}
+void MultiFitting::render(std::vector<cv::Mat> &images, std::vector<ProjectionParameters> params, MatF &shapeX, MatF &blendShapeX,ContourLandmarks &contour,MMSolver& PyMMS)
+{
+    MatF model=PyMMS.FMFull.Generate(shapeX,blendShapeX);
+    std::cout<<"model:"<<model.rows()<<","<<model.cols()<<std::endl;
+    saveModel(model,PyMMS.FMFull,"base");
+    size_t imageNum=images.size();
+    Eigen::Vector3f right=model.row(contour.rightContour[0]);
+    Eigen::Vector3f left=model.row(contour.leftContour[0]);
+    float z=(right[2]+left[2])/2;
+    for(size_t i=0;i<imageNum;i++){
+        //rotate around (0,0,-z)
+        MatF R=params[i].R/*.transpose()*/;
+        MatF rotateModel=model*R;
+        rotateModel.col(1).array()-=images[i].rows/params[i].s;
+        rotateModel.col(1).array()*=-1.0;
+        //rotateModel.col(2).array()-=z;
+        std::string name=std::to_string(i);
+        saveModel(rotateModel,PyMMS.FMFull,name);
+    }
 }
 
 void MultiFitting::selectContour(ContourLandmarks &contour, float &yawAngle,torch::Tensor &modelContourMask, float frontalRangeThreshold)

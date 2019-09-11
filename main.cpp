@@ -12,7 +12,19 @@
 string dir_path = "./data/";
 MMSolver PyMMS;
 FaceModel PyFM;
-
+void testMat()
+{
+    MatF f(4,3);
+    f(0,1)=5;f(0,2)=6;
+    f(1,0)=5;f(1,2)=7;
+    f(2,0)=-3;f(2,2)=-7;
+    f(3,0)=-3;f(3,2)=2;
+    f(4,1)=-3;f(4,2)=-2;
+    std::cout<<f<<std::endl;
+    f.col(2).array()-=5;
+    std::cout<<"---------"<<std::endl;
+    std::cout<<f<<std::endl;
+}
 void InitMMS(std::string fmkp, std::string fmfull)
 {
     cout << fmkp << endl;
@@ -141,16 +153,21 @@ int main(int argc, char *argv[])
         cv::imwrite(outputfile.string(),texture);
         textures.emplace_back(texture);
     }
+    MatF blendShapeX=blendShapeXs[0];
+    for(size_t j=1;j<images.size();j++){
+       blendShapeX+= blendShapeXs[j];
+    }
+    blendShapeX/=images.size();
     PyMMS.params=params[2];
-    PyMMS.EX=blendShapeXs[2];
+    PyMMS.EX=blendShapeX;
     PyMMS.SX=shapeX;
     string outfolder = "./output/";
     string filename = "TestObj";
     std::cout<<"---------------"<<std::endl;
-    MakeDir(outfolder);
-    MMSObj(images[2], PyMMS, outfolder, filename);
-    std::cout<<"done!"<<std::endl;
-    //testMajor();
-
+    //MakeDir(outfolder);
+    //MMSObj(images[2], PyMMS, outfolder, filename);
+    //std::cout<<"done!"<<std::endl;
+    //testMat();
+    MultiFitting::render(images,params,shapeX,blendShapeX,contour,PyMMS);
     return 0;
 }

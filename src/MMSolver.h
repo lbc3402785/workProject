@@ -618,7 +618,7 @@ inline void warpTriangle(cv::Mat &img1, cv::Mat &img2, vector<cv::Point2f> &t1, 
 }
 
 
-inline cv::Mat MMSTexture(cv::Mat orig, MMSolver &MMS, int W, int H, bool doubleface = true)
+inline cv::Mat MMSTexture(cv::Mat orig, MMSolver &MMS, int W, int H, bool doubleface = false)
 {
     auto image = orig.clone();
     cv::Mat texture = cv::Mat::zeros(H, W, CV_8UC3);
@@ -630,7 +630,6 @@ inline cv::Mat MMSTexture(cv::Mat orig, MMSolver &MMS, int W, int H, bool double
 
     auto TRI = MMS.FMFull.TRIUV;
     auto UV = MMS.FMFull.UV;
-
     for (size_t t = 0; t < TRI.rows(); t++)
     {
 
