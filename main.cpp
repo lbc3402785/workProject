@@ -65,7 +65,7 @@ bool KeypointDetectgion(cv::Mat image, MatF &KP)
     return true;
 }
 
-std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::vector<cv::Mat>& images,std::vector<MatF>& landMarks)
+std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::vector<cv::Mat>& images,std::vector<MatF>& landMarks,bool flip=true)
 {
     std::vector<std::string> outputImages;
     for(const auto& imageFile:imageFiles){
@@ -77,6 +77,9 @@ std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::ve
         if(success){
             std::cout<<imageFile<<std::endl;
             images.emplace_back(image);
+            if(flip){
+                KP.col(1).array()=image.rows-KP.col(1).array();
+            }
             landMarks.emplace_back(KP);
             outputImages.push_back(imageFile);
         }
@@ -164,8 +167,8 @@ int main(int argc, char *argv[])
     string outfolder = "./output/";
     string filename = "TestObj";
     std::cout<<"---------------"<<std::endl;
-    //MakeDir(outfolder);
-    //MMSObj(images[2], PyMMS, outfolder, filename);
+    MakeDir(outfolder);
+    MMSObj(images[2], PyMMS, outfolder, filename);
     //std::cout<<"done!"<<std::endl;
     //testMat();
     MultiFitting::render(images,params,shapeX,blendShapeX,contour,PyMMS);

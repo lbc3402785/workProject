@@ -279,7 +279,7 @@ public:
             MatF rotatedi = Projection(params[i], modelMarks[i]);
             MatF errori = landMarks[i] - rotatedi;
             errori = Reshape(errori, 1);
-            //            std::cout<<"errori:"<<errori<<std::endl;
+//          std::cout<<"errori:"<<errori<<std::endl;
             int Ni = modelMarks[i].rows();
             MatF SBXi(Ni * 2, L);
             MatF Rit = Ri.transpose();
@@ -493,13 +493,17 @@ public:
 
 
 
-inline cv::Mat MMSDraw(cv::Mat orig, MMSolver &MMS, MatF &KP)
+inline cv::Mat MMSDraw(cv::Mat orig, MMSolver &MMS,const MatF &KP,bool flip=true)
 {
 
     auto params = MMS.params;
     auto Face2 = MMS.FMFull.Generate(MMS.SX, MMS.EX);
+    auto imagePoints=KP;
     MatF projected = Projection(params, Face2);
-
+    if(flip){
+        imagePoints.col(1).array()=orig.rows-imagePoints.col(1).array();
+        projected.col(1).array()=orig.rows-projected.col(1).array();
+    }
     auto image = orig.clone();
     auto image2 = orig.clone();
 
@@ -524,7 +528,9 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMSolver &MMS, MatF &KP)
 
     auto Face = MMS.FM.Generate(MMS.SX, MMS.EX);
     projected = Projection(params, Face);
-
+    if(flip){
+        projected.col(1).array()=orig.rows-projected.col(1).array();
+    }
     for (size_t i = 0; i < projected.rows(); i++)
     {
         auto x = projected(i, 0);
@@ -543,10 +549,10 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMSolver &MMS, MatF &KP)
         }
     }
 
-    for (size_t i = 0; i < KP.rows(); i++)
+    for (size_t i = 0; i < imagePoints.rows(); i++)
     {
-        auto x = KP(i, 0);
-        auto y = KP(i, 1);
+        auto x = imagePoints(i, 0);
+        auto y = imagePoints(i, 1);
 
         circle(image, cv::Point(x, y), 2, cv::Scalar(0, 255, 0, 255), -1, CV_AA);
     }
@@ -618,7 +624,7 @@ inline void warpTriangle(cv::Mat &img1, cv::Mat &img2, vector<cv::Point2f> &t1, 
 }
 
 
-inline cv::Mat MMSTexture(cv::Mat orig, MMSolver &MMS, int W, int H, bool doubleface = false)
+inline cv::Mat MMSTexture(cv::Mat orig, MMSolver &MMS, int W, int H, bool doubleface = false,bool flip=true)
 {
     auto image = orig.clone();
     cv::Mat texture = cv::Mat::zeros(H, W, CV_8UC3);
@@ -626,7 +632,9 @@ inline cv::Mat MMSTexture(cv::Mat orig, MMSolver &MMS, int W, int H, bool double
     auto params = MMS.params;
     auto Face2 = MMS.FMFull.Generate(MMS.SX, MMS.EX);
     MatF projected = Projection(params, Face2);
-
+    if(flip){
+        projected.col(1).array()=orig.rows-projected.col(1).array();
+    }
 
     auto TRI = MMS.FMFull.TRIUV;
     auto UV = MMS.FMFull.UV;
@@ -651,7 +659,7 @@ inline cv::Mat MMSTexture(cv::Mat orig, MMSolver &MMS, int W, int H, bool double
 
         auto c = (t1[2] - t1[0]).cross(t1[1] - t1[0]);
 
-        if (doubleface || c > 0)
+        if ( c > 0)
         {
             warpTriangle(image, texture, t1, t2);
         }

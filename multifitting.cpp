@@ -118,12 +118,12 @@ std::vector<ProjectionParameters> MultiFitting::fitShapeAndPose(std::vector<cv::
 
             blendShapeXs[j]=PyMMS.SolveShape(params[j],imageMarks[j],EigenToTorch::TorchTensorToEigenMatrix(modelPointsT),PyMMS.FM.EB,eLambdas[iter]);
             //if(iter%2==0){
-                string name=std::to_string(j);
-                PyMMS.params=params[j];
-                PyMMS.EX=blendShapeXs[j];
-                PyMMS.SX=shapeX;
-                cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
-                cv::imwrite(name+".jpg",m);
+//                string name=std::to_string(j);
+//                PyMMS.params=params[j];
+//                PyMMS.EX=blendShapeXs[j];
+//                PyMMS.SX=shapeX;
+//                cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
+//                cv::imwrite(name+".jpg",m);
 //                cv::imshow(name,m);
 //                cv::waitKey();
             //}
@@ -175,35 +175,41 @@ void saveModel(MatF& Face,FaceModel&FM,std::string filename)
 void MultiFitting::render(std::vector<cv::Mat> &images, std::vector<ProjectionParameters> params, MatF &shapeX, MatF &blendShapeX,ContourLandmarks &contour,MMSolver& PyMMS)
 {
     MatF model=PyMMS.FMFull.Generate(shapeX,blendShapeX);
-    std::cout<<"model:"<<model.rows()<<","<<model.cols()<<std::endl;
-    saveModel(model,PyMMS.FMFull,"base");
+    MatF keyModel=PyMMS.FM.Generate(shapeX,blendShapeX);
+
     size_t imageNum=images.size();
-    Eigen::Vector3f right=model.row(contour.rightContour[0]);
-    Eigen::Vector3f left=model.row(contour.leftContour[0]);
+    Eigen::Vector3f right=keyModel.row(contour.rightContour[0]);
+    Eigen::Vector3f left=keyModel.row(contour.leftContour[0]);
+    std::cout<<"right[2]:"<<right[2]<<std::endl;
+    std::cout<<"left[2]:"<<left[2]<<std::endl;
     float z=(right[2]+left[2])/2;
     for(size_t i=0;i<imageNum;i++){
         //rotate around (0,0,-z)
-        MatF R=params[i].R/*.transpose()*/;
-        MatF rotateModel=model*R;
-        rotateModel.col(1).array()-=images[i].rows/params[i].s;
-        rotateModel.col(1).array()*=-1.0;
-        //rotateModel.col(2).array()-=z;
+        MatF R=params[i].R;
+        std::cout<<R<<std::endl;
+        std::cout<<"-------"<<std::endl;
+        R.row(1)=Eigen::Vector3f(0,1,0);
+        std::cout<<R<<std::endl;
+        std::cout<<"======="<<std::endl;
+        MatF rotateModel=model*R.transpose();
+        rotateModel.col(2).array()-=z;
         std::string name=std::to_string(i);
         saveModel(rotateModel,PyMMS.FMFull,name);
     }
+    model.col(2).array()-=z;
+    saveModel(model,PyMMS.FMFull,"base");
 }
 
 void MultiFitting::selectContour(ContourLandmarks &contour, float &yawAngle,torch::Tensor &modelContourMask, float frontalRangeThreshold)
 {
-    //opencv flip y
-    if ((-yawAngle) >= -frontalRangeThreshold) // positive yaw = subject looking to the left
+    if (yawAngle >= -frontalRangeThreshold) // positive yaw = subject looking to the left
     {
         // ==> we use the right cnt-lms
         torch::Tensor rightContourIds=torch::from_blob(contour.rightContour.data(),{(int64)contour.rightContour.size()},at::TensorOptions().dtype(torch::kLong));
         torch::Tensor rightValue=torch::ones(rightContourIds.size(0),at::TensorOptions().dtype(torch::kByte));
         modelContourMask.index_put_(rightContourIds,rightValue);
     }
-    if ((-yawAngle) <= frontalRangeThreshold)
+    if (yawAngle <= frontalRangeThreshold)
     {
         // ==> we use the left cnt-lms
         torch::Tensor leftContourIds=torch::from_blob(contour.leftContour.data(),{(int64)contour.leftContour.size()},at::TensorOptions().dtype(torch::kLong));
