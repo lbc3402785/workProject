@@ -64,6 +64,7 @@ message($$LIBS)
 SOURCES += \
         common/knnsearch.cpp \
         common/torchfunctions.cpp \
+        facemorph.cpp \
         glmfunctions.cpp \
         main.cpp \
         multifitting.cpp \
@@ -82,6 +83,7 @@ HEADERS += \
     common/raytriangleintersect.h \
     common/torchfunctions.h \
     contour.h \
+    facemorph.h \
     glmfunctions.h \
     multifitting.h \
     src/Dlib.h \

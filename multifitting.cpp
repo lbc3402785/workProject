@@ -5,6 +5,8 @@
 #include "glmfunctions.h"
 #include "common/knnsearch.h"
 #include "common/raytriangleintersect.h"
+#include "common/eigenfunctions.h"
+#include "facemorph.h"
 template <class T>
 inline auto concat(const std::vector<T>& vec_a, const std::vector<T>& vec_b)
 {
@@ -172,32 +174,179 @@ void saveModel(MatF& Face,FaceModel&FM,std::string filename)
         out.close();
     }
 }
-void MultiFitting::render(std::vector<cv::Mat> &images, std::vector<ProjectionParameters> params, MatF &shapeX, MatF &blendShapeX,ContourLandmarks &contour,MMSolver& PyMMS)
+inline float cosOfPosition(float x,float y)
 {
-    MatF model=PyMMS.FMFull.Generate(shapeX,blendShapeX);
-    MatF keyModel=PyMMS.FM.Generate(shapeX,blendShapeX);
+    return x/std::sqrt(x*x+y*y);
+}
+torch::Tensor computeTexturesWeight(cv::Mat orig,MatF& frontModel,torch::Tensor& frontNormals,float yawAngle,std::array<float,4>& axisMetrics, MMSolver &MMS, int W, int H,bool flip=true,float frontalAngleThreshold = 7.5f)
+{
+    float cosRightZ,sinRightZ,cosLeftZ,sinLeftZ;
+    cosRightZ=axisMetrics[0];
+    sinRightZ=axisMetrics[1];
+    cosLeftZ=axisMetrics[2];
+    sinLeftZ=axisMetrics[3];
 
+    auto TRI = MMS.FMFull.TRIUV;
+    auto UV = MMS.FMFull.UV;
+    torch::Tensor weightT=torch::zeros(TRI.rows());
+    std::cout<<"yawAngle:"<<yawAngle<<std::endl;
+    for (size_t t = 0; t < TRI.rows(); t++)
+    {
+        float weight=0.0f;
+        vector<cv::Point2f> t1;
+        vector<cv::Point2f> t2;
+        Eigen::Vector3f frontAvg(0.0,0.0,0.0);
+        for (size_t i = 0; i < 3; i++)
+        {
+            int j = TRI(t, i);
+            frontAvg+=frontModel.row(j);
+        }
+        frontAvg/=3.0;
+        float cosPosToZ=cosOfPosition(frontAvg[2],frontAvg[0]);
+        float sinPosToZ=cosOfPosition(frontAvg[0],frontAvg[2]);
+        float cosNormalToZ=cosOfPosition(frontNormals[t][2].item().toFloat(),frontNormals[t][0].item().toFloat());
+        float sinNormalToZ=cosOfPosition(frontNormals[t][0].item().toFloat(),frontNormals[t][2].item().toFloat());
+        if(std::abs(yawAngle)<frontalAngleThreshold){
+            //looking to front for personal perspective
+            if(frontAvg[2]<0){
+                weightT[t]=0.0;
+                continue;
+            }
+            weight=std::min(cosPosToZ,cosNormalToZ);
+        }else if(yawAngle>frontalAngleThreshold){
+            //looking to left for personal perspective,so pose the right face
+            if(frontAvg[0]>0){
+                weightT[t]=0.0;
+                continue;
+            }
+            float cosPosToRightAxis=cosPosToZ*cosRightZ+sinPosToZ*sinRightZ;
+            float cosNormalToRightAxis=cosNormalToZ*cosRightZ+sinNormalToZ*sinRightZ;
+            weight=std::max(cosPosToRightAxis,cosNormalToRightAxis);
+        }else{
+            //looking to right for personal perspective,so pose the left face
+            if(frontAvg[0]<0){
+                weightT[t]=0.0;
+                continue;
+            }
+            float cosPosToLeftAxis=cosPosToZ*cosLeftZ+sinPosToZ*sinLeftZ;
+            float cosNormalToLeftAxis=cosNormalToZ*cosLeftZ+sinNormalToZ*sinLeftZ;
+            weight=std::max(cosPosToLeftAxis,cosNormalToLeftAxis);
+        }
+        if(weight<0.0){
+            weightT[t]=0.0;
+            continue;
+        }else{
+            weightT[t]=weight;
+        }
+
+    }
+    return std::move(weightT);
+}
+void MultiFitting::render(std::vector<cv::Mat>& images,std::vector<ProjectionParameters>& params,MatF &shapeX,std::vector<MatF> &blendShapeXs,ContourLandmarks &contour,MMSolver& PyMMS,float offset)
+{
+    MatF EX(PyMMS.FMFull.EB.cols(),1);
+    EX*=0;
+    MatF model=PyMMS.FMFull.Generate(shapeX,EX);
+    MatF frontKeyModel=PyMMS.FM.Generate(shapeX,EX);
     size_t imageNum=images.size();
-    Eigen::Vector3f right=keyModel.row(contour.rightContour[0]);
-    Eigen::Vector3f left=keyModel.row(contour.leftContour[0]);
-    std::cout<<"right[2]:"<<right[2]<<std::endl;
-    std::cout<<"left[2]:"<<left[2]<<std::endl;
-    float z=(right[2]+left[2])/2;
+    Eigen::Vector3f rightBound=frontKeyModel.row(contour.rightContour[0]);
+    Eigen::Vector3f leftBound=frontKeyModel.row(contour.leftContour[0]);
+
+    float z=(rightBound[2]+leftBound[2])/2;
+    MatF frontModel=model;
+    frontModel.col(2).array()-=z;
+    frontKeyModel.col(2).array()-=z;
+    Eigen::Vector3f rightEye=frontKeyModel.row(36);
+    if(offset>45)offset=45;
+    if(offset<-5)offset=-5;
+    double pi = 4 * atan(1.0);
+    float cosOffset=std::cos(offset/180*pi);
+    float sinOffset=std::sin(offset/180*pi);
+    float cos90=0;
+    float sin90=1;
+    float cosRotation=cos90*cosOffset+sin90*sinOffset;
+    float sinRotation=sin90*cosOffset-cos90*sinOffset;
+    float cosRightEye=rightEye[2]/std::sqrt(rightEye[2]*rightEye[2]+rightEye[0]*rightEye[0]);
+    float sinRightEye=rightEye[0]/std::sqrt(rightEye[2]*rightEye[2]+rightEye[0]*rightEye[0]);
+    float cosRightZ=cosRightEye*cos90+sinRightEye*sin90;
+    float sinRightZ=sinRightEye*cos90-cosRightEye*sin90;
+    Eigen::Vector3f leftEye=frontKeyModel.row(45);
+    float cosLeftEye=leftEye[2]/std::sqrt(leftEye[2]*leftEye[2]+leftEye[0]*leftEye[0]);
+    float sinLeftEye=leftEye[0]/std::sqrt(leftEye[2]*leftEye[2]+leftEye[0]*leftEye[0]);
+    float cosLeftZ=cosLeftEye*cosRotation-sinLeftEye*sinRotation;
+    float sinLeftZ=sinLeftEye*cosRotation+cosLeftEye*sinRotation;
+    std::array<float,4> axisMetrics={cosRightZ,sinRightZ,cosLeftZ,sinLeftZ};
+    PyMMS.SX=shapeX;
+    torch::Tensor frontNormals=computeFaceNormal(frontModel,PyMMS.FMFull.TRI);
+    std::vector<at::Tensor> weightTs;
+    std::vector<MatF> projecteds;
     for(size_t i=0;i<imageNum;i++){
         //rotate around (0,0,-z)
         MatF R=params[i].R;
-        std::cout<<R<<std::endl;
-        std::cout<<"-------"<<std::endl;
-        R.row(1)=Eigen::Vector3f(0,1,0);
-        std::cout<<R<<std::endl;
-        std::cout<<"======="<<std::endl;
-        MatF rotateModel=model*R.transpose();
-        rotateModel.col(2).array()-=z;
-        std::string name=std::to_string(i);
-        saveModel(rotateModel,PyMMS.FMFull,name);
+        glm::tvec3<float> euler=glm::eulerAngles(GlmFunctions::RotationToQuat(params[i].R));
+        float yawAngle=glm::degrees(euler.y);
+        PyMMS.params=params[i];
+        PyMMS.EX=blendShapeXs[i];
+        auto result=computeTexturesWeight(images[i],frontModel,frontNormals,yawAngle,axisMetrics,PyMMS,1024,1024,true,7.5f);
+        result*=params[i].s;
+        weightTs.emplace_back(result);
+//        cv::imwrite(std::to_string(i)+".isomap.png",result.first);
+        auto Face2 = PyMMS.FMFull.Generate(shapeX, blendShapeXs[i]);
+        MatF projected = Projection(params[i], Face2);
+        projected.col(1).array()=images[i].rows-projected.col(1).array();
+        projecteds.emplace_back(projected);
     }
-    model.col(2).array()-=z;
-    saveModel(model,PyMMS.FMFull,"base");
+    std::cout<<"weightTs.size():"<<weightTs.size()<<std::endl;
+    merge(images,projecteds,weightTs,PyMMS,1024,1024);
+}
+
+void MultiFitting::merge(std::vector<cv::Mat> &images,std::vector<MatF> projecteds, std::vector<at::Tensor> &weightTs,MMSolver& PyMMS,int H,int W)
+{
+    auto TRI = PyMMS.FMFull.TRIUV;
+    auto UV = PyMMS.FMFull.UV;
+    cv::Mat result=cv::Mat::zeros(H,W,images[0].type());
+    size_t imageNum=weightTs.size();
+    at::Tensor sum=torch::zeros(TRI.rows());
+    for(int k=0;k<imageNum;k++){
+        sum.add_(weightTs[k]);
+    }
+
+    torch::Tensor mask=sum.lt(1e-6);
+    sum.masked_fill_(mask,1.0);
+    mask=sum.lt(1e-6);
+    std::cout<<"nonzero:"<<mask.nonzero()<<std::endl;
+    for(int k=0;k<imageNum;k++){
+        weightTs[k].div_(sum);
+    }
+
+
+    for (size_t t = 0; t < TRI.rows(); t++)
+    {
+        std::vector<cv::Point2f> dstTri;
+        std::vector<float> weights;
+        for(int k=0;k<imageNum;k++){
+            weights.push_back(weightTs[k][t].item().toFloat());
+        }
+
+        std::vector<std::vector<cv::Point2f>> srcTris;
+        srcTris.resize(imageNum);
+        for (size_t i = 0; i < 3; i++)
+        {
+            int j = TRI(t, i);
+
+            auto u = (UV(j, 0)) * (W - 1);
+            auto v = (1 - UV(j, 1)) * (H - 1);
+            dstTri.push_back(cv::Point2f(u, v));
+            for(int k=0;k<imageNum;k++){
+                auto x = projecteds[k](j, 0);
+                auto y = projecteds[k](j, 1);
+                srcTris[k].push_back(cv::Point2f(x, y));
+            }
+        }
+
+        FaceMorph::morphTriangle(images,result,srcTris,dstTri,weights);
+    }
+    cv::imwrite("result.isomap.png",result);
 }
 
 void MultiFitting::selectContour(ContourLandmarks &contour, float &yawAngle,torch::Tensor &modelContourMask, float frontalRangeThreshold)

@@ -5,7 +5,7 @@
 #define CV_AA -1
 #include "cnpy.h"
 #include "NumpyUtil.h"
-
+#include <torch/torch.h>
 
 inline cv::Point2f ImageCoordinate(MatF face, int i)
 {
@@ -181,6 +181,7 @@ public:
         cnpy::npz_t npz = cnpy::npz_load(file);
 
         SM = ToEigen(npz["SM"]);
+
         SB = ToEigen(npz["SB"]);
 
         EM = ToEigen(npz["EM"]);
@@ -195,7 +196,9 @@ public:
         if (LoadEdge)
         {
             TRI = ToEigenInt(npz["TRI"]);
-
+            std::cout<<"TRI.row(2):"<<TRI.row(2)<<std::endl;
+            torch::Tensor TRIT = ToTensorInt(npz["TRI"]);
+            std::cout<<"TRIT.select(0,2):"<<TRIT.select(0,2)<<std::endl;
             try
             {
                 TRIUV = ToEigenInt(npz["TRIUV"]);

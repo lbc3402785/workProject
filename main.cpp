@@ -12,6 +12,38 @@
 string dir_path = "./data/";
 MMSolver PyMMS;
 FaceModel PyFM;
+void testMul()
+{
+   torch::Tensor t1=torch::rand({5,4});
+   t1.select(1,0) *= 0;
+   std::cout<<t1<<std::endl;
+}
+void testSvd()
+{
+//    torch::Tensor t1=torch::rand({3,3});
+//    std::cout<<t1<<std::endl;
+//    torch::Tensor U,S,V;
+//    std::tie(U,S,V)=torch::svd(t1);
+//    std::cout<<"U:"<<U<<std::endl;
+//    std::cout<<"------"<<std::endl;
+//    std::cout<<"S:"<<S<<std::endl;
+//    std::cout<<"------"<<std::endl;
+//    std::cout<<"V:"<<V<<std::endl;
+//    std::cout<<"------"<<std::endl;
+//    Eigen::JacobiSVD<Eigen::Matrix3f, Eigen::NoQRPreconditioner> svd(EigenToTorch::TorchTensorToEigenMatrix(t1), Eigen::ComputeFullU | Eigen::ComputeFullV);
+//    Eigen::Matrix3f U1 = svd.matrixU();
+//    std::cout<<"U1:"<<U1<<std::endl;
+//    std::cout<<"------"<<std::endl;
+//    const Eigen::Matrix3f V1 = svd.matrixV();
+//    std::cout<<"V1:"<<V1<<std::endl;
+//    std::cout<<"------"<<std::endl;
+    MatF input(4,3);
+    input(0,0)=1;input(0,1)=2;input(0,2)=3;
+    input(1,0)=4;input(1,1)=5;input(1,2)=6;
+    input(2,0)=7;input(2,1)=8;input(2,2)=9;
+    input(3,0)=10;input(3,1)=11;input(3,2)=12;
+    std::cout<<input.colwise().mean()<<std::endl;
+}
 void testMat()
 {
     MatF f(4,3);
@@ -21,8 +53,11 @@ void testMat()
     f(3,0)=-3;f(3,2)=2;
     f(4,1)=-3;f(4,2)=-2;
     std::cout<<f<<std::endl;
-    f.col(2).array()-=5;
+//    f.col(2).array()-=5;
     std::cout<<"---------"<<std::endl;
+
+    MatF f1=f;
+    f1.col(2).array()-=5;
     std::cout<<f<<std::endl;
 }
 void InitMMS(std::string fmkp, std::string fmfull)
@@ -118,59 +153,58 @@ int main(int argc, char *argv[])
         std::cout<<"useage:exe modelPath imagePath";
         exit(EXIT_FAILURE);
     }
-    std::string modelPath=argv[1];
-    std::string imagePath=argv[2];
-    std::string fmkp =modelPath+"BFM2017KP.npz";
-    std::string fmfull =modelPath+ "BFMUV.obj.npz";
-    std::string dlibModel=modelPath+ "shape_predictor_68_face_landmarks.dat";
-    std::string mappingsfile=modelPath+"contour.json";
-    InitMMS(fmkp, fmfull);
-    DlibInit(dlibModel);
-    ContourLandmarks contour=ContourLandmarks::load(mappingsfile);
-    boost::filesystem::path imageDir(imagePath);
-    std::vector<std::string> imageFiles;
-    readfolder(imageDir,imageFiles);
-    std::vector<cv::Mat> images;
-    std::vector<MatF> landMarks;
-    std::vector<std::string> outputImages=loadImages(imageFiles,images,landMarks);
-    std::vector<int> image_widths;
-    std::vector<int> image_heights;
-    for (const auto& image : images)
-    {
-        image_widths.push_back(image.cols);
-        image_heights.push_back(image.rows);
-    }
-    MatF shapeX;
-    std::vector<MatF> blendShapeXs;
-    std::vector<ProjectionParameters> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,4);
-    int W = 512;
-    int H = 512;
-    std::vector<cv::Mat> textures;
-    for(size_t j=0;j<images.size();j++){
-        PyMMS.params=params[j];
-        PyMMS.EX=blendShapeXs[j];
-        PyMMS.SX=shapeX;
-        cv::Mat texture = MMSTexture(images[j], PyMMS, W, H);
-        boost::filesystem::path outputfile(outputImages[j]);
-        outputfile.replace_extension(".isomap.png");
-        cv::imwrite(outputfile.string(),texture);
-        textures.emplace_back(texture);
-    }
-    MatF blendShapeX=blendShapeXs[0];
-    for(size_t j=1;j<images.size();j++){
-       blendShapeX+= blendShapeXs[j];
-    }
-    blendShapeX/=images.size();
-    PyMMS.params=params[2];
-    PyMMS.EX=blendShapeX;
-    PyMMS.SX=shapeX;
-    string outfolder = "./output/";
-    string filename = "TestObj";
-    std::cout<<"---------------"<<std::endl;
-    MakeDir(outfolder);
-    MMSObj(images[2], PyMMS, outfolder, filename);
-    //std::cout<<"done!"<<std::endl;
-    //testMat();
-    MultiFitting::render(images,params,shapeX,blendShapeX,contour,PyMMS);
+//    std::string modelPath=argv[1];
+//    std::string imagePath=argv[2];
+//    std::string fmkp =modelPath+"BFM2017KP.npz";
+//    std::string fmfull =modelPath+ "BFMUV.obj.npz";
+//    std::string dlibModel=modelPath+ "shape_predictor_68_face_landmarks.dat";
+//    std::string mappingsfile=modelPath+"contour.json";
+//    InitMMS(fmkp, fmfull);
+//    DlibInit(dlibModel);
+//    ContourLandmarks contour=ContourLandmarks::load(mappingsfile);
+//    boost::filesystem::path imageDir(imagePath);
+//    std::vector<std::string> imageFiles;
+//    readfolder(imageDir,imageFiles);
+//    std::vector<cv::Mat> images;
+//    std::vector<MatF> landMarks;
+//    std::vector<std::string> outputImages=loadImages(imageFiles,images,landMarks);
+//    std::vector<int> image_widths;
+//    std::vector<int> image_heights;
+//    for (const auto& image : images)
+//    {
+//        image_widths.push_back(image.cols);
+//        image_heights.push_back(image.rows);
+//    }
+//    MatF shapeX;
+//    std::vector<MatF> blendShapeXs;
+//    std::vector<ProjectionParameters> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,4);
+//    int W = 512;
+//    int H = 512;
+//    std::vector<cv::Mat> textures;
+//    for(size_t j=0;j<images.size();j++){
+//        PyMMS.params=params[j];
+//        PyMMS.EX=blendShapeXs[j];
+//        PyMMS.SX=shapeX;
+//        cv::Mat texture = MMSTexture(images[j], PyMMS, W, H);
+//        boost::filesystem::path outputfile(outputImages[j]);
+//        outputfile.replace_extension(".isomap.png");
+//        cv::imwrite(outputfile.string(),texture);
+//        textures.emplace_back(texture);
+//    }
+//    MatF blendShapeX=blendShapeXs[0];
+//    for(size_t j=1;j<images.size();j++){
+//       blendShapeX+= blendShapeXs[j];
+//    }
+//    blendShapeX/=images.size();
+//    PyMMS.params=params[2];
+//    PyMMS.EX=blendShapeX;
+//    PyMMS.SX=shapeX;
+//    string outfolder = "./output/";
+//    string filename = "TestObj";
+//    std::cout<<"---------------"<<std::endl;
+//    MakeDir(outfolder);
+    //MMSObj(images[2], PyMMS, outfolder, filename);
+//    MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
+    testMul();
     return 0;
 }

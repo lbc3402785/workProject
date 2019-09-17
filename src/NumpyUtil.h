@@ -12,7 +12,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-
+#include <torch/torch.h>
 using namespace std;
 using namespace Eigen;
 using namespace cnpy;
@@ -21,7 +21,29 @@ typedef Eigen::Matrix<float, Dynamic, Dynamic, RowMajor> MatF;
 typedef Eigen::Matrix<int, Dynamic, Dynamic, RowMajor> MatI;
 typedef Eigen::Matrix<float, Dynamic, Dynamic, ColMajor> MatFC;
 typedef Eigen::Matrix<int, Dynamic, Dynamic, ColMajor> MatIC;
+inline torch::Tensor ToTensor(NpyArray &np)
+{
+    if (np.data_holder == nullptr)
+    {
+        throw "No Data";
+    }
 
+    auto shape = np.shape;
+    auto L = np.shape.size();
+    if (L > 2)
+    {
+        cout << "Error" << endl;
+    }
+
+    if (L == 1)
+    {
+        return torch::from_blob(np.data<float>(), {(int64_t)shape[0], (int64_t)1});
+    }
+    else
+    {
+        return torch::from_blob(np.data<float>(), {(int64_t)shape[0], (int64_t)shape[1]});
+    }
+}
 inline Map<MatF> ToEigen(NpyArray &np)
 {
 	if (np.data_holder == nullptr)
@@ -70,6 +92,29 @@ inline MatF ToEigenC(NpyArray &np)
 	}
 }
 
+inline torch::Tensor ToTensorInt(NpyArray &np)
+{
+    if (np.data_holder == nullptr)
+    {
+        throw "No Data";
+    }
+
+    auto shape = np.shape;
+    auto L = np.shape.size();
+    if (L > 2)
+    {
+        cout << "Error" << endl;
+    }
+
+    if (L == 1)
+    {
+        return torch::from_blob(np.data<int>(), {(int64_t)shape[0], (int64_t)1},at::TensorOptions().dtype(torch::kInt));
+    }
+    else
+    {
+        return torch::from_blob(np.data<int>(), {(int64_t)shape[0], (int64_t)shape[1]},at::TensorOptions().dtype(torch::kInt));
+    }
+}
 inline Map<MatI> ToEigenInt(NpyArray &np)
 {
 	if (np.data_holder == nullptr)

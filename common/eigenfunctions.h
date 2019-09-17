@@ -2,12 +2,17 @@
 #define EIGENFUNCTIONS_H
 #include <Eigen/Dense>
 #include <vector>
+#include <glm/gtx/euler_angles.hpp>
 template<typename Type>
 class EigenFunctions{
 public:
     static void saveObj(std::string name, Eigen::Matrix<Type,3,Eigen::Dynamic>& verts, std::vector<int64_t> &faceIds);
     static void saveObj(std::string name, Eigen::Matrix<Type,3,Eigen::Dynamic,Eigen::RowMajor>& verts, std::vector<int64_t> faceIds);
+    template <int _Options>
+    static Eigen::Matrix<Type,3,3,_Options> eulerAngleY(Type const& angleY);
 };
+
+
 template<typename Type>
 void EigenFunctions<Type>::saveObj(std::string name, Eigen::Matrix<Type, 3, Eigen::Dynamic>& verts, std::vector<int64_t> &faceIds)
 {
@@ -25,6 +30,8 @@ void EigenFunctions<Type>::saveObj(std::string name, Eigen::Matrix<Type, 3, Eige
         }
     }
 }
+
+
 template<typename Type>
 void EigenFunctions<Type>::saveObj(std::string name, Eigen::Matrix<Type, 3, Eigen::Dynamic,Eigen::RowMajor>& verts, std::vector<int64_t> faceIds)
 {
@@ -42,6 +49,21 @@ void EigenFunctions<Type>::saveObj(std::string name, Eigen::Matrix<Type, 3, Eige
         }
     }
 }
+
+
+template <typename Type>
+template <int _Options>
+Eigen::Matrix<Type,3,3,_Options> EigenFunctions<Type>::eulerAngleY(const Type &angleY)
+{
+    Type cosY = glm::cos(angleY);
+    Type sinY = glm::sin(angleY);
+    Eigen::Matrix<Type,3,3,_Options> e;
+    e<<cosY,	Type(0),	sinY,
+       Type(0),	Type(1),	Type(0),
+       -sinY,	Type(0),	cosY;
+    return e;
+}
 #endif // EIGENFUNCTIONS_H
+
 
 
