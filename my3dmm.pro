@@ -5,8 +5,8 @@ CONFIG -= app_bundle
 OBJECTS_DIR=$${PWD}/build
 TORCH_LIBRARY_DIRS=D:\soft\libtorch\lib
 TORCH_INCLUDE_DIRS=D:\soft\libtorch\include
-CUDA_INCLUDE_DIRS=D:\soft\CUDA\v10.0\Development\include
-CUDA_LIBRARY_DIRS=D:\soft\CUDA\v10.0\Development\lib\x64
+CUDA_INCLUDE_DIRS="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"
+CUDA_LIBRARY_DIRS="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64"
 BOOST_LIBRARY_DIRS=D:\soft\boost_1_69_0\stage-static\lib
 OPENCV_LIBRARY_DIRS=D:\soft\opencv3\build\x64\vc14\lib
 FLANN_LIBRARY_DIRS=D:\soft\flann-1.8.4-src\lib
@@ -88,8 +88,8 @@ HEADERS += \
     multifitting.h \
     src/Dlib.h \
     src/EigenUtil.h \
-    src/MMSolver.h \
     src/NumpyUtil.h \
     src/Poisson.h \
     src/cnpy.h \
+    src/mmtensorsolver.h \
     src/stdafx.h

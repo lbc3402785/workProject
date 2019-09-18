@@ -16,10 +16,10 @@ CXX           = cl
 DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -DWIN64 -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_CORE_LIB -DNDEBUG
 CFLAGS        = -nologo -Zc:wchar_t -FS -Zc:strictStrings -O2 -MD -W3 -w44456 -w44457 -w44458 $(DEFINES)
 CXXFLAGS      = -nologo -Zc:wchar_t -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -O2 -MD -std:c++14 -W3 -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 -wd4577 -wd4467 -EHsc $(DEFINES)
-INCPATH       = -I. -ID:\soft\boost_1_69_0 -ID:\soft\opencv3\build\include -I"C:\Program Files (x86)\dlib\include" -ID:\soft\eigen-eigen-323c052e1731 -ID:\soft\OpenMesh8.0\include -ID:\soft\zlib\include -Isrc -ID:\soft\flann-1.8.4-src\src\cpp -ID:\soft\CUDA\v10.0\Development\include -ID:\soft\libtorch\include -ID:\soft\libtorch\include\torch\csrc\api\include -ID:\soft\glm -ID:\Qt\5.13.0\msvc2017_64\include -ID:\Qt\5.13.0\msvc2017_64\include\QtCore -Irelease -ID:\Qt\5.13.0\msvc2017_64\mkspecs\win32-msvc 
+INCPATH       = -I. -ID:\soft\boost_1_69_0 -ID:\soft\opencv3\build\include -I"C:\Program Files (x86)\dlib\include" -ID:\soft\eigen-eigen-323c052e1731 -ID:\soft\OpenMesh8.0\include -ID:\soft\zlib\include -Isrc -ID:\soft\flann-1.8.4-src\src\cpp -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include" -ID:\soft\libtorch\include -ID:\soft\libtorch\include\torch\csrc\api\include -ID:\soft\glm -ID:\Qt\5.13.0\msvc2017_64\include -ID:\Qt\5.13.0\msvc2017_64\include\QtCore -Irelease -ID:\Qt\5.13.0\msvc2017_64\mkspecs\win32-msvc 
 LINKER        = link
 LFLAGS        = /NOLOGO /DYNAMICBASE /NXCOMPAT /INCREMENTAL:NO /SUBSYSTEM:CONSOLE "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'"
-LIBS          = /LIBPATH:D:\soft\boost_1_69_0\stage-static\lib /LIBPATH:D:\soft\opencv3\build\x64\vc14\lib D:\soft\opencv3\build\x64\vc14\lib\opencv_world344.lib D:\soft\boost_1_69_0\stage-static\lib\libboost_system-vc141-mt-x64-1_69.lib D:\soft\boost_1_69_0\stage-static\lib\libboost_filesystem-vc141-mt-x64-1_69.lib D:\soft\boost_1_69_0\stage-static\lib\libboost_program_options-vc141-mt-x64-1_69.lib /LIBPATH:"C:\Program Files (x86)\dlib\lib" "C:\Program Files (x86)\dlib\lib\dlib19.16.99_release_64bit_msvc1900.lib" /LIBPATH:D:\soft\flann-1.8.4-src\lib D:\soft\flann-1.8.4-src\lib\flann.lib D:\soft\libtorch\lib\torch.lib D:\soft\libtorch\lib\c10_cuda.lib D:\soft\libtorch\lib\c10.lib D:\soft\CUDA\v10.0\Development\lib\x64\cudart.lib D:\soft\CUDA\v10.0\Development\lib\x64\cublas.lib D:\soft\CUDA\v10.0\Development\lib\x64\cufft.lib D:\soft\CUDA\v10.0\Development\lib\x64\curand.lib D:\soft\CUDA\v10.0\Development\lib\x64\cudnn.lib D:\soft\libtorch\lib\caffe2_gpu.lib D:\soft\libtorch\lib\caffe2.lib D:\Qt\5.13.0\msvc2017_64\lib\Qt5Core.lib   
+LIBS          = /LIBPATH:D:\soft\boost_1_69_0\stage-static\lib /LIBPATH:D:\soft\opencv3\build\x64\vc14\lib D:\soft\opencv3\build\x64\vc14\lib\opencv_world344.lib D:\soft\boost_1_69_0\stage-static\lib\libboost_system-vc141-mt-x64-1_69.lib D:\soft\boost_1_69_0\stage-static\lib\libboost_filesystem-vc141-mt-x64-1_69.lib D:\soft\boost_1_69_0\stage-static\lib\libboost_program_options-vc141-mt-x64-1_69.lib /LIBPATH:"C:\Program Files (x86)\dlib\lib" "C:\Program Files (x86)\dlib\lib\dlib19.16.99_release_64bit_msvc1900.lib" /LIBPATH:D:\soft\flann-1.8.4-src\lib D:\soft\flann-1.8.4-src\lib\flann.lib D:\soft\libtorch\lib\torch.lib D:\soft\libtorch\lib\c10_cuda.lib D:\soft\libtorch\lib\c10.lib "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64\cudart.lib" "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64\cublas.lib" "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64\cufft.lib" "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64\curand.lib" "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64\cudnn.lib" D:\soft\libtorch\lib\caffe2_gpu.lib D:\soft\libtorch\lib\caffe2.lib D:\Qt\5.13.0\msvc2017_64\lib\Qt5Core.lib   
 QMAKE         = D:\Qt\5.13.0\msvc2017_64\bin\qmake.exe
 IDC           = idc
 IDL           = midl
@@ -75,10 +75,10 @@ DIST          =  common\dataconvertor.h \
 		multifitting.h \
 		src\Dlib.h \
 		src\EigenUtil.h \
-		src\MMSolver.h \
 		src\NumpyUtil.h \
 		src\Poisson.h \
 		src\cnpy.h \
+		src\mmtensorsolver.h \
 		src\stdafx.h common\knnsearch.cpp \
 		common\torchfunctions.cpp \
 		facemorph.cpp \
@@ -173,7 +173,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) my3dmm.zip $(SOURCES) $(DIST) my3dmm.pro D:\Qt\5.13.0\msvc2017_64\mkspecs\features\spec_pre.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\angle.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\windows-desktop.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\windows_vulkan_sdk.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\windows-vulkan.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\msvc-desktop.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\qconfig.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3danimation.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3danimation_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dcore.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dcore_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dextras.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dextras_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dinput.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dinput_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dlogic.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dlogic_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquick.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquick_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3drender.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3drender_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_accessibility_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axbase.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axbase_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axcontainer.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axcontainer_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axserver.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axserver_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_bluetooth.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_bluetooth_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_bootstrap_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_concurrent.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_concurrent_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_core.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_core_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_dbus.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_dbus_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_designer.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_designer_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_designercomponents_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_edid_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_egl_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_fb_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_gamepad.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_gamepad_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_gui.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_gui_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_help.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_help_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_location.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_location_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_multimedia.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_multimedia_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_network.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_network_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_nfc.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_nfc_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_opengl.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_opengl_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_openglextensions.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_openglextensions_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_packetprotocol_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_positioning.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_positioning_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_positioningquick.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_positioningquick_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_printsupport.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_printsupport_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qml.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qml_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qmldebug_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qmldevtools_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qmltest.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qmltest_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quick.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quick_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickparticles_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickshapes_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_repparser.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_repparser_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_script.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_script_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_scripttools.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_scripttools_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_scxml.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_scxml_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_sensors.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_sensors_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_serialbus.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_serialbus_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_serialport.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_serialport_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_sql.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_sql_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_svg.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_svg_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_testlib.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_testlib_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_texttospeech.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_texttospeech_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_theme_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_uiplugin.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_uitools.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_uitools_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_vulkan_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webchannel.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webchannel_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webengine.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webengine_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginecore.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginecore_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginecoreheaders_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginewidgets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginewidgets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_websockets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_websockets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webview.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webview_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_widgets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_widgets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_windowsuiautomation_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_winextras.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_winextras_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_xml.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_xml_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_zlib_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qt_functions.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qt_config.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\win32-msvc\qmake.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\spec_post.prf .qmake.stash D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exclusive_builds.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\msvc-version.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\toolchain.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\default_pre.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\default_pre.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\resolve_config.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exclusive_builds_post.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\default_post.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\build_pass.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\console.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\resources.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qtquickcompiler.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\precompile_header.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\warn_on.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qt.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\moc.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qmake_use.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\file_copies.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\testcase_targets.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exceptions.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\yacc.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\lex.prf my3dmm.pro D:\Qt\5.13.0\msvc2017_64\lib\Qt5Core.prl      D:\Qt\5.13.0\msvc2017_64\mkspecs\features\data\dummy.cpp common\dataconvertor.h common\eigenfunctions.h common\knnsearch.h common\raytriangleintersect.h common\torchfunctions.h contour.h facemorph.h glmfunctions.h multifitting.h src\Dlib.h src\EigenUtil.h src\MMSolver.h src\NumpyUtil.h src\Poisson.h src\cnpy.h src\stdafx.h  common\knnsearch.cpp common\torchfunctions.cpp facemorph.cpp glmfunctions.cpp main.cpp multifitting.cpp src\Dlib.cpp src\cnpy.cpp    
+	$(ZIP) my3dmm.zip $(SOURCES) $(DIST) my3dmm.pro D:\Qt\5.13.0\msvc2017_64\mkspecs\features\spec_pre.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\angle.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\windows-desktop.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\windows_vulkan_sdk.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\windows-vulkan.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\msvc-desktop.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\qconfig.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3danimation.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3danimation_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dcore.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dcore_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dextras.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dextras_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dinput.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dinput_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dlogic.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dlogic_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquick.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquick_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3drender.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_3drender_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_accessibility_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axbase.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axbase_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axcontainer.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axcontainer_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axserver.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_axserver_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_bluetooth.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_bluetooth_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_bootstrap_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_concurrent.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_concurrent_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_core.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_core_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_dbus.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_dbus_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_designer.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_designer_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_designercomponents_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_edid_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_egl_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_fb_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_gamepad.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_gamepad_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_gui.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_gui_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_help.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_help_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_location.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_location_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_multimedia.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_multimedia_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_network.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_network_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_nfc.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_nfc_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_opengl.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_opengl_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_openglextensions.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_openglextensions_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_packetprotocol_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_positioning.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_positioning_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_positioningquick.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_positioningquick_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_printsupport.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_printsupport_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qml.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qml_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qmldebug_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qmldevtools_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qmltest.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qmltest_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quick.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quick_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickparticles_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickshapes_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_repparser.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_repparser_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_script.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_script_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_scripttools.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_scripttools_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_scxml.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_scxml_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_sensors.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_sensors_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_serialbus.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_serialbus_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_serialport.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_serialport_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_sql.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_sql_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_svg.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_svg_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_testlib.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_testlib_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_texttospeech.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_texttospeech_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_theme_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_uiplugin.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_uitools.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_uitools_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_vulkan_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webchannel.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webchannel_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webengine.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webengine_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginecore.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginecore_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginecoreheaders_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginewidgets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webenginewidgets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_websockets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_websockets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webview.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_webview_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_widgets.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_widgets_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_windowsuiautomation_support_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_winextras.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_winextras_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_xml.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_xml_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\modules\qt_lib_zlib_private.pri D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qt_functions.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qt_config.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\win32-msvc\qmake.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\spec_post.prf .qmake.stash D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exclusive_builds.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\common\msvc-version.conf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\toolchain.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\default_pre.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\default_pre.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\resolve_config.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exclusive_builds_post.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\default_post.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\build_pass.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\win32\console.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\resources.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qtquickcompiler.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\precompile_header.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\warn_on.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qt.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\moc.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\qmake_use.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\file_copies.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\testcase_targets.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\exceptions.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\yacc.prf D:\Qt\5.13.0\msvc2017_64\mkspecs\features\lex.prf my3dmm.pro D:\Qt\5.13.0\msvc2017_64\lib\Qt5Core.prl      D:\Qt\5.13.0\msvc2017_64\mkspecs\features\data\dummy.cpp common\dataconvertor.h common\eigenfunctions.h common\knnsearch.h common\raytriangleintersect.h common\torchfunctions.h contour.h facemorph.h glmfunctions.h multifitting.h src\Dlib.h src\EigenUtil.h src\NumpyUtil.h src\Poisson.h src\cnpy.h src\mmtensorsolver.h src\stdafx.h  common\knnsearch.cpp common\torchfunctions.cpp facemorph.cpp glmfunctions.cpp main.cpp multifitting.cpp src\Dlib.cpp src\cnpy.cpp    
 
 clean: compiler_clean 
 	-$(DEL_FILE) build\knnsearch.obj build\torchfunctions.obj build\facemorph.obj build\glmfunctions.obj build\main.obj build\multifitting.obj build\Dlib.obj build\cnpy.obj
@@ -402,8 +402,8 @@ build\knnsearch.obj: common\knnsearch.cpp common\knnsearch.h \
 		D:\soft\libtorch\include\c10\util\C++17.h \
 		D:\soft\libtorch\include\c10\Half.h \
 		D:\soft\libtorch\include\c10\core\bitcasts.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.hpp \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.hpp" \
 		D:\soft\libtorch\include\c10\Half-inl.h \
 		D:\soft\libtorch\include\c10\util\typeid.h \
 		D:\soft\libtorch\include\c10\util\Backtrace.h \
@@ -425,7 +425,7 @@ build\knnsearch.obj: common\knnsearch.cpp common\knnsearch.h \
 		D:\soft\libtorch\include\c10\util\Flags.h \
 		D:\soft\libtorch\include\c10\util\Logging.h \
 		D:\soft\libtorch\include\c10\util\logging_is_google_glog.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda.h" \
 		D:\soft\libtorch\include\c10\util\logging_is_not_google_glog.h \
 		D:\soft\libtorch\include\ATen\core\UndefinedTensorImpl.h \
 		D:\soft\libtorch\include\ATen\core\LegacyTypeDispatch.h \
@@ -704,8 +704,8 @@ build\torchfunctions.obj: common\torchfunctions.cpp common\torchfunctions.h \
 		D:\soft\libtorch\include\c10\util\C++17.h \
 		D:\soft\libtorch\include\c10\Half.h \
 		D:\soft\libtorch\include\c10\core\bitcasts.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.hpp \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.hpp" \
 		D:\soft\libtorch\include\c10\Half-inl.h \
 		D:\soft\libtorch\include\c10\util\typeid.h \
 		D:\soft\libtorch\include\c10\util\Backtrace.h \
@@ -727,7 +727,7 @@ build\torchfunctions.obj: common\torchfunctions.cpp common\torchfunctions.h \
 		D:\soft\libtorch\include\c10\util\Flags.h \
 		D:\soft\libtorch\include\c10\util\Logging.h \
 		D:\soft\libtorch\include\c10\util\logging_is_google_glog.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda.h" \
 		D:\soft\libtorch\include\c10\util\logging_is_not_google_glog.h \
 		D:\soft\libtorch\include\ATen\core\UndefinedTensorImpl.h \
 		D:\soft\libtorch\include\ATen\core\LegacyTypeDispatch.h \
@@ -896,59 +896,59 @@ build\torchfunctions.obj: common\torchfunctions.cpp common\torchfunctions.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseCore \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\Core \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\DisableStupidWarnings.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_config.h \
-		D:\soft\CUDA\v10.0\Development\include\builtin_types.h \
-		D:\soft\CUDA\v10.0\Development\include\device_types.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_types.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_types.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\library_types.h \
-		D:\soft\CUDA\v10.0\Development\include\channel_descriptor.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_device_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.hpp \
-		D:\soft\CUDA\v10.0\Development\include\surface_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_fetch_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\common_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\func_macro.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\math_constants.h \
-		D:\soft\CUDA\v10.0\Development\include\device_launch_parameters.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_config.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\builtin_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\library_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\channel_descriptor.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_device_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_fetch_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\common_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\func_macro.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\math_constants.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_launch_parameters.h" \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Macros.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\MKL_support.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\blas.h \
@@ -1364,7 +1364,7 @@ build\glmfunctions.obj: glmfunctions.cpp glmfunctions.h \
 		D:\soft\glm\glm\detail\type_int.hpp \
 		D:\soft\glm\glm\detail\setup.hpp \
 		D:\soft\glm\glm\simd\platform.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda.h" \
 		D:\soft\glm\glm\detail\type_float.hpp \
 		D:\soft\glm\glm\detail\type_vec.hpp \
 		D:\soft\glm\glm\detail\precision.hpp \
@@ -1459,66 +1459,67 @@ build\glmfunctions.obj: glmfunctions.cpp glmfunctions.h \
 		D:\soft\glm\glm\detail\func_integer_simd.inl \
 		D:\soft\glm\glm\simd\integer.h \
 		D:\soft\glm\glm\gtx\transform.inl \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\Dense \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\Core \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\DisableStupidWarnings.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_config.h \
-		D:\soft\CUDA\v10.0\Development\include\builtin_types.h \
-		D:\soft\CUDA\v10.0\Development\include\device_types.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_types.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_types.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\library_types.h \
-		D:\soft\CUDA\v10.0\Development\include\channel_descriptor.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_device_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.hpp \
-		D:\soft\CUDA\v10.0\Development\include\surface_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_fetch_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\common_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\func_macro.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\math_constants.h \
-		D:\soft\CUDA\v10.0\Development\include\device_launch_parameters.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_config.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\builtin_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\library_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\channel_descriptor.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_device_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_fetch_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\common_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\func_macro.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\math_constants.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_launch_parameters.h" \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Macros.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\MKL_support.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\blas.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.hpp \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.hpp" \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Constants.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Meta.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\ForwardDeclarations.h \
@@ -1654,7 +1655,6 @@ build\glmfunctions.obj: glmfunctions.cpp glmfunctions.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\Assign_MKL.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\GlobalFunctions.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\ReenableStupidWarnings.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\Dense \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\LU \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\Kernel.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\Image.h \
@@ -1720,7 +1720,233 @@ build\glmfunctions.obj: glmfunctions.cpp glmfunctions.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Eigenvalues\MatrixBaseEigenvalues.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Eigenvalues\RealSchur_LAPACKE.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Eigenvalues\ComplexSchur_LAPACKE.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Eigenvalues\SelfAdjointEigenSolver_LAPACKE.h
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Eigenvalues\SelfAdjointEigenSolver_LAPACKE.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\torch.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\all.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\cuda.h \
+		D:\soft\libtorch\include\torch\csrc\WindowsTorchApiMacro.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\dataloader.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\dataloader_options.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\arg.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\types.h \
+		D:\soft\libtorch\include\ATen\ATen.h \
+		D:\soft\libtorch\include\ATen\Allocator.h \
+		D:\soft\libtorch\include\c10\core\Allocator.h \
+		D:\soft\libtorch\include\c10\Device.h \
+		D:\soft\libtorch\include\c10\DeviceType.h \
+		D:\soft\libtorch\include\c10\macros\Macros.h \
+		D:\soft\libtorch\include\c10\macros\cmake_macros.h \
+		D:\soft\libtorch\include\c10\macros\Export.h \
+		D:\soft\libtorch\include\c10\util\Exception.h \
+		D:\soft\libtorch\include\c10\util\StringUtil.h \
+		D:\soft\libtorch\include\c10\util\string_utils.h \
+		D:\soft\libtorch\include\c10\util\UniqueVoidPtr.h \
+		D:\soft\libtorch\include\ATen\CPUGeneral.h \
+		D:\soft\libtorch\include\ATen\core\ATenGeneral.h \
+		D:\soft\libtorch\include\ATen\Context.h \
+		D:\soft\libtorch\include\ATen\Type.h \
+		D:\soft\libtorch\include\ATen\core\Type.h \
+		D:\soft\libtorch\include\ATen\core\Deprecated.h \
+		D:\soft\libtorch\include\ATen\core\Generator.h \
+		D:\soft\libtorch\include\c10\core\Layout.h \
+		D:\soft\libtorch\include\c10\core\Backend.h \
+		D:\soft\libtorch\include\c10\core\TensorTypeId.h \
+		D:\soft\libtorch\include\c10\util\IdWrapper.h \
+		D:\soft\libtorch\include\c10\core\TensorTypeIdRegistration.h \
+		D:\soft\libtorch\include\c10\core\Scalar.h \
+		D:\soft\libtorch\include\c10\core\ScalarType.h \
+		D:\soft\libtorch\include\c10\util\ArrayRef.h \
+		D:\soft\libtorch\include\c10\util\SmallVector.h \
+		D:\soft\libtorch\include\c10\util\AlignOf.h \
+		D:\soft\libtorch\include\c10\util\C++17.h \
+		D:\soft\libtorch\include\c10\Half.h \
+		D:\soft\libtorch\include\c10\core\bitcasts.h \
+		D:\soft\libtorch\include\c10\Half-inl.h \
+		D:\soft\libtorch\include\c10\util\typeid.h \
+		D:\soft\libtorch\include\c10\util\Backtrace.h \
+		D:\soft\libtorch\include\c10\util\Type.h \
+		D:\soft\libtorch\include\ATen\core\SparseTensorRef.h \
+		D:\soft\libtorch\include\ATen\core\Reduction.h \
+		D:\soft\libtorch\include\ATen\core\TensorOptions.h \
+		D:\soft\libtorch\include\ATen\core\DefaultDtype.h \
+		D:\soft\libtorch\include\c10\core\ScalarTypeUtils.h \
+		D:\soft\libtorch\include\c10\util\Optional.h \
+		D:\soft\libtorch\include\ATen\core\Tensor.h \
+		D:\soft\libtorch\include\c10\core\Storage.h \
+		D:\soft\libtorch\include\c10\core\StorageImpl.h \
+		D:\soft\libtorch\include\c10\util\intrusive_ptr.h \
+		D:\soft\libtorch\include\ATen\core\TensorAccessor.h \
+		D:\soft\libtorch\include\ATen\core\TensorImpl.h \
+		D:\soft\libtorch\include\ATen\core\context_base.h \
+		D:\soft\libtorch\include\c10\util\Registry.h \
+		D:\soft\libtorch\include\c10\util\Flags.h \
+		D:\soft\libtorch\include\c10\util\Logging.h \
+		D:\soft\libtorch\include\c10\util\logging_is_google_glog.h \
+		D:\soft\libtorch\include\c10\util\logging_is_not_google_glog.h \
+		D:\soft\libtorch\include\ATen\core\UndefinedTensorImpl.h \
+		D:\soft\libtorch\include\ATen\core\LegacyTypeDispatch.h \
+		D:\soft\libtorch\include\ATen\core\VariableHooksInterface.h \
+		D:\soft\libtorch\include\ATen\core\LegacyDeviceTypeInit.h \
+		D:\soft\libtorch\include\ATen\core\ScalarType.h \
+		D:\soft\libtorch\include\ATen\core\TensorMethods.h \
+		D:\soft\libtorch\include\ATen\TypeExtendedInterface.h \
+		D:\soft\libtorch\include\ATen\Utils.h \
+		D:\soft\libtorch\include\ATen\Formatting.h \
+		D:\soft\libtorch\include\ATen\core\Formatting.h \
+		D:\soft\libtorch\include\ATen\LegacyTHDispatch.h \
+		D:\soft\libtorch\include\ATen\LegacyTHDispatcher.h \
+		D:\soft\libtorch\include\ATen\detail\CUDAHooksInterface.h \
+		D:\soft\libtorch\include\ATen\detail\HIPHooksInterface.h \
+		D:\soft\libtorch\include\ATen\detail\ComplexHooksInterface.h \
+		D:\soft\libtorch\include\ATen\Device.h \
+		D:\soft\libtorch\include\ATen\DeviceGuard.h \
+		D:\soft\libtorch\include\c10\DeviceGuard.h \
+		D:\soft\libtorch\include\c10\impl\InlineDeviceGuard.h \
+		D:\soft\libtorch\include\c10\impl\DeviceGuardImplInterface.h \
+		D:\soft\libtorch\include\c10\Stream.h \
+		D:\soft\libtorch\include\c10\impl\VirtualGuardImpl.h \
+		D:\soft\libtorch\include\ATen\DimVector.h \
+		D:\soft\libtorch\include\ATen\core\DimVector.h \
+		D:\soft\libtorch\include\ATen\Dispatch.h \
+		D:\soft\libtorch\include\ATen\core\Half.h \
+		D:\soft\libtorch\include\ATen\Functions.h \
+		D:\soft\libtorch\include\ATen\Tensor.h \
+		D:\soft\libtorch\include\ATen\NativeFunctions.h \
+		D:\soft\libtorch\include\ATen\ScalarOps.h \
+		D:\soft\libtorch\include\ATen\TensorGeometry.h \
+		D:\soft\libtorch\include\ATen\WrapDimUtils.h \
+		D:\soft\libtorch\include\ATen\core\WrapDimMinimal.h \
+		D:\soft\libtorch\include\ATen\TensorOperators.h \
+		D:\soft\libtorch\include\ATen\core\Scalar.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\generated\variable_factories.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\variable.h \
+		D:\soft\libtorch\include\torch\csrc\utils\python_stub.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\edge.h \
+		D:\soft\libtorch\include\torch\csrc\utils\hash.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\function_hook.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\variable_version.h \
+		D:\soft\libtorch\include\torch\csrc\jit\tracer.h \
+		D:\soft\libtorch\include\torch\csrc\jit\assertions.h \
+		D:\soft\libtorch\include\torch\csrc\jit\constants.h \
+		D:\soft\libtorch\include\torch\csrc\jit\ivalue.h \
+		D:\soft\libtorch\include\ATen\core\ivalue.h \
+		D:\soft\libtorch\include\ATen\core\blob.h \
+		D:\soft\libtorch\include\ATen\core\thread_pool.h \
+		D:\soft\libtorch\include\torch\csrc\jit\scope.h \
+		D:\soft\libtorch\include\torch\csrc\jit\interned_strings.h \
+		D:\soft\libtorch\include\ATen\core\interned_strings.h \
+		D:\soft\libtorch\include\ATen\core\aten_interned_strings.h \
+		D:\soft\libtorch\include\torch\csrc\jit\source_range.h \
+		D:\soft\libtorch\include\torch\csrc\jit\source_location.h \
+		D:\soft\libtorch\include\torch\csrc\jit\stack.h \
+		D:\soft\libtorch\include\torch\csrc\jit\tracing_state.h \
+		D:\soft\libtorch\include\torch\csrc\jit\type.h \
+		D:\soft\libtorch\include\ATen\core\jit_type.h \
+		D:\soft\libtorch\include\ATen\core\functional.h \
+		D:\soft\libtorch\include\caffe2\core\common.h \
+		D:\soft\libtorch\include\caffe2\core\macros.h \
+		D:\soft\libtorch\include\torch\csrc\utils\functional.h \
+		D:\soft\libtorch\include\torch\csrc\utils\variadic.h \
+		D:\soft\libtorch\include\ATen\Backtrace.h \
+		D:\soft\libtorch\include\ATen\core\Backtrace.h \
+		D:\soft\libtorch\include\torch\csrc\jit\ir.h \
+		D:\soft\libtorch\include\torch\csrc\jit\attributes.h \
+		D:\soft\libtorch\include\torch\csrc\jit\generic_if.h \
+		D:\soft\libtorch\include\torch\csrc\jit\graph_node_list.h \
+		D:\soft\libtorch\include\torch\csrc\jit\resource_guard.h \
+		D:\soft\libtorch\include\torch\csrc\jit\function_schema.h \
+		D:\soft\libtorch\include\ATen\core\function_schema.h \
+		D:\soft\libtorch\include\ATen\core\alias_info.h \
+		D:\soft\libtorch\include\torch\csrc\jit\named_value.h \
+		D:\soft\libtorch\include\torch\csrc\utils\disallow_copy.h \
+		D:\soft\libtorch\include\torch\csrc\utils\object_ptr.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\detail\data_shuttle.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\detail\queue.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\detail\sequencers.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\iterator.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\samplers\random.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\samplers\base.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\worker_exception.h \
+		D:\soft\libtorch\include\torch\csrc\utils\memory.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\datasets.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\datasets\base.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\example.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\datasets\map.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\datasets\mnist.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\datasets\shared.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\datasets\tensor.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\samplers.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\samplers\custom_batch_request.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\samplers\sequential.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\samplers\serialize.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\serialize\archive.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\serialize\input-archive.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\serialize\output-archive.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\samplers\stream.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\transforms.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\transforms\base.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\transforms\collate.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\transforms\lambda.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\transforms\stack.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\data\transforms\tensor.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\jit.h \
+		D:\soft\libtorch\include\torch\csrc\jit\script\compiler.h \
+		D:\soft\libtorch\include\torch\csrc\jit\script\error_report.h \
+		D:\soft\libtorch\include\torch\csrc\jit\script\tree.h \
+		D:\soft\libtorch\include\torch\csrc\jit\script\lexer.h \
+		D:\soft\libtorch\include\torch\csrc\jit\script\tree_views.h \
+		D:\soft\libtorch\include\torch\csrc\jit\script\module.h \
+		D:\soft\libtorch\include\torch\csrc\jit\graph_executor.h \
+		D:\soft\libtorch\include\torch\csrc\jit\variable_tensor_list.h \
+		D:\soft\libtorch\include\torch\csrc\jit\interpreter.h \
+		D:\soft\libtorch\include\torch\csrc\jit\autodiff.h \
+		D:\soft\libtorch\include\torch\csrc\jit\argument_spec.h \
+		D:\soft\libtorch\include\torch\csrc\jit\passes\shape_analysis.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\ordered_dict.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\cloneable.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\module.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\pimpl.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\pimpl-inl.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\utils.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\grad_mode.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\init.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\any.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\detail\static.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\batchnorm.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\conv.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\expanding_array.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\dropout.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\embedding.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\functional.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\linear.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\rnn.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\nn\modules\sequential.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\optim.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\optim\adagrad.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\optim\optimizer.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\optim\serialize.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\optim\adam.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\optim\lbfgs.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\optim\rmsprop.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\optim\sgd.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\serialize.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\serialize\tensor.h \
+		D:\soft\libtorch\include\torch\extension.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\python.h \
+		D:\soft\libtorch\include\torch\csrc\python_headers.h \
+		D:\soft\libtorch\include\torch\csrc\utils\pybind.h \
+		D:\soft\libtorch\include\torch\csrc\DynamicTypes.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\python_variable.h \
+		D:\soft\libtorch\include\torch\csrc\THP_export.h \
+		D:\soft\libtorch\include\torch\csrc\utils\python_tuples.h \
+		D:\soft\libtorch\include\torch\csrc\Exceptions.h \
+		D:\soft\libtorch\include\torch\csrc\utils\auto_gil.h \
+		D:\soft\libtorch\include\torch\csrc\utils\python_numbers.h \
+		D:\soft\libtorch\include\torch\csrc\utils\tensor_numpy.h \
+		D:\soft\libtorch\include\torch\csrc\variable_tensor_functions.h
 
 build\main.obj: main.cpp D:\soft\boost_1_69_0\boost\filesystem.hpp \
 		D:\soft\boost_1_69_0\boost\filesystem\config.hpp \
@@ -2119,7 +2345,7 @@ build\main.obj: main.cpp D:\soft\boost_1_69_0\boost\filesystem.hpp \
 		D:\soft\boost_1_69_0\boost\predef\language\stdcpp.h \
 		D:\soft\boost_1_69_0\boost\predef\language\objc.h \
 		D:\soft\boost_1_69_0\boost\predef\language\cuda.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda.h" \
 		D:\soft\boost_1_69_0\boost\predef\architecture.h \
 		D:\soft\boost_1_69_0\boost\predef\architecture\alpha.h \
 		D:\soft\boost_1_69_0\boost\predef\architecture\arm.h \
@@ -2319,8 +2545,8 @@ build\main.obj: main.cpp D:\soft\boost_1_69_0\boost\filesystem.hpp \
 		D:\soft\libtorch\include\c10\util\C++17.h \
 		D:\soft\libtorch\include\c10\Half.h \
 		D:\soft\libtorch\include\c10\core\bitcasts.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.hpp \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.hpp" \
 		D:\soft\libtorch\include\c10\Half-inl.h \
 		D:\soft\libtorch\include\c10\util\typeid.h \
 		D:\soft\libtorch\include\c10\util\Backtrace.h \
@@ -2506,7 +2732,7 @@ build\main.obj: main.cpp D:\soft\boost_1_69_0\boost\filesystem.hpp \
 		D:\soft\libtorch\include\torch\csrc\utils\python_numbers.h \
 		D:\soft\libtorch\include\torch\csrc\utils\tensor_numpy.h \
 		D:\soft\libtorch\include\torch\csrc\variable_tensor_functions.h \
-		src\MMSolver.h \
+		src\mmtensorsolver.h \
 		src\cnpy.h \
 		D:\soft\zlib\include\zlib.h \
 		D:\soft\zlib\include\zconf.h \
@@ -2514,59 +2740,59 @@ build\main.obj: main.cpp D:\soft\boost_1_69_0\boost\filesystem.hpp \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\Dense \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\Core \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\DisableStupidWarnings.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_config.h \
-		D:\soft\CUDA\v10.0\Development\include\builtin_types.h \
-		D:\soft\CUDA\v10.0\Development\include\device_types.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_types.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_types.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\library_types.h \
-		D:\soft\CUDA\v10.0\Development\include\channel_descriptor.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_device_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.hpp \
-		D:\soft\CUDA\v10.0\Development\include\surface_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_fetch_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\common_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\func_macro.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\math_constants.h \
-		D:\soft\CUDA\v10.0\Development\include\device_launch_parameters.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_config.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\builtin_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\library_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\channel_descriptor.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_device_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_fetch_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\common_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\func_macro.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\math_constants.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_launch_parameters.h" \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Macros.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\MKL_support.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\blas.h \
@@ -2813,149 +3039,6 @@ build\main.obj: main.cpp D:\soft\boost_1_69_0\boost\filesystem.hpp \
 		D:\soft\opencv3\build\include\opencv2\videoio\videoio_c.h \
 		D:\soft\opencv3\build\include\opencv2\imgproc\imgproc.hpp \
 		D:\soft\opencv3\build\include\opencv2\imgproc.hpp \
-		src\Dlib.h \
-		contour.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QFile \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qfile.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qfiledevice.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonParseError \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsondocument.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonvalue.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonObject \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonobject.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonArray \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonarray.h \
-		multifitting.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\Sparse \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseCore \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseUtil.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMatrixBase.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseAssign.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\CompressedStorage.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\AmbiVector.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCompressedBase.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMatrix.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMap.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\MappedSparseMatrix.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseVector.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseRef.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCwiseUnaryOp.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCwiseBinaryOp.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseTranspose.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseBlock.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDot.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseRedux.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseView.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDiagonalProduct.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\ConservativeSparseSparseProduct.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSparseProductWithPruning.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseProduct.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDenseProduct.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSelfAdjointView.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseTriangularView.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\TriangularSolver.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparsePermutation.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseFuzzy.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSolverBase.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\OrderingMethods \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Amd.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\NonMPL2.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Ordering.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Eigen_Colamd.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseCholesky \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCholesky\SimplicialCholesky.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCholesky\SimplicialCholesky_impl.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseLU \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_gemm_kernel.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Structs.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_SupernodalMatrix.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLUImpl.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseColEtree.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Memory.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_heap_relax_snode.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_relax_snode.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_pivotL.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_panel_dfs.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_kernel_bmod.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_panel_bmod.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_column_dfs.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_column_bmod.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_copy_to_ucol.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_pruneL.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Utils.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseQR \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseQR\SparseQR.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\IterativeLinearSolvers \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\SolveWithGuess.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IterativeSolverBase.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\BasicPreconditioners.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\ConjugateGradient.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\LeastSquareConjugateGradient.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\BiCGSTAB.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IncompleteLUT.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IncompleteCholesky.h \
-		D:\soft\libtorch\include\torch\script.h \
-		D:\soft\libtorch\include\torch\csrc\jit\custom_operator.h \
-		D:\soft\libtorch\include\torch\csrc\jit\operator.h \
-		D:\soft\libtorch\include\c10\util\Metaprogramming.h \
-		D:\soft\libtorch\include\c10\util\TypeList.h \
-		D:\soft\libtorch\include\c10\util\TypeTraits.h \
-		D:\soft\libtorch\include\c10\util\Array.h \
-		D:\soft\libtorch\include\torch\csrc\jit\import.h \
-		common\torchfunctions.h \
 		common\dataconvertor.h \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\Tensor \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\SpecialFunctions \
@@ -3047,71 +3130,368 @@ build\main.obj: main.cpp D:\soft\boost_1_69_0\boost\filesystem.hpp \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\src\Tensor\TensorFixedSize.h \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\src\Tensor\TensorMap.h \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\src\Tensor\TensorRef.h \
-		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\src\Tensor\TensorIO.h
-
-build\multifitting.obj: multifitting.cpp multifitting.h \
+		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\src\Tensor\TensorIO.h \
+		src\Dlib.h \
+		contour.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QFile \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qfile.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qfiledevice.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qiodevice.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qglobal.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qconfig.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qtcore-config.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qsystemdetection.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qprocessordetection.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcompilerdetection.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qtypeinfo.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qsysinfo.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qlogging.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qflags.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbasicatomic.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qgenericatomic.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_cxx11.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_msvc.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qglobalstatic.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qmutex.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qnumeric.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qversiontagging.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobject.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobjectdefs.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qnamespace.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstring.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qchar.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbytearray.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qrefcount.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qarraydata.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringliteral.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringalgorithms.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringview.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringbuilder.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qlist.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qalgorithms.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qiterator.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qhashfunctions.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qpair.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qvector.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qpoint.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbytearraylist.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringlist.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qregexp.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringmatcher.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcoreevent.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qscopedpointer.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qmetatype.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qvarlengtharray.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcontainerfwd.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobject_impl.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonParseError \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsondocument.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonvalue.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonObject \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonobject.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonArray \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonarray.h \
+		multifitting.h \
+		D:\soft\libtorch\include\torch\script.h \
+		D:\soft\libtorch\include\torch\csrc\jit\custom_operator.h \
+		D:\soft\libtorch\include\torch\csrc\jit\operator.h \
+		D:\soft\libtorch\include\c10\util\Metaprogramming.h \
+		D:\soft\libtorch\include\c10\util\TypeList.h \
+		D:\soft\libtorch\include\c10\util\TypeTraits.h \
+		D:\soft\libtorch\include\c10\util\Array.h \
+		D:\soft\libtorch\include\torch\csrc\jit\import.h \
+		common\torchfunctions.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\Sparse \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseCore \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseUtil.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMatrixBase.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseAssign.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\CompressedStorage.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\AmbiVector.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCompressedBase.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMatrix.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMap.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\MappedSparseMatrix.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseVector.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseRef.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCwiseUnaryOp.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCwiseBinaryOp.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseTranspose.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseBlock.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDot.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseRedux.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseView.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDiagonalProduct.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\ConservativeSparseSparseProduct.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSparseProductWithPruning.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseProduct.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDenseProduct.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSelfAdjointView.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseTriangularView.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\TriangularSolver.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparsePermutation.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseFuzzy.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSolverBase.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\OrderingMethods \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Amd.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\NonMPL2.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Ordering.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Eigen_Colamd.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseCholesky \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCholesky\SimplicialCholesky.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCholesky\SimplicialCholesky_impl.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseLU \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_gemm_kernel.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Structs.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_SupernodalMatrix.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLUImpl.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseColEtree.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Memory.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_heap_relax_snode.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_relax_snode.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_pivotL.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_panel_dfs.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_kernel_bmod.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_panel_bmod.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_column_dfs.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_column_bmod.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_copy_to_ucol.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_pruneL.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Utils.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseQR \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseQR\SparseQR.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\IterativeLinearSolvers \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\SolveWithGuess.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IterativeSolverBase.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\BasicPreconditioners.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\ConjugateGradient.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\LeastSquareConjugateGradient.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\BiCGSTAB.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IncompleteLUT.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IncompleteCholesky.h
+
+build\multifitting.obj: multifitting.cpp multifitting.h \
+		D:\soft\libtorch\include\torch\script.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\types.h \
+		D:\soft\libtorch\include\ATen\ATen.h \
+		D:\soft\libtorch\include\ATen\Allocator.h \
+		D:\soft\libtorch\include\c10\core\Allocator.h \
+		D:\soft\libtorch\include\c10\Device.h \
+		D:\soft\libtorch\include\c10\DeviceType.h \
+		D:\soft\libtorch\include\c10\macros\Macros.h \
+		D:\soft\libtorch\include\c10\macros\cmake_macros.h \
+		D:\soft\libtorch\include\c10\macros\Export.h \
+		D:\soft\libtorch\include\c10\util\Exception.h \
+		D:\soft\libtorch\include\c10\util\StringUtil.h \
+		D:\soft\libtorch\include\c10\util\string_utils.h \
+		D:\soft\libtorch\include\c10\util\UniqueVoidPtr.h \
+		D:\soft\libtorch\include\ATen\CPUGeneral.h \
+		D:\soft\libtorch\include\ATen\core\ATenGeneral.h \
+		D:\soft\libtorch\include\ATen\Context.h \
+		D:\soft\libtorch\include\ATen\Type.h \
+		D:\soft\libtorch\include\ATen\core\Type.h \
+		D:\soft\libtorch\include\ATen\core\Deprecated.h \
+		D:\soft\libtorch\include\ATen\core\Generator.h \
+		D:\soft\libtorch\include\c10\core\Layout.h \
+		D:\soft\libtorch\include\c10\core\Backend.h \
+		D:\soft\libtorch\include\c10\core\TensorTypeId.h \
+		D:\soft\libtorch\include\c10\util\IdWrapper.h \
+		D:\soft\libtorch\include\c10\core\TensorTypeIdRegistration.h \
+		D:\soft\libtorch\include\c10\core\Scalar.h \
+		D:\soft\libtorch\include\c10\core\ScalarType.h \
+		D:\soft\libtorch\include\c10\util\ArrayRef.h \
+		D:\soft\libtorch\include\c10\util\SmallVector.h \
+		D:\soft\libtorch\include\c10\util\AlignOf.h \
+		D:\soft\libtorch\include\c10\util\C++17.h \
+		D:\soft\libtorch\include\c10\Half.h \
+		D:\soft\libtorch\include\c10\core\bitcasts.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.hpp" \
+		D:\soft\libtorch\include\c10\Half-inl.h \
+		D:\soft\libtorch\include\c10\util\typeid.h \
+		D:\soft\libtorch\include\c10\util\Backtrace.h \
+		D:\soft\libtorch\include\c10\util\Type.h \
+		D:\soft\libtorch\include\ATen\core\SparseTensorRef.h \
+		D:\soft\libtorch\include\ATen\core\Reduction.h \
+		D:\soft\libtorch\include\ATen\core\TensorOptions.h \
+		D:\soft\libtorch\include\ATen\core\DefaultDtype.h \
+		D:\soft\libtorch\include\c10\core\ScalarTypeUtils.h \
+		D:\soft\libtorch\include\c10\util\Optional.h \
+		D:\soft\libtorch\include\ATen\core\Tensor.h \
+		D:\soft\libtorch\include\c10\core\Storage.h \
+		D:\soft\libtorch\include\c10\core\StorageImpl.h \
+		D:\soft\libtorch\include\c10\util\intrusive_ptr.h \
+		D:\soft\libtorch\include\ATen\core\TensorAccessor.h \
+		D:\soft\libtorch\include\ATen\core\TensorImpl.h \
+		D:\soft\libtorch\include\ATen\core\context_base.h \
+		D:\soft\libtorch\include\c10\util\Registry.h \
+		D:\soft\libtorch\include\c10\util\Flags.h \
+		D:\soft\libtorch\include\c10\util\Logging.h \
+		D:\soft\libtorch\include\c10\util\logging_is_google_glog.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda.h" \
+		D:\soft\libtorch\include\c10\util\logging_is_not_google_glog.h \
+		D:\soft\libtorch\include\ATen\core\UndefinedTensorImpl.h \
+		D:\soft\libtorch\include\ATen\core\LegacyTypeDispatch.h \
+		D:\soft\libtorch\include\ATen\core\VariableHooksInterface.h \
+		D:\soft\libtorch\include\ATen\core\LegacyDeviceTypeInit.h \
+		D:\soft\libtorch\include\ATen\core\ScalarType.h \
+		D:\soft\libtorch\include\ATen\core\TensorMethods.h \
+		D:\soft\libtorch\include\ATen\TypeExtendedInterface.h \
+		D:\soft\libtorch\include\ATen\Utils.h \
+		D:\soft\libtorch\include\ATen\Formatting.h \
+		D:\soft\libtorch\include\ATen\core\Formatting.h \
+		D:\soft\libtorch\include\ATen\LegacyTHDispatch.h \
+		D:\soft\libtorch\include\ATen\LegacyTHDispatcher.h \
+		D:\soft\libtorch\include\ATen\detail\CUDAHooksInterface.h \
+		D:\soft\libtorch\include\ATen\detail\HIPHooksInterface.h \
+		D:\soft\libtorch\include\ATen\detail\ComplexHooksInterface.h \
+		D:\soft\libtorch\include\ATen\Device.h \
+		D:\soft\libtorch\include\ATen\DeviceGuard.h \
+		D:\soft\libtorch\include\c10\DeviceGuard.h \
+		D:\soft\libtorch\include\c10\impl\InlineDeviceGuard.h \
+		D:\soft\libtorch\include\c10\impl\DeviceGuardImplInterface.h \
+		D:\soft\libtorch\include\c10\Stream.h \
+		D:\soft\libtorch\include\c10\impl\VirtualGuardImpl.h \
+		D:\soft\libtorch\include\ATen\DimVector.h \
+		D:\soft\libtorch\include\ATen\core\DimVector.h \
+		D:\soft\libtorch\include\ATen\Dispatch.h \
+		D:\soft\libtorch\include\ATen\core\Half.h \
+		D:\soft\libtorch\include\ATen\Functions.h \
+		D:\soft\libtorch\include\ATen\Tensor.h \
+		D:\soft\libtorch\include\ATen\NativeFunctions.h \
+		D:\soft\libtorch\include\ATen\ScalarOps.h \
+		D:\soft\libtorch\include\ATen\TensorGeometry.h \
+		D:\soft\libtorch\include\ATen\WrapDimUtils.h \
+		D:\soft\libtorch\include\ATen\core\WrapDimMinimal.h \
+		D:\soft\libtorch\include\ATen\TensorOperators.h \
+		D:\soft\libtorch\include\ATen\core\Scalar.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\generated\variable_factories.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\variable.h \
+		D:\soft\libtorch\include\torch\csrc\utils\python_stub.h \
+		D:\soft\libtorch\include\torch\csrc\WindowsTorchApiMacro.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\edge.h \
+		D:\soft\libtorch\include\torch\csrc\utils\hash.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\function_hook.h \
+		D:\soft\libtorch\include\torch\csrc\autograd\variable_version.h \
+		D:\soft\libtorch\include\torch\csrc\jit\tracer.h \
+		D:\soft\libtorch\include\torch\csrc\jit\assertions.h \
+		D:\soft\libtorch\include\torch\csrc\jit\constants.h \
+		D:\soft\libtorch\include\torch\csrc\jit\ivalue.h \
+		D:\soft\libtorch\include\ATen\core\ivalue.h \
+		D:\soft\libtorch\include\ATen\core\blob.h \
+		D:\soft\libtorch\include\ATen\core\thread_pool.h \
+		D:\soft\libtorch\include\torch\csrc\jit\scope.h \
+		D:\soft\libtorch\include\torch\csrc\jit\interned_strings.h \
+		D:\soft\libtorch\include\ATen\core\interned_strings.h \
+		D:\soft\libtorch\include\ATen\core\aten_interned_strings.h \
+		D:\soft\libtorch\include\torch\csrc\jit\source_range.h \
+		D:\soft\libtorch\include\torch\csrc\jit\source_location.h \
+		D:\soft\libtorch\include\torch\csrc\jit\stack.h \
+		D:\soft\libtorch\include\torch\csrc\jit\tracing_state.h \
+		D:\soft\libtorch\include\torch\csrc\jit\type.h \
+		D:\soft\libtorch\include\ATen\core\jit_type.h \
+		D:\soft\libtorch\include\ATen\core\functional.h \
+		D:\soft\libtorch\include\caffe2\core\common.h \
+		D:\soft\libtorch\include\caffe2\core\macros.h \
+		D:\soft\libtorch\include\torch\csrc\utils\functional.h \
+		D:\soft\libtorch\include\torch\csrc\utils\variadic.h \
+		D:\soft\libtorch\include\ATen\Backtrace.h \
+		D:\soft\libtorch\include\ATen\core\Backtrace.h \
+		D:\soft\libtorch\include\torch\csrc\jit\ir.h \
+		D:\soft\libtorch\include\torch\csrc\jit\attributes.h \
+		D:\soft\libtorch\include\torch\csrc\jit\generic_if.h \
+		D:\soft\libtorch\include\torch\csrc\jit\graph_node_list.h \
+		D:\soft\libtorch\include\torch\csrc\jit\resource_guard.h \
+		D:\soft\libtorch\include\torch\csrc\jit\function_schema.h \
+		D:\soft\libtorch\include\ATen\core\function_schema.h \
+		D:\soft\libtorch\include\ATen\core\alias_info.h \
+		D:\soft\libtorch\include\torch\csrc\jit\named_value.h \
+		D:\soft\libtorch\include\torch\csrc\utils\disallow_copy.h \
+		D:\soft\libtorch\include\torch\csrc\utils\object_ptr.h \
+		D:\soft\libtorch\include\torch\csrc\jit\custom_operator.h \
+		D:\soft\libtorch\include\torch\csrc\jit\operator.h \
+		D:\soft\libtorch\include\c10\util\Metaprogramming.h \
+		D:\soft\libtorch\include\c10\util\TypeList.h \
+		D:\soft\libtorch\include\c10\util\TypeTraits.h \
+		D:\soft\libtorch\include\c10\util\Array.h \
+		D:\soft\libtorch\include\torch\csrc\jit\import.h \
+		D:\soft\libtorch\include\torch\csrc\jit\script\module.h \
+		D:\soft\libtorch\include\torch\csrc\jit\graph_executor.h \
+		D:\soft\libtorch\include\torch\csrc\jit\variable_tensor_list.h \
+		D:\soft\libtorch\include\torch\csrc\jit\interpreter.h \
+		D:\soft\libtorch\include\torch\csrc\jit\autodiff.h \
+		D:\soft\libtorch\include\torch\csrc\jit\argument_spec.h \
+		D:\soft\libtorch\include\torch\csrc\jit\passes\shape_analysis.h \
+		D:\soft\libtorch\include\torch\csrc\api\include\torch\ordered_dict.h \
+		D:\soft\libtorch\include\torch\csrc\utils\memory.h \
+		src\NumpyUtil.h \
+		src\cnpy.h \
+		D:\soft\zlib\include\zlib.h \
+		D:\soft\zlib\include\zconf.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\Dense \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\Core \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\DisableStupidWarnings.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_config.h \
-		D:\soft\CUDA\v10.0\Development\include\builtin_types.h \
-		D:\soft\CUDA\v10.0\Development\include\device_types.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_types.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_types.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\library_types.h \
-		D:\soft\CUDA\v10.0\Development\include\channel_descriptor.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_device_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.hpp \
-		D:\soft\CUDA\v10.0\Development\include\surface_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_fetch_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\common_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\func_macro.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\math_constants.h \
-		D:\soft\CUDA\v10.0\Development\include\device_launch_parameters.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_config.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\builtin_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\library_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\channel_descriptor.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_device_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_fetch_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\common_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\func_macro.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\math_constants.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_launch_parameters.h" \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Macros.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\MKL_support.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\blas.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.hpp \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Constants.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Meta.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\ForwardDeclarations.h \
@@ -3247,229 +3627,6 @@ build\multifitting.obj: multifitting.cpp multifitting.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\Assign_MKL.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\GlobalFunctions.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\ReenableStupidWarnings.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseUtil.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMatrixBase.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseAssign.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\CompressedStorage.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\AmbiVector.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCompressedBase.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMatrix.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMap.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\MappedSparseMatrix.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseVector.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseRef.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCwiseUnaryOp.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCwiseBinaryOp.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseTranspose.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseBlock.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDot.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseRedux.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseView.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDiagonalProduct.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\ConservativeSparseSparseProduct.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSparseProductWithPruning.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseProduct.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDenseProduct.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSelfAdjointView.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseTriangularView.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\TriangularSolver.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparsePermutation.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseFuzzy.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSolverBase.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\OrderingMethods \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Amd.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\NonMPL2.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Ordering.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Eigen_Colamd.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseCholesky \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCholesky\SimplicialCholesky.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCholesky\SimplicialCholesky_impl.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseLU \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_gemm_kernel.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Structs.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_SupernodalMatrix.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLUImpl.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseColEtree.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Memory.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_heap_relax_snode.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_relax_snode.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_pivotL.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_panel_dfs.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_kernel_bmod.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_panel_bmod.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_column_dfs.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_column_bmod.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_copy_to_ucol.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_pruneL.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Utils.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseQR \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseQR\SparseQR.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\IterativeLinearSolvers \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\SolveWithGuess.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IterativeSolverBase.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\BasicPreconditioners.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\ConjugateGradient.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\LeastSquareConjugateGradient.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\BiCGSTAB.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IncompleteLUT.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IncompleteCholesky.h \
-		D:\soft\libtorch\include\torch\script.h \
-		D:\soft\libtorch\include\torch\csrc\api\include\torch\types.h \
-		D:\soft\libtorch\include\ATen\ATen.h \
-		D:\soft\libtorch\include\ATen\Allocator.h \
-		D:\soft\libtorch\include\c10\core\Allocator.h \
-		D:\soft\libtorch\include\c10\Device.h \
-		D:\soft\libtorch\include\c10\DeviceType.h \
-		D:\soft\libtorch\include\c10\macros\Macros.h \
-		D:\soft\libtorch\include\c10\macros\cmake_macros.h \
-		D:\soft\libtorch\include\c10\macros\Export.h \
-		D:\soft\libtorch\include\c10\util\Exception.h \
-		D:\soft\libtorch\include\c10\util\StringUtil.h \
-		D:\soft\libtorch\include\c10\util\string_utils.h \
-		D:\soft\libtorch\include\c10\util\UniqueVoidPtr.h \
-		D:\soft\libtorch\include\ATen\CPUGeneral.h \
-		D:\soft\libtorch\include\ATen\core\ATenGeneral.h \
-		D:\soft\libtorch\include\ATen\Context.h \
-		D:\soft\libtorch\include\ATen\Type.h \
-		D:\soft\libtorch\include\ATen\core\Type.h \
-		D:\soft\libtorch\include\ATen\core\Deprecated.h \
-		D:\soft\libtorch\include\ATen\core\Generator.h \
-		D:\soft\libtorch\include\c10\core\Layout.h \
-		D:\soft\libtorch\include\c10\core\Backend.h \
-		D:\soft\libtorch\include\c10\core\TensorTypeId.h \
-		D:\soft\libtorch\include\c10\util\IdWrapper.h \
-		D:\soft\libtorch\include\c10\core\TensorTypeIdRegistration.h \
-		D:\soft\libtorch\include\c10\core\Scalar.h \
-		D:\soft\libtorch\include\c10\core\ScalarType.h \
-		D:\soft\libtorch\include\c10\util\ArrayRef.h \
-		D:\soft\libtorch\include\c10\util\SmallVector.h \
-		D:\soft\libtorch\include\c10\util\AlignOf.h \
-		D:\soft\libtorch\include\c10\util\C++17.h \
-		D:\soft\libtorch\include\c10\Half.h \
-		D:\soft\libtorch\include\c10\core\bitcasts.h \
-		D:\soft\libtorch\include\c10\Half-inl.h \
-		D:\soft\libtorch\include\c10\util\typeid.h \
-		D:\soft\libtorch\include\c10\util\Backtrace.h \
-		D:\soft\libtorch\include\c10\util\Type.h \
-		D:\soft\libtorch\include\ATen\core\SparseTensorRef.h \
-		D:\soft\libtorch\include\ATen\core\Reduction.h \
-		D:\soft\libtorch\include\ATen\core\TensorOptions.h \
-		D:\soft\libtorch\include\ATen\core\DefaultDtype.h \
-		D:\soft\libtorch\include\c10\core\ScalarTypeUtils.h \
-		D:\soft\libtorch\include\c10\util\Optional.h \
-		D:\soft\libtorch\include\ATen\core\Tensor.h \
-		D:\soft\libtorch\include\c10\core\Storage.h \
-		D:\soft\libtorch\include\c10\core\StorageImpl.h \
-		D:\soft\libtorch\include\c10\util\intrusive_ptr.h \
-		D:\soft\libtorch\include\ATen\core\TensorAccessor.h \
-		D:\soft\libtorch\include\ATen\core\TensorImpl.h \
-		D:\soft\libtorch\include\ATen\core\context_base.h \
-		D:\soft\libtorch\include\c10\util\Registry.h \
-		D:\soft\libtorch\include\c10\util\Flags.h \
-		D:\soft\libtorch\include\c10\util\Logging.h \
-		D:\soft\libtorch\include\c10\util\logging_is_google_glog.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda.h \
-		D:\soft\libtorch\include\c10\util\logging_is_not_google_glog.h \
-		D:\soft\libtorch\include\ATen\core\UndefinedTensorImpl.h \
-		D:\soft\libtorch\include\ATen\core\LegacyTypeDispatch.h \
-		D:\soft\libtorch\include\ATen\core\VariableHooksInterface.h \
-		D:\soft\libtorch\include\ATen\core\LegacyDeviceTypeInit.h \
-		D:\soft\libtorch\include\ATen\core\ScalarType.h \
-		D:\soft\libtorch\include\ATen\core\TensorMethods.h \
-		D:\soft\libtorch\include\ATen\TypeExtendedInterface.h \
-		D:\soft\libtorch\include\ATen\Utils.h \
-		D:\soft\libtorch\include\ATen\Formatting.h \
-		D:\soft\libtorch\include\ATen\core\Formatting.h \
-		D:\soft\libtorch\include\ATen\LegacyTHDispatch.h \
-		D:\soft\libtorch\include\ATen\LegacyTHDispatcher.h \
-		D:\soft\libtorch\include\ATen\detail\CUDAHooksInterface.h \
-		D:\soft\libtorch\include\ATen\detail\HIPHooksInterface.h \
-		D:\soft\libtorch\include\ATen\detail\ComplexHooksInterface.h \
-		D:\soft\libtorch\include\ATen\Device.h \
-		D:\soft\libtorch\include\ATen\DeviceGuard.h \
-		D:\soft\libtorch\include\c10\DeviceGuard.h \
-		D:\soft\libtorch\include\c10\impl\InlineDeviceGuard.h \
-		D:\soft\libtorch\include\c10\impl\DeviceGuardImplInterface.h \
-		D:\soft\libtorch\include\c10\Stream.h \
-		D:\soft\libtorch\include\c10\impl\VirtualGuardImpl.h \
-		D:\soft\libtorch\include\ATen\DimVector.h \
-		D:\soft\libtorch\include\ATen\core\DimVector.h \
-		D:\soft\libtorch\include\ATen\Dispatch.h \
-		D:\soft\libtorch\include\ATen\core\Half.h \
-		D:\soft\libtorch\include\ATen\Functions.h \
-		D:\soft\libtorch\include\ATen\Tensor.h \
-		D:\soft\libtorch\include\ATen\NativeFunctions.h \
-		D:\soft\libtorch\include\ATen\ScalarOps.h \
-		D:\soft\libtorch\include\ATen\TensorGeometry.h \
-		D:\soft\libtorch\include\ATen\WrapDimUtils.h \
-		D:\soft\libtorch\include\ATen\core\WrapDimMinimal.h \
-		D:\soft\libtorch\include\ATen\TensorOperators.h \
-		D:\soft\libtorch\include\ATen\core\Scalar.h \
-		D:\soft\libtorch\include\torch\csrc\autograd\generated\variable_factories.h \
-		D:\soft\libtorch\include\torch\csrc\autograd\variable.h \
-		D:\soft\libtorch\include\torch\csrc\utils\python_stub.h \
-		D:\soft\libtorch\include\torch\csrc\WindowsTorchApiMacro.h \
-		D:\soft\libtorch\include\torch\csrc\autograd\edge.h \
-		D:\soft\libtorch\include\torch\csrc\utils\hash.h \
-		D:\soft\libtorch\include\torch\csrc\autograd\function_hook.h \
-		D:\soft\libtorch\include\torch\csrc\autograd\variable_version.h \
-		D:\soft\libtorch\include\torch\csrc\jit\tracer.h \
-		D:\soft\libtorch\include\torch\csrc\jit\assertions.h \
-		D:\soft\libtorch\include\torch\csrc\jit\constants.h \
-		D:\soft\libtorch\include\torch\csrc\jit\ivalue.h \
-		D:\soft\libtorch\include\ATen\core\ivalue.h \
-		D:\soft\libtorch\include\ATen\core\blob.h \
-		D:\soft\libtorch\include\ATen\core\thread_pool.h \
-		D:\soft\libtorch\include\torch\csrc\jit\scope.h \
-		D:\soft\libtorch\include\torch\csrc\jit\interned_strings.h \
-		D:\soft\libtorch\include\ATen\core\interned_strings.h \
-		D:\soft\libtorch\include\ATen\core\aten_interned_strings.h \
-		D:\soft\libtorch\include\torch\csrc\jit\source_range.h \
-		D:\soft\libtorch\include\torch\csrc\jit\source_location.h \
-		D:\soft\libtorch\include\torch\csrc\jit\stack.h \
-		D:\soft\libtorch\include\torch\csrc\jit\tracing_state.h \
-		D:\soft\libtorch\include\torch\csrc\jit\type.h \
-		D:\soft\libtorch\include\ATen\core\jit_type.h \
-		D:\soft\libtorch\include\ATen\core\functional.h \
-		D:\soft\libtorch\include\caffe2\core\common.h \
-		D:\soft\libtorch\include\caffe2\core\macros.h \
-		D:\soft\libtorch\include\torch\csrc\utils\functional.h \
-		D:\soft\libtorch\include\torch\csrc\utils\variadic.h \
-		D:\soft\libtorch\include\ATen\Backtrace.h \
-		D:\soft\libtorch\include\ATen\core\Backtrace.h \
-		D:\soft\libtorch\include\torch\csrc\jit\ir.h \
-		D:\soft\libtorch\include\torch\csrc\jit\attributes.h \
-		D:\soft\libtorch\include\torch\csrc\jit\generic_if.h \
-		D:\soft\libtorch\include\torch\csrc\jit\graph_node_list.h \
-		D:\soft\libtorch\include\torch\csrc\jit\resource_guard.h \
-		D:\soft\libtorch\include\torch\csrc\jit\function_schema.h \
-		D:\soft\libtorch\include\ATen\core\function_schema.h \
-		D:\soft\libtorch\include\ATen\core\alias_info.h \
-		D:\soft\libtorch\include\torch\csrc\jit\named_value.h \
-		D:\soft\libtorch\include\torch\csrc\utils\disallow_copy.h \
-		D:\soft\libtorch\include\torch\csrc\utils\object_ptr.h \
-		D:\soft\libtorch\include\torch\csrc\jit\custom_operator.h \
-		D:\soft\libtorch\include\torch\csrc\jit\operator.h \
-		D:\soft\libtorch\include\c10\util\Metaprogramming.h \
-		D:\soft\libtorch\include\c10\util\TypeList.h \
-		D:\soft\libtorch\include\c10\util\TypeTraits.h \
-		D:\soft\libtorch\include\c10\util\Array.h \
-		D:\soft\libtorch\include\torch\csrc\jit\import.h \
-		D:\soft\libtorch\include\torch\csrc\jit\script\module.h \
-		D:\soft\libtorch\include\torch\csrc\jit\graph_executor.h \
-		D:\soft\libtorch\include\torch\csrc\jit\variable_tensor_list.h \
-		D:\soft\libtorch\include\torch\csrc\jit\interpreter.h \
-		D:\soft\libtorch\include\torch\csrc\jit\autodiff.h \
-		D:\soft\libtorch\include\torch\csrc\jit\argument_spec.h \
-		D:\soft\libtorch\include\torch\csrc\jit\passes\shape_analysis.h \
-		D:\soft\libtorch\include\torch\csrc\api\include\torch\ordered_dict.h \
-		D:\soft\libtorch\include\torch\csrc\utils\memory.h \
-		src\NumpyUtil.h \
-		src\cnpy.h \
-		D:\soft\zlib\include\zlib.h \
-		D:\soft\zlib\include\zconf.h \
-		D:\soft\eigen-eigen-323c052e1731\Eigen\Dense \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\LU \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\Kernel.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\Image.h \
@@ -3662,71 +3819,7 @@ build\multifitting.obj: multifitting.cpp multifitting.h \
 		D:\soft\libtorch\include\torch\csrc\utils\python_numbers.h \
 		D:\soft\libtorch\include\torch\csrc\utils\tensor_numpy.h \
 		D:\soft\libtorch\include\torch\csrc\variable_tensor_functions.h \
-		src\MMSolver.h \
-		contour.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QFile \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qfile.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qfiledevice.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qiodevice.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qglobal.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qconfig.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qtcore-config.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qsystemdetection.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qprocessordetection.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qtypeinfo.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qsysinfo.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qlogging.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qflags.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbasicatomic.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qgenericatomic.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qglobalstatic.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qmutex.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qnumeric.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qversiontagging.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobject.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobjectdefs.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qnamespace.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstring.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qchar.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbytearray.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qrefcount.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qarraydata.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringliteral.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringview.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringbuilder.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qlist.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qalgorithms.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qiterator.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qhashfunctions.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qpair.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qvector.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qpoint.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbytearraylist.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringlist.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qregexp.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringmatcher.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcoreevent.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qscopedpointer.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qmetatype.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobject_impl.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonParseError \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsondocument.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonvalue.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonObject \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonobject.h \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonArray \
-		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonarray.h \
-		common\torchfunctions.h \
+		src\mmtensorsolver.h \
 		common\dataconvertor.h \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\Tensor \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\SpecialFunctions \
@@ -3819,6 +3912,139 @@ build\multifitting.obj: multifitting.cpp multifitting.h \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\src\Tensor\TensorMap.h \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\src\Tensor\TensorRef.h \
 		D:\soft\eigen-eigen-323c052e1731\unsupported\Eigen\CXX11\src\Tensor\TensorIO.h \
+		contour.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QFile \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qfile.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qfiledevice.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qiodevice.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qglobal.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qconfig.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qtcore-config.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qsystemdetection.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qprocessordetection.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcompilerdetection.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qtypeinfo.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qsysinfo.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qlogging.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qflags.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbasicatomic.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qgenericatomic.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_cxx11.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qatomic_msvc.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qglobalstatic.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qmutex.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qnumeric.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qversiontagging.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobject.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobjectdefs.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qnamespace.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstring.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qchar.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbytearray.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qrefcount.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qarraydata.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringliteral.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringalgorithms.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringview.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringbuilder.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qlist.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qalgorithms.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qiterator.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qhashfunctions.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qpair.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qvector.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qpoint.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qbytearraylist.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringlist.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qregexp.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qstringmatcher.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcoreevent.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qscopedpointer.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qmetatype.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qvarlengtharray.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qcontainerfwd.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qobject_impl.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonParseError \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsondocument.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonvalue.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonObject \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonobject.h \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\QJsonArray \
+		D:\Qt\5.13.0\msvc2017_64\include\QtCore\qjsonarray.h \
+		common\torchfunctions.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\Sparse \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseCore \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseUtil.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMatrixBase.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseAssign.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\CompressedStorage.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\AmbiVector.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCompressedBase.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMatrix.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseMap.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\MappedSparseMatrix.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseVector.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseRef.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCwiseUnaryOp.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseCwiseBinaryOp.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseTranspose.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseBlock.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDot.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseRedux.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseView.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDiagonalProduct.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\ConservativeSparseSparseProduct.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSparseProductWithPruning.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseProduct.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseDenseProduct.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSelfAdjointView.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseTriangularView.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\TriangularSolver.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparsePermutation.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseFuzzy.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseSolverBase.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\OrderingMethods \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Amd.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\NonMPL2.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Ordering.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\OrderingMethods\Eigen_Colamd.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseCholesky \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCholesky\SimplicialCholesky.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCholesky\SimplicialCholesky_impl.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseLU \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_gemm_kernel.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Structs.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_SupernodalMatrix.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLUImpl.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseCore\SparseColEtree.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Memory.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_heap_relax_snode.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_relax_snode.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_pivotL.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_panel_dfs.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_kernel_bmod.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_panel_bmod.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_column_dfs.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_column_bmod.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_copy_to_ucol.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_pruneL.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU_Utils.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseLU\SparseLU.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\SparseQR \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\SparseQR\SparseQR.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\IterativeLinearSolvers \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\SolveWithGuess.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IterativeSolverBase.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\BasicPreconditioners.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\ConjugateGradient.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\LeastSquareConjugateGradient.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\BiCGSTAB.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IncompleteLUT.h \
+		D:\soft\eigen-eigen-323c052e1731\Eigen\src\IterativeLinearSolvers\IncompleteCholesky.h \
 		D:\soft\glm\glm\gtc\matrix_transform.hpp \
 		D:\soft\glm\glm\mat4x4.hpp \
 		D:\soft\glm\glm\detail\type_mat4x4.hpp \
@@ -4058,214 +4284,69 @@ build\multifitting.obj: multifitting.cpp multifitting.h \
 		D:\soft\flann-1.8.4-src\src\cpp\flann\util\timer.h \
 		D:\soft\flann-1.8.4-src\src\cpp\flann\util\sampling.h \
 		D:\soft\flann-1.8.4-src\src\cpp\flann\algorithms\kdtree_cuda_3d_index.h \
-		common\raytriangleintersect.h \
-		D:\soft\boost_1_69_0\boost\optional.hpp \
-		D:\soft\boost_1_69_0\boost\optional\optional.hpp \
-		D:\soft\boost_1_69_0\boost\core\enable_if.hpp \
-		D:\soft\boost_1_69_0\boost\core\explicit_operator_bool.hpp \
-		D:\soft\boost_1_69_0\boost\core\swap.hpp \
-		D:\soft\boost_1_69_0\boost\optional\bad_optional_access.hpp \
-		D:\soft\boost_1_69_0\boost\type.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\alignment_of.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\intrinsics.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\config.hpp \
-		D:\soft\boost_1_69_0\boost\version.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_same.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\integral_constant.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_reference.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_lvalue_reference.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_rvalue_reference.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_rvalue_reference_msvc10_fix.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_volatile.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_void.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\conditional.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\has_nothrow_constructor.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\has_trivial_constructor.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_pod.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_scalar.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_arithmetic.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_integral.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_floating_point.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_enum.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\add_reference.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_convertible.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_complete.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\declval.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\add_rvalue_reference.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\remove_reference.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_function.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_function_cxx_11.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_function_cxx_03.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_function_ptr_helper.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_function_ptr_tester.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\yes_no_type.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_function_msvc10_fix.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_array.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_abstract.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_class.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_union.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_polymorphic.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\add_lvalue_reference.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_pointer.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_member_pointer.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_member_function_pointer.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_member_function_pointer_cxx_11.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_member_function_pointer_cxx_03.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_mem_fun_pointer_impl.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\remove_cv.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\detail\is_mem_fun_pointer_tester.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_default_constructible.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\remove_all_extents.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\type_with_alignment.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\remove_const.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\decay.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\remove_bounds.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\remove_extent.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\add_pointer.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_base_of.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_base_and_derived.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_const.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_constructible.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_destructible.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_nothrow_move_assignable.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\has_trivial_move_assign.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_assignable.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\has_trivial_assign.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\has_nothrow_assign.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\enable_if.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_nothrow_move_constructible.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\has_trivial_move_constructor.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\has_nothrow_copy.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_copy_constructible.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\is_noncopyable.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\has_trivial_copy.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\add_const.hpp \
-		D:\soft\boost_1_69_0\boost\none.hpp \
-		D:\soft\boost_1_69_0\boost\none_t.hpp \
-		D:\soft\boost_1_69_0\boost\utility\compare_pointees.hpp \
-		D:\soft\boost_1_69_0\boost\utility\result_of.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\cat.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\config\config.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\iteration\iterate.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\arithmetic\dec.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\arithmetic\inc.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\array\elem.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\array\data.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\tuple\elem.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\expand.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\overload.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\variadic\size.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\tuple\rem.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\tuple\detail\is_single_return.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\control\iif.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\is_1.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\is_empty.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\is_empty_variadic.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\punctuation\is_begin_parens.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\punctuation\detail\is_begin_parens.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\empty.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\detail\is_empty.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\identity.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\tuple\eat.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\detail\split.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\tuple\size.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\variadic\elem.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\array\size.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\slot\slot.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\slot\detail\def.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\repetition\enum_params.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\punctuation\comma_if.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\control\if.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\logical\bool.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\punctuation\comma.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\repetition\repeat.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\debug\error.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\detail\auto_rec.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\detail\dmc\auto_rec.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\repetition\enum_trailing_params.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\repetition\enum_binary_params.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\repetition\enum_shifted_params.hpp \
-		D:\soft\boost_1_69_0\boost\preprocessor\facilities\intercept.hpp \
-		D:\soft\boost_1_69_0\boost\type_traits\type_identity.hpp \
-		D:\soft\boost_1_69_0\boost\utility\detail\result_of_iterate.hpp \
-		D:\soft\boost_1_69_0\boost\optional\optional_fwd.hpp \
-		D:\soft\boost_1_69_0\boost\optional\detail\optional_config.hpp \
-		D:\soft\boost_1_69_0\boost\optional\detail\optional_factory_support.hpp \
-		D:\soft\boost_1_69_0\boost\optional\detail\optional_aligned_storage.hpp \
-		D:\soft\boost_1_69_0\boost\optional\detail\old_optional_implementation.hpp \
-		D:\soft\boost_1_69_0\boost\detail\reference_content.hpp \
-		D:\soft\boost_1_69_0\boost\optional\detail\optional_trivially_copyable_base.hpp \
-		D:\soft\boost_1_69_0\boost\optional\detail\optional_reference_spec.hpp \
-		D:\soft\boost_1_69_0\boost\optional\detail\optional_relops.hpp \
-		D:\soft\boost_1_69_0\boost\optional\detail\optional_swap.hpp \
-		common\eigenfunctions.h \
-		D:\soft\glm\glm\gtx\euler_angles.hpp \
-		D:\soft\glm\glm\gtx\euler_angles.inl \
-		D:\soft\glm\glm\gtx\compatibility.hpp \
-		D:\soft\glm\glm\gtx\compatibility.inl \
 		facemorph.h
 
 build\Dlib.obj: src\Dlib.cpp src\stdafx.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\Core \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\DisableStupidWarnings.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_config.h \
-		D:\soft\CUDA\v10.0\Development\include\builtin_types.h \
-		D:\soft\CUDA\v10.0\Development\include\device_types.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_types.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_types.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\library_types.h \
-		D:\soft\CUDA\v10.0\Development\include\channel_descriptor.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_device_runtime_api.h \
-		D:\soft\CUDA\v10.0\Development\include\driver_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\vector_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\host_defines.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\device_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\device_double_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_60_atomic_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_20_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_30_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_32_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\sm_35_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.h \
-		D:\soft\CUDA\v10.0\Development\include\sm_61_intrinsics.hpp \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\sm_70_rt.hpp \
-		D:\soft\CUDA\v10.0\Development\include\surface_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_surface_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_fetch_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_texture_types.h \
-		D:\soft\CUDA\v10.0\Development\include\texture_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\surface_indirect_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\common_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\func_macro.h \
-		D:\soft\CUDA\v10.0\Development\include\crt\math_functions.hpp \
-		D:\soft\CUDA\v10.0\Development\include\math_constants.h \
-		D:\soft\CUDA\v10.0\Development\include\device_launch_parameters.h \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_config.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\builtin_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\library_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\channel_descriptor.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_device_runtime_api.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\driver_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\vector_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\host_defines.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\device_double_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_60_atomic_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_20_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_30_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_32_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_35_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\sm_61_intrinsics.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\sm_70_rt.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_surface_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_fetch_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_texture_types.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\texture_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\surface_indirect_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\common_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\func_macro.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\crt\math_functions.hpp" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\math_constants.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\device_launch_parameters.h" \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Macros.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\MKL_support.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\misc\blas.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.h \
-		D:\soft\CUDA\v10.0\Development\include\cuda_fp16.hpp \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.h" \
+		"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include\cuda_fp16.hpp" \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Constants.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\Meta.h \
 		D:\soft\eigen-eigen-323c052e1731\Eigen\src\Core\util\ForwardDeclarations.h \

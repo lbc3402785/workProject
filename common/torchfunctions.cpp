@@ -187,19 +187,20 @@ at::Tensor TorchFunctions::computeSingleNormal( at::Tensor &model,  std::vector<
 }
 /**
  * @brief TorchFunctions::computeFaceNormals
- * @param model     6890x3x1
+ * @param model     6890x3
  * @param f         fnumx3
- * @return          fnumx3x1
+ * @return          fnumx3
  */
 at::Tensor TorchFunctions::computeFaceNormals(at::Tensor &model, at::Tensor &f)
 {
-    at::Tensor i0=f.select(1,0);
-    at::Tensor i1=f.select(1,1);
-    at::Tensor i2=f.select(1,2);
-    at::Tensor v1=torch::index_select(model,0,i0);//fnumx3x1
-    at::Tensor v2=torch::index_select(model,0,i1);//fnumx3x1
-    at::Tensor v3=torch::index_select(model,0,i2);//fnumx3x1
-    at::Tensor fn=torch::cross(v2-v1,v3-v1);//fnumx3x1
+    at::Tensor index=f.toType(torch::kLong);
+    at::Tensor i0=index.select(1,0);
+    at::Tensor i1=index.select(1,1);
+    at::Tensor i2=index.select(1,2);
+    at::Tensor v1=torch::index_select(model,0,i0);//fnumx3
+    at::Tensor v2=torch::index_select(model,0,i1);//fnumx3
+    at::Tensor v3=torch::index_select(model,0,i2);//fnumx3
+    at::Tensor fn=torch::cross(v2-v1,v3-v1);//fnumx3
 //    at::Tensor l=fn.norm(2,1);//fnum
 //    at::Tensor index=l.lt(0.00001);//fnum
 //    l.add_(index.toType(l.type()));

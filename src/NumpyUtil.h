@@ -37,12 +37,24 @@ inline torch::Tensor ToTensor(NpyArray &np)
 
     if (L == 1)
     {
-        return torch::from_blob(np.data<float>(), {(int64_t)shape[0], (int64_t)1});
+        return std::move(torch::from_blob(np.data<float>(), {(int64_t)shape[0], (int64_t)1}).clone());
     }
     else
     {
-        return torch::from_blob(np.data<float>(), {(int64_t)shape[0], (int64_t)shape[1]});
+        return std::move(torch::from_blob(np.data<float>(), {(int64_t)shape[0], (int64_t)shape[1]}).clone());
     }
+}
+inline torch::Tensor ToTensor(std::vector<cv::Point> imagePoints)
+{
+        int N = imagePoints.size();
+
+        torch::Tensor b=torch::zeros({N, 2});
+        for (int i = 0; i < N; ++i)
+        {
+            b[i][0]=imagePoints[i].x;b[i][1]=imagePoints[i].y;
+        }
+
+        return std::move(b);
 }
 inline Map<MatF> ToEigen(NpyArray &np)
 {
@@ -67,7 +79,19 @@ inline Map<MatF> ToEigen(NpyArray &np)
 		return Map<MatF>(np.data<float>(), shape[0], shape[1]);
 	}
 }
+inline MatF ToEigen(std::vector<cv::Point> image_points)
+{
+        int N = image_points.size();
 
+        MatF b(N, 2);
+        for (int i = 0; i < N; ++i)
+        {
+                Eigen::Vector2f p = Eigen::Vector2f(image_points[i].x, image_points[i].y);
+                b.block<1, 2>(i, 0) = p;
+        }
+
+        return b;
+}
 inline MatF ToEigenC(NpyArray &np)
 {
 	if (np.data_holder == nullptr)
@@ -108,11 +132,11 @@ inline torch::Tensor ToTensorInt(NpyArray &np)
 
     if (L == 1)
     {
-        return torch::from_blob(np.data<int>(), {(int64_t)shape[0], (int64_t)1},at::TensorOptions().dtype(torch::kInt));
+        return std::move(torch::from_blob(np.data<int>(), {(int64_t)shape[0], (int64_t)1},at::TensorOptions().dtype(torch::kInt)).clone());
     }
     else
     {
-        return torch::from_blob(np.data<int>(), {(int64_t)shape[0], (int64_t)shape[1]},at::TensorOptions().dtype(torch::kInt));
+        return std::move(torch::from_blob(np.data<int>(), {(int64_t)shape[0], (int64_t)shape[1]},at::TensorOptions().dtype(torch::kInt)).clone());
     }
 }
 inline Map<MatI> ToEigenInt(NpyArray &np)
