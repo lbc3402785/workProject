@@ -25,6 +25,7 @@ void InitMMS(std::string fmkp, std::string fmfull)
     cout << fmkp << endl;
     cout << fmfull << endl;
     PyMMS.Initialize(fmkp, fmfull);
+    std::cout<<"PyMMS.FMFull.TRIUV.sizes():"<<PyMMS.FMFull.TRIUV.sizes()<<std::endl;
 }
 void readfolder(boost::filesystem::path& imageDir,std::vector<std::string>& result) {
     boost::filesystem::directory_iterator endIter;
@@ -91,7 +92,7 @@ void MakeDir(string path)
 }
 int main(int argc, char *argv[])
 {
-    testMul();
+//    testMul();
     if(argc<3){
         std::cout<<"useage:exe modelPath imagePath";
         exit(EXIT_FAILURE);
@@ -122,8 +123,8 @@ int main(int argc, char *argv[])
     torch::Tensor shapeX;
     std::vector<torch::Tensor> blendShapeXs;
     std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,4);
-//    int W = 512;
-//    int H = 512;
+    int W = 512;
+    int H = 512;
 //    std::vector<cv::Mat> textures;
 //    for(size_t j=0;j<images.size();j++){
 //        PyMMS.params=params[j];
@@ -148,8 +149,8 @@ int main(int argc, char *argv[])
     std::cout<<"---------------"<<std::endl;
     MakeDir(outfolder);
     std::cout<<"*********"<<std::endl;
-//    MMSObj(images[2], PyMMS, outfolder, filename);
-//    std::cout<<"+++++++++"<<std::endl;
+    MMSObj(images[2], PyMMS, outfolder, filename);
+    std::cout<<"+++++++++"<<std::endl;
     MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
 //    testMul();
     return 0;
