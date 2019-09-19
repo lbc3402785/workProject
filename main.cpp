@@ -148,9 +148,9 @@ int main(int argc, char *argv[])
     string filename = "TestObj";
     std::cout<<"---------------"<<std::endl;
     MakeDir(outfolder);
-    std::cout<<"*********"<<std::endl;
-    MMSObj(images[2], PyMMS, outfolder, filename);
-    std::cout<<"+++++++++"<<std::endl;
+//    std::cout<<"*********"<<std::endl;
+//    MMSObj(images[2], PyMMS, outfolder, filename);
+
     MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
 //    testMul();
     return 0;
