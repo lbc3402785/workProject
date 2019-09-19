@@ -707,6 +707,88 @@ inline void FMObj(cv::Mat texture, FaceModelTensor &FM, string folder, string fi
 
 }
 
+inline void MMSObjWithTexture(cv::Mat texture , MMTensorSolver &MMS, string folder, string filename0)
+{
+    string filename = folder + filename0;
+
+    imwrite(filename + ".png", texture);
+
+    MMS.FMFull.Generate(MMS.SX, MMS.EX);
+    auto Face=MMS.FMFull.GeneratedFace;
+    auto TRI = MMS.FMFull.TRI;
+    auto TRIUV = MMS.FMFull.TRIUV;
+    auto UV = MMS.FMFull.UV;
+
+    string numpyfile = filename + ".npz";
+
+
+    cnpy::npz_save(numpyfile, "SX", MMS.SX.data<float>(), { (unsigned long long)MMS.SX.size(0), (unsigned long long)MMS.SX.size(1) }, "w"); //"w" overwrites any existing file
+    cnpy::npz_save(numpyfile, "EX", MMS.EX.data<float>(), { (unsigned long long)MMS.EX.size(0), (unsigned long long)MMS.EX.size(1) }, "a"); //"a" appends to the file we created above
+
+    {
+        std::stringstream ss;
+
+
+        ss << "mtllib " << filename0 << ".mtl" << endl;
+        ss << "o FaceObject" << endl;
+
+        int N = Face.size(0);
+        for (size_t i = 0; i < N; i++)
+        {
+            ss << "v " << Face[i][0].item().toFloat() << " " << Face[i][1].item().toFloat() << " " << Face[i][2].item().toFloat() << endl;
+            ss << "vt " << UV[i][0].item().toFloat()<< " " << UV[i][1].item().toFloat() << endl;
+        }
+
+        ss << "usemtl material_0" << endl;
+        ss << "s 1" << endl;
+
+        N = TRI.size(0);
+        for (size_t i = 0; i < N; i++)
+        {
+            ss << "f " << TRI[i][0].item().toInt() + 1 << "/" << TRIUV[i][0].item().toInt()  + 1 << " "
+               << TRI[i][1].item().toInt() + 1 << "/" << TRIUV[i][1].item().toInt()  + 1 << " "
+               << TRI[i][2].item().toInt() + 1 << "/" << TRIUV[i][2].item().toInt()  + 1 << " "
+               << endl;
+        }
+
+
+        std::string input = ss.str();
+
+        std::ofstream out(filename + ".obj", std::ofstream::out);
+        out << input;
+        out.close();
+    }
+
+    {
+        std::stringstream ss;
+
+
+        ss << "mtllib " << filename0 << ".mtl" << endl;
+        ss << "o FaceObject" << endl;
+
+        ss << "newmtl material_0" << endl;
+        ss << "	Ns 0.000000" << endl;
+        ss << "Ka 0.200000 0.200000 0.200000" << endl;
+        ss << "Kd 0.639216 0.639216 0.639216" << endl;
+        ss << "Ks 1.000000 1.000000 1.000000" << endl;
+        ss << "Ke 0.000000 0.000000 0.000000" << endl;
+        ss << "Ni 1.000000" << endl;
+        ss << "d 1.000000" << endl;
+        ss << "illum 2" << endl;
+        ss << "map_Kd " << filename0 + ".png" << endl;
+
+
+
+        std::string input = ss.str();
+
+        std::ofstream out(filename + ".mtl", std::ofstream::out);
+        out << input;
+        out.close();
+    }
+
+
+}
+
 
 inline void MMSObj(cv::Mat orig, MMTensorSolver &MMS, string folder, string filename0)
 {

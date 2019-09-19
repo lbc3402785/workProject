@@ -149,9 +149,10 @@ int main(int argc, char *argv[])
     std::cout<<"---------------"<<std::endl;
     MakeDir(outfolder);
 //    std::cout<<"*********"<<std::endl;
-//    MMSObj(images[2], PyMMS, outfolder, filename);
 
-    MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
+    cv::Mat texture=MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
+    MMSObjWithTexture(texture, PyMMS, outfolder, filename);
+
 //    testMul();
     return 0;
 }

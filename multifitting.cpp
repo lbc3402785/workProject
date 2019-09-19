@@ -210,13 +210,6 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
     torch::Tensor cosNormalToZs=centerNormmalZs.div(normalDis);
     torch::Tensor sinNormalToZs=centerNormmalXs.div(normalDis);
     torch::Tensor minFronts=torch::min(cosPosToZs,cosNormalToZs);
-
-//    std::cout<<"cosPosToZs[0]:"<<cosPosToZs[0]<<std::endl;
-//    std::cout<<"cosNormalToZs[0]:"<<cosNormalToZs[0]<<std::endl;
-//    std::cout<<"cosPosToZs[1]:"<<cosPosToZs[1]<<std::endl;
-//    std::cout<<"cosNormalToZs[1]:"<<cosNormalToZs[1]<<std::endl;
-//    std::cout<<"cosPosToZs[2]:"<<cosPosToZs[2]<<std::endl;
-//    std::cout<<"cosNormalToZs[2]:"<<cosNormalToZs[2]<<std::endl;
     minFronts=minFronts*minFronts.gt(0).toType(torch::kFloat);
 
     torch::Tensor cosPosToRightAxiss=cosPosToZs*cosRightZs+sinPosToZs*sinRightZs;
@@ -246,7 +239,7 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
     }
     return std::move(result);
 }
-void MultiFitting::render(std::vector<cv::Mat>& images,std::vector<ProjectionTensor>& params,torch::Tensor &shapeX,std::vector<torch::Tensor> &blendShapeXs,ContourLandmarks &contour,MMTensorSolver& PyMMS,float offset)
+cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<ProjectionTensor>& params,torch::Tensor &shapeX,std::vector<torch::Tensor> &blendShapeXs,ContourLandmarks &contour,MMTensorSolver& PyMMS,float offset)
 {
     torch::Tensor EX=torch::zeros({PyMMS.FMFull.EB.size(1),1});
     PyMMS.FMFull.Generate(shapeX,EX);
@@ -304,7 +297,7 @@ void MultiFitting::render(std::vector<cv::Mat>& images,std::vector<ProjectionTen
     }
     std::vector<at::Tensor> weightTs=computeTextureWeights(imageNum,frontModel,frontNormals,yawAngles,axisMetrics,PyMMS);
 
-    merge(images,projecteds,weightTs,PyMMS,1024,1024);
+    return merge(images,projecteds,weightTs,PyMMS,1024,1024);
 }
 /**
  * @brief MultiFitting::merge
@@ -361,7 +354,7 @@ void MultiFitting::render(std::vector<cv::Mat>& images,std::vector<ProjectionTen
 //    cv::imwrite("result.isomap.png",result);
 //    return std::move(result);
 //}
-void MultiFitting::merge(std::vector<cv::Mat> &images,std::vector<torch::Tensor> projecteds, std::vector<at::Tensor> &weightTs,MMTensorSolver& PyMMS,int H,int W)
+cv::Mat MultiFitting::merge(std::vector<cv::Mat> &images,std::vector<torch::Tensor> projecteds, std::vector<at::Tensor> &weightTs,MMTensorSolver& PyMMS,int H,int W)
 {
     auto TRI = PyMMS.FMFull.TRIUV;
     auto UV = PyMMS.FMFull.UV;
@@ -406,7 +399,8 @@ void MultiFitting::merge(std::vector<cv::Mat> &images,std::vector<torch::Tensor>
 
         FaceMorph::morphTriangle(images,result,srcTris,dstTri,weights);
     }
-    cv::imwrite("result.isomap.png",result);
+    //cv::imwrite("result.isomap.png",result);
+    return std::move(result);
 }
 void MultiFitting::selectContour(ContourLandmarks &contour, float &yawAngle,torch::Tensor &modelContourMask, float frontalRangeThreshold)
 {
