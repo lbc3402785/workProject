@@ -200,15 +200,15 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
     torch::Tensor centerZs=centers.select(1,2);//t
     torch::Tensor dis=(centerXs.pow(2)+centerZs.pow(2)).sqrt();//t
 
-    torch::Tensor cosPosToZs=centerXs.div(dis);//t
-    torch::Tensor sinPosToZs=centerZs.div(dis);//t
+    torch::Tensor cosPosToZs=centerZs.div(dis);//t
+    torch::Tensor sinPosToZs=centerXs.div(dis);//t
 
     torch::Tensor centerNormmalXs=frontNormals.select(1,0);//t
     torch::Tensor centerNormmalZs=frontNormals.select(1,2);//t
     torch::Tensor normalDis=(centerNormmalXs.pow(2)+centerNormmalZs.pow(2)).sqrt();
 
-    torch::Tensor cosNormalToZs=centerNormmalXs.div(normalDis);
-    torch::Tensor sinNormalToZs=centerNormmalZs.div(normalDis);
+    torch::Tensor cosNormalToZs=centerNormmalZs.div(normalDis);
+    torch::Tensor sinNormalToZs=centerNormmalXs.div(normalDis);
     torch::Tensor minFronts=torch::min(cosPosToZs,cosNormalToZs);
 
 //    std::cout<<"cosPosToZs[0]:"<<cosPosToZs[0]<<std::endl;
@@ -224,9 +224,9 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
     torch::Tensor maxRights=torch::max(cosPosToRightAxiss,cosNormalToRightAxiss);
     maxRights=maxRights*maxRights.gt(0).toType(torch::kFloat);
 
-    torch::Tensor cosPosToLeftAxiss=cosPosToZs/**cosLeftZs+sinPosToZs*sinLeftZs*/;
-    torch::Tensor cosNormalToLeftAxiss=cosNormalToZs/**cosLeftZs+sinNormalToZs*sinLeftZs*/;
-    torch::Tensor maxLefts=cosPosToLeftAxiss/*torch::max(cosPosToLeftAxiss,cosNormalToLeftAxiss)*/;
+    torch::Tensor cosPosToLeftAxiss=cosPosToZs*cosLeftZs+sinPosToZs*sinLeftZs;
+    torch::Tensor cosNormalToLeftAxiss=cosNormalToZs*cosLeftZs+sinNormalToZs*sinLeftZs;
+    torch::Tensor maxLefts=torch::max(cosPosToLeftAxiss,cosNormalToLeftAxiss);
     maxLefts=maxLefts*maxLefts.gt(0).toType(torch::kFloat);
     for(size_t j=0;j<imageNum;j++)
     {
@@ -234,13 +234,13 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
         if(std::abs(yawAngles[j])<frontalAngleThreshold){
             //looking to front for personal perspective
             std::cout<<"looking to front..."<<std::endl;
-            result[j]=minFronts*centerZs.gt(0.0).toType(torch::kFloat)*0;
+            result[j]=minFronts*centerZs.gt(0.0).toType(torch::kFloat);
         }else if(yawAngles[j]>frontalAngleThreshold){
             //looking to left for personal perspective,so pose the right face
-            result[j]=maxRights*centerXs.lt(0.0).toType(torch::kFloat)*0;
+            result[j]=maxRights*centerXs.lt(0.0).toType(torch::kFloat);
         }else{
             //looking to right for personal perspective,so pose the left face
-            result[j]=maxLefts/**centerXs.gt(0.0).toType(torch::kFloat)*/;
+            result[j]=maxLefts*centerXs.gt(0.0).toType(torch::kFloat);
         }
 
     }
