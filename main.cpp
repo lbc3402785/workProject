@@ -25,7 +25,6 @@ void InitMMS(std::string fmkp, std::string fmfull)
     cout << fmkp << endl;
     cout << fmfull << endl;
     PyMMS.Initialize(fmkp, fmfull);
-    std::cout<<"PyMMS.FMFull.TRIUV.sizes():"<<PyMMS.FMFull.TRIUV.sizes()<<std::endl;
 }
 void readfolder(boost::filesystem::path& imageDir,std::vector<std::string>& result) {
     boost::filesystem::directory_iterator endIter;
@@ -53,7 +52,7 @@ bool KeypointDetectgion(cv::Mat image, torch::Tensor &KP)
 
     if (keypoints.size() <= 0)
     {
-        std::cout << "NO POINTS" << endl;
+        //std::cout << "NO POINTS" << endl;
         return false;
     }
     KP = ToTensor(keypoints[0]) * (1.0 / S);
@@ -84,9 +83,6 @@ std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::ve
 
 void MakeDir(string path)
 {
-//    namespace fs = std::filesystem; // C++17
-//    std::error_code ec;
-//    bool success = fs::create_directories(path, ec);
     boost::filesystem::path dir(path);
     boost::filesystem::create_directory(dir);
 }
@@ -125,17 +121,7 @@ int main(int argc, char *argv[])
     std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,4);
     int W = 512;
     int H = 512;
-//    std::vector<cv::Mat> textures;
-//    for(size_t j=0;j<images.size();j++){
-//        PyMMS.params=params[j];
-//        PyMMS.EX=blendShapeXs[j];
-//        PyMMS.SX=shapeX;
-//        cv::Mat texture = MMSTexture(images[j], PyMMS, W, H);
-//        boost::filesystem::path outputfile(outputImages[j]);
-//        outputfile.replace_extension(".isomap.png");
-//        cv::imwrite(outputfile.string(),texture);
-//        textures.emplace_back(texture);
-//    }
+
     torch::Tensor blendShapeX=blendShapeXs[0];
     for(size_t j=1;j<images.size();j++){
        blendShapeX+= blendShapeXs[j];
@@ -146,11 +132,11 @@ int main(int argc, char *argv[])
     PyMMS.SX=shapeX;
     string outfolder = "./output/";
     string filename = "TestObj";
-    std::cout<<"---------------"<<std::endl;
+
     MakeDir(outfolder);
-//    std::cout<<"*********"<<std::endl;
 
     cv::Mat texture=MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
+
     MMSObjWithTexture(texture, PyMMS, outfolder, filename);
 
 //    testMul();

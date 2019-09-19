@@ -68,7 +68,6 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
        modelMarkTs.emplace_back(currentModelPoint);
        torch::Tensor currentMesh =PyMMS.FMFull.Face+FullS;
        currentMeshes.emplace_back(currentMesh);
-
     }
 
     std::vector<torch::Tensor> visdual2Ds,visdual3Ds;
@@ -78,13 +77,14 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
     for(int iter=0;iter<iterNum;iter++){
         std::vector<torch::Tensor> imageMarks;
         std::vector<torch::Tensor> modelMarks;
+        imageMarks.resize(imageNum);
+        modelMarks.resize(imageNum);
         allModelMask=fixModelMask.clone();
+        #pragma omp parallel for
         for(int j=0;j<imageNum;j++){
             torch::Tensor innerIndices=allModelMask.select(0,j).nonzero();
-
             angles[j]=glm::eulerAngles(GlmFunctions::RotationToQuat(params[j].R))[1];
             auto yawAngle =glm::degrees(angles[j]);
-
             torch::Tensor visual2DIndex;
             torch::Tensor visual3DIndex;
             std::tie(visual2DIndex,visual3DIndex)=getContourCorrespondences(params[j],contour,modelMarkTs[j],landMarks[j],yawAngle);
@@ -96,15 +96,16 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
             torch::Tensor imagePointsT=landMarks[j].index_select(0,visual2DIndex.squeeze(-1));
             torch::Tensor modelPointsT=modelMarkTs[j].index_select(0,visual3DIndex.squeeze(-1));
 
-            imageMarks.emplace_back(imagePointsT);
-            modelMarks.emplace_back(modelPointsT);
+//            imageMarks.emplace_back(imagePointsT);
+//            modelMarks.emplace_back(modelPointsT);
+            imageMarks[j]=imagePointsT;
+            modelMarks[j]=modelPointsT;
             ProjectionTensor param=PyMMS.SolveProjection(imagePointsT,modelPointsT);
             params[j]=param;
-
         }
 
         shapeX=PyMMS.SolveMultiShape(params,imageMarks,modelMarks,angles,PyMMS.FM.SB,Lambdas[iter]);
-
+        #pragma omp parallel for
         for(int j=0;j<imageNum;j++)
         {
             torch::Tensor FaceS = torch::matmul(PyMMS.FM.SB , shapeX);
@@ -115,9 +116,7 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
             modelMarkTs[j]=(currentModelPoint);
             torch::Tensor currentMesh =PyMMS.FMFull.Face+FullS;
             torch::Tensor modelPointsT=modelMarkTs[j].index_select(0,visdual3Ds[j].squeeze(-1));
-
             blendShapeXs[j]=PyMMS.SolveShape(params[j],imageMarks[j],modelPointsT,PyMMS.FM.EB,eLambdas[iter]);
-
             //if(iter%2==0){
 //                string name=std::to_string(j);
 //                PyMMS.params=params[j];
@@ -188,7 +187,7 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
     sinRightZ=axisMetrics[1];
     cosLeftZ=axisMetrics[2];
     sinLeftZ=axisMetrics[3];
-    std::cout<<"cosRightZ:"<<cosRightZ<<" sinRightZ:"<<sinRightZ<<" cosLeftZ:"<<cosLeftZ<<" sinLeftZ:"<<sinLeftZ<<std::endl;
+//    std::cout<<"cosRightZ:"<<cosRightZ<<" sinRightZ:"<<sinRightZ<<" cosLeftZ:"<<cosLeftZ<<" sinLeftZ:"<<sinLeftZ<<std::endl;
     auto num=TRI.size(0);
     torch::Tensor cosRightZs=torch::ones(num)*cosRightZ;
     torch::Tensor sinRightZs=torch::ones(num)*sinRightZ;
@@ -221,12 +220,12 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
     torch::Tensor cosNormalToLeftAxiss=cosNormalToZs*cosLeftZs+sinNormalToZs*sinLeftZs;
     torch::Tensor maxLefts=torch::max(cosPosToLeftAxiss,cosNormalToLeftAxiss);
     maxLefts=maxLefts*maxLefts.gt(0).toType(torch::kFloat);
-    for(size_t j=0;j<imageNum;j++)
+    #pragma omp parallel for
+    for(int j=0;j<imageNum;j++)
     {
 
         if(std::abs(yawAngles[j])<frontalAngleThreshold){
             //looking to front for personal perspective
-            std::cout<<"looking to front..."<<std::endl;
             result[j]=minFronts*centerZs.gt(0.0).toType(torch::kFloat);
         }else if(yawAngles[j]>frontalAngleThreshold){
             //looking to left for personal perspective,so pose the right face
@@ -239,6 +238,7 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
     }
     return std::move(result);
 }
+
 cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<ProjectionTensor>& params,torch::Tensor &shapeX,std::vector<torch::Tensor> &blendShapeXs,ContourLandmarks &contour,MMTensorSolver& PyMMS,float offset)
 {
     torch::Tensor EX=torch::zeros({PyMMS.FMFull.EB.size(1),1});
@@ -251,12 +251,12 @@ cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<Projection
     torch::Tensor rightBound=frontKeyModel[contour.rightContour[0]];
     torch::Tensor leftBound=frontKeyModel[contour.leftContour[0]];
     float zOffset=(rightBound[2]+leftBound[2]).item().toFloat()/2;
-
-    frontModel.select(1,2).sub_(zOffset);
-    frontKeyModel.select(1,2).sub_(zOffset);
+    float r=2.5;
+    frontModel.select(1,2).sub_(zOffset*r);
+    frontKeyModel.select(1,2).sub_(zOffset*r);
     torch::Tensor rightEye=frontKeyModel[36];
     if(offset>45)offset=45;
-    if(offset<-5)offset=-5;
+    if(offset<-45)offset=-45;
     double pi = 4 * atan(1.0);
     float cosOffset=std::cos(offset/180*pi);
     float sinOffset=std::sin(offset/180*pi);
@@ -269,8 +269,8 @@ cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<Projection
     x=rightEye[0].item().toFloat();z=rightEye[2].item().toFloat();
     float cosRightEye=cosOfPosition(z,x);
     float sinRightEye=cosOfPosition(x,z);
-    float cosRightZ=cosRightEye*cos90+sinRightEye*sin90;
-    float sinRightZ=sinRightEye*cos90-cosRightEye*sin90;
+    float cosRightZ=cosRightEye*cosRotation+sinRightEye*sinRotation;
+    float sinRightZ=sinRightEye*cosRotation-cosRightEye*sinRotation;
     torch::Tensor leftEye=frontKeyModel[45];
     x=leftEye[0].item().toFloat();z=leftEye[2].item().toFloat();
     float cosLeftEye=cosOfPosition(z,x);
@@ -279,14 +279,12 @@ cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<Projection
     float sinLeftZ=sinLeftEye*cosRotation+cosLeftEye*sinRotation;
     std::array<float,4> axisMetrics={cosRightZ,sinRightZ,cosLeftZ,sinLeftZ};
     PyMMS.SX=shapeX;
-
-    std::cout<<frontModel[0]<<std::endl;
     torch::Tensor frontNormals=TorchFunctions::computeFaceNormals(frontModel,PyMMS.FMFull.TRI);
-
     std::vector<torch::Tensor> projecteds;
     std::vector<float> yawAngles;
     projecteds.resize(imageNum);
     yawAngles.resize(imageNum);
+
     for(size_t j=0;j<imageNum;j++){
         glm::tvec3<float> euler=glm::eulerAngles(GlmFunctions::RotationToQuat(params[j].R));
         yawAngles[j]=glm::degrees(euler.y);
@@ -372,8 +370,8 @@ cv::Mat MultiFitting::merge(std::vector<cv::Mat> &images,std::vector<torch::Tens
         weightTs[k].div_(sum);
     }
 
-
-    for (size_t t = 0; t < TRI.size(0); t++)
+    #pragma omp parallel for
+    for (int t = 0; t < TRI.size(0); t++)
     {
         std::vector<cv::Point2f> dstTri;
         std::vector<float> weights;

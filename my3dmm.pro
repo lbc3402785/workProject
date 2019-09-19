@@ -2,6 +2,7 @@ QT -= gui
 
 CONFIG += c++14 console
 CONFIG -= app_bundle
+QMAKE_CXXFLAGS+=/openmp
 OBJECTS_DIR=$${PWD}/build
 TORCH_LIBRARY_DIRS=D:\soft\libtorch\lib
 TORCH_INCLUDE_DIRS=D:\soft\libtorch\include

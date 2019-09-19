@@ -7,12 +7,12 @@
 #include <torch/torch.h>
 inline torch::Tensor Orthogonalize(torch::Tensor R)
 {
-//    std::cout<<"R:" << R << std::endl;
+    //    std::cout<<"R:" << R << std::endl;
     // Set R to the closest orthonormal matrix to the estimated affine transform:
     torch::Tensor U,S,V;
     std::tie(U,S,V)=torch::svd(R);
-//    std::cout<<"U:" << U << std::endl;
-//    std::cout<<"V:" << V << std::endl;
+    //    std::cout<<"U:" << U << std::endl;
+    //    std::cout<<"V:" << V << std::endl;
     torch::Tensor R_ortho = torch::matmul(U , V.transpose(0,1));
 
     // The determinant of R must be 1 for it to be a valid rotation matrix
@@ -29,12 +29,12 @@ inline torch::Tensor SolveLinear(torch::Tensor A, torch::Tensor B, float lambda)
     //lambda = 1.0
     // Solve d[(Ax-b)^2 + lambda * x^2 ]/dx = 0
     // https://math.stackexchange.com/questions/725185/minimize-a-x-b
-//    MatF MA=EigenToTorch::TorchTensorToEigenMatrix(A);
-//    MatF MB=EigenToTorch::TorchTensorToEigenMatrix(B);
-//    MatF Diagonal = Eigen::MatrixXf::Identity(MA.cols(), MA.cols()) * lambda;
-//    auto AA = MA.transpose() * MA + Diagonal;
-//    MatF X = AA.colPivHouseholderQr().solve(MA.transpose() * MB);
-//    return EigenToTorch::EigenMatrixToTorchTensor(X);
+    //    MatF MA=EigenToTorch::TorchTensorToEigenMatrix(A);
+    //    MatF MB=EigenToTorch::TorchTensorToEigenMatrix(B);
+    //    MatF Diagonal = Eigen::MatrixXf::Identity(MA.cols(), MA.cols()) * lambda;
+    //    auto AA = MA.transpose() * MA + Diagonal;
+    //    MatF X = AA.colPivHouseholderQr().solve(MA.transpose() * MB);
+    //    return EigenToTorch::EigenMatrixToTorchTensor(X);
     torch::Tensor W=torch::matmul(A.transpose(0,1),A)+torch::eye(A.size(1))*lambda;
     torch::Tensor b=torch::matmul(A.transpose(0,1),B);
     torch::Tensor X,QR;
@@ -44,12 +44,12 @@ inline torch::Tensor SolveLinear(torch::Tensor A, torch::Tensor B, float lambda)
 inline torch::Tensor SolveLinear(torch::Tensor A, torch::Tensor B)
 {
 
-//    MatF MA=EigenToTorch::TorchTensorToEigenMatrix(A);
-//    MatF MB=EigenToTorch::TorchTensorToEigenMatrix(B);
-//    std::cout << MB.row(0) << std::endl;
-//        std::cout << MB.row(1) << std::endl;
-//    MatF X = MA.colPivHouseholderQr().solve(MB);
-//    return EigenToTorch::EigenMatrixToTorchTensor(X);
+    //    MatF MA=EigenToTorch::TorchTensorToEigenMatrix(A);
+    //    MatF MB=EigenToTorch::TorchTensorToEigenMatrix(B);
+    //    std::cout << MB.row(0) << std::endl;
+    //        std::cout << MB.row(1) << std::endl;
+    //    MatF X = MA.colPivHouseholderQr().solve(MB);
+    //    return EigenToTorch::EigenMatrixToTorchTensor(X);
     torch::Tensor X,QR;
     std::tie(X,QR)=torch::gels(B,A);
     return std::move(X);
@@ -191,28 +191,30 @@ public:
     torch::Tensor SolveMultiShape(std::vector<ProjectionTensor> params, std::vector<torch::Tensor> landMarks, std::vector<torch::Tensor> modelMarks,std::vector<float>& angles, torch::Tensor SB, float lambda)
     {
         //cout << Shape(SB) << endl;
-
         const int imageNum=params.size();
         int totalLandMarkNum=0;
         for(size_t i=0;i<imageNum;i++)
         {
             totalLandMarkNum+=landMarks[i].size(0);
         }
-
         int rowIndex=0;
         int L = SB.size(1);
         torch::Tensor SBX=torch::zeros({totalLandMarkNum * 2, L});
         torch::Tensor error=torch::zeros({totalLandMarkNum * 2,1});
-        for(size_t i=0;i<imageNum;i++)
+        std::vector<int> rowIndexs(imageNum,0);
+        for(int i=0;i<imageNum;i++){
+            rowIndexs[i]=rowIndex;
+            int Ni = modelMarks[i].size(0);
+            rowIndex+=Ni*2;
+        }
+        #pragma omp parallel for
+        for(int i=0;i<imageNum;i++)
         {
             float weighti=std::abs(std::cos(angles[i]));
             torch::Tensor Ri = params[i].R * params[i].s;
             Ri = Ri.slice(1,0,2);
-
             torch::Tensor rotatedi = Projection(params[i], modelMarks[i]);
-
             torch::Tensor errori = landMarks[i] - rotatedi;
-
             errori = errori.view({-1, 1});
             int Ni = modelMarks[i].size(0);
             torch::Tensor SBXi=torch::zeros({Ni * 2, L});
@@ -221,7 +223,6 @@ public:
             {
                 SBXi.slice(0,ii * 2,ii * 2+2)=torch::matmul( Rit , SB.slice(0,ii * 3, ii * 3+3));
             }
-
             if (USEWEIGHT)
             {
                 torch::Tensor W = torch::ones(2 * Ni);
@@ -235,16 +236,15 @@ public:
             }
             SBXi*=weighti/params[i].s;
             errori*=weighti/params[i].s;
-            error.slice(0,rowIndex,rowIndex+Ni*2)=errori;
-            SBX.slice(0,rowIndex,rowIndex+Ni*2)=SBXi;
-            rowIndex+=Ni*2;
+            error.slice(0,rowIndexs[i],rowIndexs[i]+Ni*2)=errori;
+            SBX.slice(0,rowIndexs[i],rowIndexs[i]+Ni*2)=SBXi;
         }
         return SolveLinear(SBX, error, lambda);
     }
     torch::Tensor SolveShape(ProjectionTensor& p, torch::Tensor& imagePoints, torch::Tensor M, torch::Tensor SB, float lambda)
     {
         //cout << Shape(SB) << endl;
-//        std::cout << p.R << endl;
+        //        std::cout << p.R << endl;
         torch::Tensor R = p.R.transpose(0,1)  * p.s;
         R = R.slice(1,0,2);
 
@@ -314,7 +314,7 @@ public:
         }
 
         const torch::Tensor k = SolveLinear(A, b); // resulting affine matrix (8x1)
-//        std::cout<<"k:"<<k<<std::endl;
+        //        std::cout<<"k:"<<k<<std::endl;
         // Extract all values from the estimated affine parameters k:
         torch::Tensor R1 = k.slice(0,0,3).transpose(0,1);
         torch::Tensor R2 = k.slice(0,4,7).transpose(0,1);
