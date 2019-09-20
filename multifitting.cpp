@@ -54,7 +54,11 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
        torch::Tensor relia2D=landMarks[i].index_select(0,selectIds.squeeze(-1));
        torch::Tensor relia3D=PyMMS.FM.Face.index_select(0,selectIds.squeeze(-1));
 
-       ProjectionTensor param=PyMMS.SolveProjection(relia2D,relia3D);
+//       ProjectionTensor param=PyMMS.SolveProjection(relia2D,relia3D);
+       ProjectionTensor param=PyMMS.SolveProjection(landMarks[i],PyMMS.FM.Face);
+       float yawRadian=glm::eulerAngles(GlmFunctions::RotationToQuat(param.R))[1];
+       auto yawAngle =glm::degrees(yawRadian);
+
        params.emplace_back(param);
 
        torch::Tensor currentEX=PyMMS.SolveShape(param,landMarks[i],PyMMS.FM.Face,PyMMS.FM.EB,20.0f);
@@ -85,6 +89,7 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
             torch::Tensor innerIndices=allModelMask.select(0,j).nonzero();
             angles[j]=glm::eulerAngles(GlmFunctions::RotationToQuat(params[j].R))[1];
             auto yawAngle =glm::degrees(angles[j]);
+            std::cout<<"yawAngle:"<<yawAngle<<std::endl;
             torch::Tensor visual2DIndex;
             torch::Tensor visual3DIndex;
             std::tie(visual2DIndex,visual3DIndex)=getContourCorrespondences(params[j],contour,modelMarkTs[j],landMarks[j],yawAngle);
@@ -126,7 +131,7 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
 //                cv::imwrite(name+".jpg",m);
 //                cv::imshow(name,m);
 //                cv::waitKey();
-           // }
+            //}
 
         }
     }
@@ -208,17 +213,17 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
 
     torch::Tensor cosNormalToZs=centerNormmalZs.div(normalDis);
     torch::Tensor sinNormalToZs=centerNormmalXs.div(normalDis);
-    torch::Tensor minFronts=torch::min(cosPosToZs,cosNormalToZs);
+    torch::Tensor minFronts=torch::max(cosPosToZs,cosNormalToZs);
     minFronts=minFronts*minFronts.gt(0).toType(torch::kFloat);
 
     torch::Tensor cosPosToRightAxiss=cosPosToZs*cosRightZs+sinPosToZs*sinRightZs;
     torch::Tensor cosNormalToRightAxiss=cosNormalToZs*cosRightZs+sinNormalToZs*sinRightZs;
-    torch::Tensor maxRights=torch::max(cosPosToRightAxiss,cosNormalToRightAxiss);
+    torch::Tensor maxRights=torch::min(cosPosToRightAxiss,cosNormalToRightAxiss);
     maxRights=maxRights*maxRights.gt(0).toType(torch::kFloat);
 
     torch::Tensor cosPosToLeftAxiss=cosPosToZs*cosLeftZs+sinPosToZs*sinLeftZs;
     torch::Tensor cosNormalToLeftAxiss=cosNormalToZs*cosLeftZs+sinNormalToZs*sinLeftZs;
-    torch::Tensor maxLefts=torch::max(cosPosToLeftAxiss,cosNormalToLeftAxiss);
+    torch::Tensor maxLefts=torch::min(cosPosToLeftAxiss,cosNormalToLeftAxiss);
     maxLefts=maxLefts*maxLefts.gt(0).toType(torch::kFloat);
     #pragma omp parallel for
     for(int j=0;j<imageNum;j++)
@@ -251,7 +256,7 @@ cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<Projection
     torch::Tensor rightBound=frontKeyModel[contour.rightContour[0]];
     torch::Tensor leftBound=frontKeyModel[contour.leftContour[0]];
     float zOffset=(rightBound[2]+leftBound[2]).item().toFloat()/2;
-    float r=2.5;
+    float r=1.5;
     frontModel.select(1,2).sub_(zOffset*r);
     frontKeyModel.select(1,2).sub_(zOffset*r);
     torch::Tensor rightEye=frontKeyModel[36];
@@ -354,48 +359,75 @@ cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<Projection
 //}
 cv::Mat MultiFitting::merge(std::vector<cv::Mat> &images,std::vector<torch::Tensor> projecteds, std::vector<at::Tensor> &weightTs,MMTensorSolver& PyMMS,int H,int W)
 {
-    auto TRI = PyMMS.FMFull.TRIUV;
+    auto TRI = PyMMS.FMFull.TRI;
+    auto TRIUV = PyMMS.FMFull.TRIUV;
     auto UV = PyMMS.FMFull.UV;
     cv::Mat result=cv::Mat::zeros(H,W,images[0].type());
     size_t imageNum=weightTs.size();
     at::Tensor sum=torch::zeros(TRI.size(0));
+    std::vector<int> imageWidths;
+    std::vector<int> imageHeights;
     for(int k=0;k<imageNum;k++){
         sum.add_(weightTs[k]);
+        imageWidths.push_back(images[k].cols);
+        imageHeights.push_back(images[k].rows);
     }
-
     torch::Tensor mask=sum.lt(1e-6);
     sum.masked_fill_(mask,1.0);
-
+    std::vector<torch::Tensor> triProjecteds;
+    triProjecteds.resize(imageNum);
+    std::vector<torch::Tensor> triMasks;
+    triMasks.resize(imageNum);
     for(int k=0;k<imageNum;k++){
         weightTs[k].div_(sum);
+        triProjecteds[k]=projecteds[k].index_select(0,TRI.toType(torch::kLong).view(-1)).view({-1,3,2});//tx3x2
+        triMasks[k]=(triProjecteds[k].select(2,0).lt(0)
+                     +triProjecteds[k].select(2,0).gt(imageWidths[k]-1)
+                     +triProjecteds[k].select(2,1).lt(0)
+                     +triProjecteds[k].select(2,1).gt(imageHeights[k]-1)).sum(1);
     }
+    at::Tensor triUVs=UV.index_select(0,TRIUV.toType(torch::kLong).view(-1)).view({-1,3,2});//tx3x2
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
+    bool ignore=false;
     for (int t = 0; t < TRI.size(0); t++)
     {
         std::vector<cv::Point2f> dstTri;
         std::vector<float> weights;
         for(int k=0;k<imageNum;k++){
-            weights.push_back(weightTs[k][t].item().toFloat());
+            if(triMasks[k][t].item().toByte()>0){
+                ignore=true;
+                break;
+            }
+            weights.push_back(weightTs[k][t].item().toFloat());   
         }
-
+        if(ignore){
+            ignore=false;
+            continue;
+        }
         std::vector<std::vector<cv::Point2f>> srcTris;
         srcTris.resize(imageNum);
         for (size_t i = 0; i < 3; i++)
         {
-            int j = TRI[t][i].item().toInt();
 
+            int j = TRI[t][i].item().toInt();
             auto u = (UV[j][0].item().toFloat()) * (W - 1);
             auto v = (1 - UV[j][1].item().toFloat()) * (H - 1);
             dstTri.push_back(cv::Point2f(u, v));
             for(int k=0;k<imageNum;k++){
-                auto x = projecteds[k][j][0].item().toFloat();
-                auto y = projecteds[k][j][1].item().toFloat();
+//                auto x = projecteds[k][j][0].item().toFloat();
+//                auto y = projecteds[k][j][1].item().toFloat();
+                auto x =triProjecteds[k][t][i][0].item().toFloat();
+                auto y =triProjecteds[k][t][i][1].item().toFloat();
                 srcTris[k].push_back(cv::Point2f(x, y));
             }
         }
-
+        if(ignore){
+            ignore=false;
+            continue;
+        }
         FaceMorph::morphTriangle(images,result,srcTris,dstTri,weights);
+
     }
     //cv::imwrite("result.isomap.png",result);
     return std::move(result);

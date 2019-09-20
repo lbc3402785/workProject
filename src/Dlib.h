@@ -3,4 +3,4 @@
 
 
 void DlibInit(std::string filepath);
-void DlibFace(cv::Mat img, vector<cv::Rect> &rectangles, std::vector<std::vector<cv::Point>> &keypoints);
+bool DlibFace(cv::Mat img, vector<cv::Rect> &rectangles, std::vector<std::vector<cv::Point>> &keypoints);

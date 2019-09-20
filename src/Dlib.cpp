@@ -112,7 +112,7 @@ void DlibInit(string filepath)
 
 
 
-void DlibFace(Mat img, vector<Rect> &rectangles, vector<vector<Point>> &keypoints)
+bool DlibFace(Mat img, vector<Rect> &rectangles, vector<vector<Point>> &keypoints)
 {
 	dlib::cv_image<dlib::bgr_pixel> cimg(img);
 
@@ -154,7 +154,7 @@ void DlibFace(Mat img, vector<Rect> &rectangles, vector<vector<Point>> &keypoint
 	}
 
     //cout << faces.size() << endl;
-
+    if(faces.size()==0)return false;
 	// Find the pose of each face.
 	std::vector<dlib::full_object_detection> shapes;
 	for (unsigned long i = 0; i < faces.size(); ++i)
@@ -182,6 +182,15 @@ void DlibFace(Mat img, vector<Rect> &rectangles, vector<vector<Point>> &keypoint
 		}
 
 	}
-
+//    if(1){
+//        cv::Mat result_cnn = img.clone();
+//        cv::rectangle(result_cnn, rectangles[0], cv::Scalar(0, 255, 0), 2);
+//        for (int i = 0; i < 68; i++)
+//            cv::circle(result_cnn, cv::Point(keypoints[0][i].x,keypoints[0][i].y), 1, cv::Scalar(0, 255, 255),1);
+//        cv::namedWindow("w",0);
+//        cv::imshow("w",result_cnn);
+//        cv::waitKey(200000);
+//    }
+    return faces.size()>0;
 
 }

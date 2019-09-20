@@ -48,11 +48,11 @@ bool KeypointDetectgion(cv::Mat image, torch::Tensor &KP)
 
     std::vector<cv::Rect> rectangles;
     DlibInit(dir_path + "shape_predictor_68_face_landmarks.dat");
-    DlibFace(simage, rectangles, keypoints);
+    if(!DlibFace(simage, rectangles, keypoints))return false;
 
     if (keypoints.size() <= 0)
     {
-        //std::cout << "NO POINTS" << endl;
+        std::cout << "NO POINTS" << endl;
         return false;
     }
     KP = ToTensor(keypoints[0]) * (1.0 / S);
@@ -102,20 +102,22 @@ int main(int argc, char *argv[])
     InitMMS(fmkp, fmfull);
 
     DlibInit(dlibModel);
+
     ContourLandmarks contour=ContourLandmarks::load(mappingsfile);
+
     boost::filesystem::path imageDir(imagePath);
     std::vector<std::string> imageFiles;
     readfolder(imageDir,imageFiles);
+
     std::vector<cv::Mat> images;
     std::vector<torch::Tensor> landMarks;
     std::vector<std::string> outputImages=loadImages(imageFiles,images,landMarks);
-    std::vector<int> image_widths;
-    std::vector<int> image_heights;
-    for (const auto& image : images)
-    {
-        image_widths.push_back(image.cols);
-        image_heights.push_back(image.rows);
+    if(images.empty()){
+        std::cout<<"no avaliable image!";
+        exit(EXIT_FAILURE);
     }
+
+
     torch::Tensor shapeX;
     std::vector<torch::Tensor> blendShapeXs;
     std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,4);
@@ -126,8 +128,8 @@ int main(int argc, char *argv[])
     for(size_t j=1;j<images.size();j++){
        blendShapeX+= blendShapeXs[j];
     }
+
     blendShapeX.div_((int64_t)images.size());
-    PyMMS.params=params[2];
     PyMMS.EX=blendShapeX;
     PyMMS.SX=shapeX;
     string outfolder = "./output/";

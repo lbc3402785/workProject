@@ -99,6 +99,7 @@ void FaceMorph::applyAffineTransform(cv::Mat &warpImage, cv::Mat &src, std::vect
 
 void FaceMorph::morphTriangle(std::vector<cv::Mat> &imgs, cv::Mat &target, std::vector<std::vector<cv::Point2f> > &srcTris, std::vector<cv::Point2f> &dstTri, std::vector<float> &weights)
 {
+
     size_t imageNum=imgs.size();
     cv::Rect r = cv::boundingRect(dstTri);
     std::vector<cv::Rect> rs;
@@ -124,6 +125,7 @@ void FaceMorph::morphTriangle(std::vector<cv::Mat> &imgs, cv::Mat &target, std::
 
     // Get mask by filling triangle
     cv::Mat mask = cv::Mat::zeros(r.height, r.width, imgs[0].type());
+
     fillConvexPoly(mask, dstRectInt, cv::Scalar(1.0, 1.0, 1.0), 16, 0);//antialiased line
 
     std::vector<cv::Mat> srcImgRects;
@@ -131,7 +133,14 @@ void FaceMorph::morphTriangle(std::vector<cv::Mat> &imgs, cv::Mat &target, std::
     for(size_t j=0;j<imageNum;j++)
     {
         cv::Mat temp;
-        imgs[j](rs[j]).copyTo(temp);
+        try {
+            imgs[j](rs[j]).copyTo(temp);
+        } catch (std::exception& e) {
+            std::cout<<rs[j]<<std::endl;
+            std::cout<<e.what()<<std::endl;
+            exit(EXIT_FAILURE);
+        }
+
         srcImgRects.push_back(temp);
         cv::Mat warpImagej = cv::Mat::zeros(r.height, r.width, temp.type());
         applyAffineTransform(warpImagej, srcImgRects[j], srcRects[j], dstRect);
