@@ -213,17 +213,17 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
 
     torch::Tensor cosNormalToZs=centerNormmalZs.div(normalDis);
     torch::Tensor sinNormalToZs=centerNormmalXs.div(normalDis);
-    torch::Tensor minFronts=torch::max(cosPosToZs,cosNormalToZs);
+    torch::Tensor minFronts=torch::min(cosPosToZs,cosNormalToZs);
     minFronts=minFronts*minFronts.gt(0).toType(torch::kFloat);
 
     torch::Tensor cosPosToRightAxiss=cosPosToZs*cosRightZs+sinPosToZs*sinRightZs;
     torch::Tensor cosNormalToRightAxiss=cosNormalToZs*cosRightZs+sinNormalToZs*sinRightZs;
-    torch::Tensor maxRights=torch::min(cosPosToRightAxiss,cosNormalToRightAxiss);
+    torch::Tensor maxRights=torch::max(cosPosToRightAxiss,cosNormalToRightAxiss);
     maxRights=maxRights*maxRights.gt(0).toType(torch::kFloat);
 
     torch::Tensor cosPosToLeftAxiss=cosPosToZs*cosLeftZs+sinPosToZs*sinLeftZs;
     torch::Tensor cosNormalToLeftAxiss=cosNormalToZs*cosLeftZs+sinNormalToZs*sinLeftZs;
-    torch::Tensor maxLefts=torch::min(cosPosToLeftAxiss,cosNormalToLeftAxiss);
+    torch::Tensor maxLefts=torch::max(cosPosToLeftAxiss,cosNormalToLeftAxiss);
     maxLefts=maxLefts*maxLefts.gt(0).toType(torch::kFloat);
     #pragma omp parallel for
     for(int j=0;j<imageNum;j++)
@@ -256,7 +256,7 @@ cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<Projection
     torch::Tensor rightBound=frontKeyModel[contour.rightContour[0]];
     torch::Tensor leftBound=frontKeyModel[contour.leftContour[0]];
     float zOffset=(rightBound[2]+leftBound[2]).item().toFloat()/2;
-    float r=1.5;
+    float r=2.0;
     frontModel.select(1,2).sub_(zOffset*r);
     frontKeyModel.select(1,2).sub_(zOffset*r);
     torch::Tensor rightEye=frontKeyModel[36];
