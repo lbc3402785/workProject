@@ -64,6 +64,12 @@ public:
     float tx,ty;
     float s;
 };
+/**
+ * @brief Projection
+ * @param p
+ * @param model_points NX3
+ * @return             NX2
+ */
 inline torch::Tensor Projection(ProjectionTensor p, torch::Tensor model_points)
 {
     torch::Tensor R = p.R.transpose(0,1) * p.s;
@@ -188,57 +194,89 @@ public:
             FMFull.SB.select(1,0) *= 0;
         }
     }
-    torch::Tensor SolveMultiShape(std::vector<ProjectionTensor> params, std::vector<torch::Tensor> landMarks, std::vector<torch::Tensor> modelMarks,std::vector<float>& angles, torch::Tensor SB, float lambda)
+    /**
+     * @brief SolveMultiShape
+     * @param params
+     * @param landMarks
+     * @param visdual2Ds
+     * @param modelMarkTs
+     * @param visdual3Ds
+     * @param angles
+     * @param SB            (68*3)X199
+     * @param lambda
+     */
+    torch::Tensor SolveMultiShape(std::vector<ProjectionTensor> params,std::vector<torch::Tensor>& landMarks, std::vector<torch::Tensor>& visdual2Ds, std::vector<torch::Tensor>& modelMarkTs, std::vector<torch::Tensor>& visdual3Ds,std::vector<float>& angles, torch::Tensor SB, float lambda)
     {
-        //cout << Shape(SB) << endl;
         const int imageNum=params.size();
-        int totalLandMarkNum=0;
-        for(size_t i=0;i<imageNum;i++)
-        {
-            totalLandMarkNum+=landMarks[i].size(0);
-        }
-        int rowIndex=0;
         int L = SB.size(1);
-        torch::Tensor SBX=torch::zeros({totalLandMarkNum * 2, L});
-        torch::Tensor error=torch::zeros({totalLandMarkNum * 2,1});
-        std::vector<int> rowIndexs(imageNum,0);
-        for(int i=0;i<imageNum;i++){
-            rowIndexs[i]=rowIndex;
-            int Ni = modelMarks[i].size(0);
-            rowIndex+=Ni*2;
-        }
+        std::vector<torch::Tensor> selectBasisV;
+        selectBasisV.resize(imageNum);
+        std::vector<torch::Tensor> errorV;
+        errorV.resize(imageNum);
+        torch::Tensor pSB=SB.view({-1,3,SB.size(1)});
         #pragma omp parallel for
         for(int i=0;i<imageNum;i++)
         {
-            float weighti=std::abs(std::cos(angles[i]));
-            torch::Tensor Ri = params[i].R * params[i].s;
-            Ri = Ri.slice(1,0,2);
-            torch::Tensor rotatedi = Projection(params[i], modelMarks[i]);
-            torch::Tensor errori = landMarks[i] - rotatedi;
-            errori = errori.view({-1, 1});
-            int Ni = modelMarks[i].size(0);
-            torch::Tensor SBXi=torch::zeros({Ni * 2, L});
-            torch::Tensor Rit = Ri.transpose(0,1);
-            for (size_t ii = 0; ii < Ni; ii++)
-            {
-                SBXi.slice(0,ii * 2,ii * 2+2)=torch::matmul( Rit , SB.slice(0,ii * 3, ii * 3+3));
+            float weightI=std::abs(std::cos(angles[i]));
+            torch::Tensor Ri = params[i].R.transpose(0,1)  * params[i].s;
+            Ri=Ri.slice(0,0,2);//2X3
+            torch::Tensor imagePointsT=landMarks[i].index_select(0,visdual2Ds[i].squeeze(-1));
+            torch::Tensor modelPointsT=modelMarkTs[i].index_select(0,visdual3Ds[i].squeeze(-1));
+            torch::Tensor projectI = Projection(params[i], modelPointsT);
+            torch::Tensor errorI=imagePointsT-projectI;
+//             std::cout << errorI.sizes() << std::endl;
+            torch::Tensor esI=errorI.norm(2,1);
+            torch::Tensor meanI=esI.mean();
+            torch::Tensor stdvarI=esI.var().sqrt();
+
+            torch::Tensor maskI= esI.lt(meanI+0.5*stdvarI) ;
+            errorI=errorI.index_select(0,maskI.nonzero().squeeze(-1)).view({-1,1});//MiX2-->2MiX1
+//            std::cout << errorI.sizes() << std::endl;
+
+            torch::Tensor  filter2DIndexI=visdual2Ds[i].squeeze(-1).masked_select(maskI);
+            torch::Tensor  filter3DIndexI=visdual3Ds[i].squeeze(-1).masked_select(maskI);
+
+            torch::Tensor  SBXI=pSB.index_select(0,filter3DIndexI);//MiX3X199
+            SBXI=torch::matmul(Ri,SBXI).view({-1,L});//2X3 MiX3X199-->MiX2X199 --> 2MiX199
+//            std::cout << SBXI.sizes() << std::endl;
+            if(USEWEIGHT){
+                SBXI*=weightI;
+                errorI*=weightI;
             }
-            if (USEWEIGHT)
-            {
-                torch::Tensor W = torch::ones(2 * Ni);
-                for (size_t j = 0; j < SkipList.size(); j++)
-                {
-                    W[2 * SkipList[j] + 0] = WEIGHT;
-                    W[2 * SkipList[j] + 1] = WEIGHT;
-                }
-                SBXi =  torch::matmul(W.diag(), SBXi);
-                errori = torch::matmul( W.diag(), errori);
-            }
-            SBXi*=weighti/params[i].s;
-            errori*=weighti/params[i].s;
-            error.slice(0,rowIndexs[i],rowIndexs[i]+Ni*2)=errori;
-            SBX.slice(0,rowIndexs[i],rowIndexs[i]+Ni*2)=SBXi;
+            selectBasisV[i]=SBXI;
+            errorV[i]=errorI;
         }
+        torch::TensorList selectBasisL(selectBasisV.data(),selectBasisV.size());
+        torch::TensorList errorL(errorV.data(),errorV.size());
+        torch::Tensor SBX=torch::cat(selectBasisL,0);
+//        std::cout << SBX.sizes() << std::endl;
+        torch::Tensor error=torch::cat(errorL,0);
+//         std::cout << error.sizes() << std::endl;
+        return SolveLinear(SBX, error, lambda);
+    }
+    torch::Tensor SolveSelectShape(ProjectionTensor& p, torch::Tensor& landMark,torch::Tensor& visdual2D,torch::Tensor& modelMarkT,torch::Tensor& visdual3D, torch::Tensor SB, float lambda)
+    {
+        //cout << Shape(SB) << endl;
+        int L = SB.size(1);
+        torch::Tensor pSB=SB.view({-1,3,SB.size(1)});
+        torch::Tensor R = p.R.transpose(0,1)  * p.s;
+        R = R.slice(0,0,2);
+        torch::Tensor imagePoints=landMark.index_select(0,visdual2D.squeeze(-1));
+        torch::Tensor modelPoints=modelMarkT.index_select(0,visdual3D.squeeze(-1));
+        torch::Tensor project = Projection(p, modelPoints);
+        torch::Tensor error=imagePoints-project;
+        torch::Tensor es=error.norm(2,1);
+        torch::Tensor mean=es.mean();
+        torch::Tensor stdvar=es.var().sqrt();
+
+        torch::Tensor mask= es.lt(mean+0.5*stdvar) ;
+        error=error.index_select(0,mask.nonzero().squeeze(-1)).view({-1,1});//MX2-->2MX1
+
+        torch::Tensor  filter2DIndexI=visdual2D.squeeze(-1).masked_select(mask);
+        torch::Tensor  filter3DIndexI=visdual3D.squeeze(-1).masked_select(mask);
+
+        torch::Tensor  SBX=pSB.index_select(0,filter3DIndexI);//MX3X199
+        SBX=torch::matmul(R,SBX).view({-1,L});//2X3 MX3X199-->MX2X199 --> 2MX199
         return SolveLinear(SBX, error, lambda);
     }
     torch::Tensor SolveShape(ProjectionTensor& p, torch::Tensor& imagePoints, torch::Tensor M, torch::Tensor SB, float lambda)
@@ -246,7 +284,6 @@ public:
         //cout << Shape(SB) << endl;
         //        std::cout << p.R << endl;
         torch::Tensor R = p.R.transpose(0,1)  * p.s;
-        R = R.slice(1,0,2);
 
         torch::Tensor rotated = Projection(p, M);
 
@@ -261,10 +298,10 @@ public:
         auto sTx = p.tx * p.s;
         auto sTy = p.ty * p.s;
         torch::Tensor SBX=torch::zeros({N * 2, L});
-        torch::Tensor Rt = R.transpose(0,1);
+        R = R.slice(0,0,2);
         for (size_t i = 0; i < N; i++)
         {
-            SBX.slice(0,i * 2,i * 2+2) =torch::matmul( Rt , SB.slice(0,i * 3, i * 3+3));
+            SBX.slice(0,i * 2,i * 2+2) =torch::matmul( R , SB.slice(0,i * 3, i * 3+3));
         }
 
         if (USEWEIGHT)
@@ -530,6 +567,7 @@ inline cv::Mat MMSTexture(cv::Mat orig, MMTensorSolver &MMS, int W, int H, bool 
 
     auto TRI = MMS.FMFull.TRIUV;
     auto UV = MMS.FMFull.UV;
+    bool ignore=false;
     for (size_t t = 0; t < TRI.size(0); t++)
     {
 
@@ -545,10 +583,16 @@ inline cv::Mat MMSTexture(cv::Mat orig, MMTensorSolver &MMS, int W, int H, bool 
             auto v = (1 - UV[j][1].item().toFloat()) * (H - 1);
             t1.push_back(cv::Point2f(x, y));
             t2.push_back(cv::Point2f(u, v));
-
+            if(x>=orig.cols||x<0||y>=orig.rows||y<0){
+                ignore=true;
+                break;
+            }
             //cout << Point2f(x, y) << Point2f(u, v) << endl;
         }
-
+        if(ignore){
+            ignore=false;
+            continue;
+        }
         auto c = (t1[2] - t1[0]).cross(t1[1] - t1[0]);
 
         if ( c > 0)

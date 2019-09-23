@@ -121,25 +121,26 @@ int main(int argc, char *argv[])
     torch::Tensor shapeX;
     std::vector<torch::Tensor> blendShapeXs;
     std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,4);
-    int W = 512;
-    int H = 512;
-
-    torch::Tensor blendShapeX=blendShapeXs[0];
-    for(size_t j=1;j<images.size();j++){
-       blendShapeX+= blendShapeXs[j];
-    }
-
-    blendShapeX.div_((int64_t)images.size());
-    PyMMS.EX=blendShapeX;
-    PyMMS.SX=shapeX;
     string outfolder = "./output/";
     string filename = "TestObj";
-
     MakeDir(outfolder);
+    if(images.size()>1){
+        torch::Tensor blendShapeX=blendShapeXs[0];
+        for(size_t j=1;j<images.size();j++){
+           blendShapeX+= blendShapeXs[j];
+        }
+        blendShapeX.div_((int64_t)images.size());
+        PyMMS.EX=blendShapeX;
+        PyMMS.SX=shapeX;
+        cv::Mat texture=MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
+        MMSObjWithTexture(texture, PyMMS, outfolder, filename);
+    }else{
+        PyMMS.params=params[0];
+        PyMMS.EX=blendShapeXs[0];
+        PyMMS.SX=shapeX;
+        MMSObj(images[0], PyMMS, outfolder, filename);
+    }
 
-    cv::Mat texture=MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
-
-    MMSObjWithTexture(texture, PyMMS, outfolder, filename);
 
 //    testMul();
     return 0;

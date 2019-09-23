@@ -34,44 +34,37 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
                                    std::vector<torch::Tensor> &blendShapeXs,int iterNum)
 {
     int imageNum = static_cast<int>(landMarks.size());
-    //std::cout<<"imageNum:"<<imageNum<<std::endl;
     std::vector<ProjectionTensor> params;
-    std::vector<torch::Tensor> currentMeshes;
     params.reserve(imageNum);
     blendShapeXs.reserve(imageNum);
-    currentMeshes.reserve(imageNum);
-    float eLambdas[8] = { 100.0, 100.0, 50.0, 50.0 , 50.0 , 50.0 , 50.0 , 50.0 };
-    float Lambdas[8] = { 50.0, 100.0, 200.0, 300.0 , 400.0 , 500.0 , 600.0 , 700.0 };
+
+    float eLambdas[8] = { 10.0, 10.0, 8.0,8.0 , 6.0 ,6.0 , 4.0 ,4.0 };
+    float Lambdas[8] = {5.0, 5.0,10.0,10.0 ,15 , 15 , 20.0 , 20.0 };
     torch::Tensor modelMask=torch::ones((int64)landMarks[0].size(0),at::TensorOptions().dtype(torch::kByte));
     innerSelect(modelMask,contour);
     torch::Tensor allModelMask=modelMask.expand({imageNum,modelMask.size(0)}).contiguous();
     torch::Tensor fixModelMask=allModelMask.clone();
-
-    std::vector<float> angles(imageNum,0.0f);
+    shapeX=torch::zeros({PyMMS.FM.SB.size(1),1});
+    std::vector<float> yawAngles(imageNum,0.0f);
     std::vector<torch::Tensor> modelMarkTs;
     for(int i=0;i<imageNum;i++){
        torch::Tensor selectIds=modelMask.nonzero();
        torch::Tensor relia2D=landMarks[i].index_select(0,selectIds.squeeze(-1));
        torch::Tensor relia3D=PyMMS.FM.Face.index_select(0,selectIds.squeeze(-1));
 
-//       ProjectionTensor param=PyMMS.SolveProjection(relia2D,relia3D);
-       ProjectionTensor param=PyMMS.SolveProjection(landMarks[i],PyMMS.FM.Face);
+       ProjectionTensor param=PyMMS.SolveProjection(relia2D,relia3D);
+//       ProjectionTensor param=PyMMS.SolveProjection(landMarks[i],PyMMS.FM.Face);
        float yawRadian=glm::eulerAngles(GlmFunctions::RotationToQuat(param.R))[1];
-       auto yawAngle =glm::degrees(yawRadian);
+       yawAngles[i] =glm::degrees(yawRadian);
 
        params.emplace_back(param);
 
-       torch::Tensor currentEX=PyMMS.SolveShape(param,landMarks[i],PyMMS.FM.Face,PyMMS.FM.EB,20.0f);
+       torch::Tensor currentEX=PyMMS.SolveShape(param,landMarks[i],PyMMS.FM.Face,PyMMS.FM.EB,10.0f);
        blendShapeXs.emplace_back(currentEX);
-
        torch::Tensor FaceS =torch::matmul( PyMMS.FM.EB , currentEX);
-       torch::Tensor FaceFullS = torch::matmul(PyMMS.FMFull.EB , currentEX);
        torch::Tensor S=FaceS.view({-1,3});
-       torch::Tensor FullS=FaceFullS.view({-1,3});
        torch::Tensor currentModelPoint =PyMMS.FM.Face+S;
        modelMarkTs.emplace_back(currentModelPoint);
-       torch::Tensor currentMesh =PyMMS.FMFull.Face+FullS;
-       currentMeshes.emplace_back(currentMesh);
     }
 
     std::vector<torch::Tensor> visdual2Ds,visdual3Ds;
@@ -79,20 +72,14 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
     visdual3Ds.resize(imageNum);
 
     for(int iter=0;iter<iterNum;iter++){
-        std::vector<torch::Tensor> imageMarks;
-        std::vector<torch::Tensor> modelMarks;
-        imageMarks.resize(imageNum);
-        modelMarks.resize(imageNum);
         allModelMask=fixModelMask.clone();
-        #pragma omp parallel for
+        //#pragma omp parallel for
         for(int j=0;j<imageNum;j++){
             torch::Tensor innerIndices=allModelMask.select(0,j).nonzero();
-            angles[j]=glm::eulerAngles(GlmFunctions::RotationToQuat(params[j].R))[1];
-            auto yawAngle =glm::degrees(angles[j]);
-            std::cout<<"yawAngle:"<<yawAngle<<std::endl;
             torch::Tensor visual2DIndex;
             torch::Tensor visual3DIndex;
-            std::tie(visual2DIndex,visual3DIndex)=getContourCorrespondences(params[j],contour,modelMarkTs[j],landMarks[j],yawAngle);
+
+            std::tie(visual2DIndex,visual3DIndex)=getContourCorrespondences(params[j],contour,modelMarkTs[j],landMarks[j],yawAngles[j]);
             visual2DIndex=torch::cat({innerIndices.clone(),visual2DIndex},0);
             visual3DIndex=torch::cat({innerIndices.clone(),visual3DIndex},0);
 
@@ -101,27 +88,21 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
             torch::Tensor imagePointsT=landMarks[j].index_select(0,visual2DIndex.squeeze(-1));
             torch::Tensor modelPointsT=modelMarkTs[j].index_select(0,visual3DIndex.squeeze(-1));
 
-//            imageMarks.emplace_back(imagePointsT);
-//            modelMarks.emplace_back(modelPointsT);
-            imageMarks[j]=imagePointsT;
-            modelMarks[j]=modelPointsT;
             ProjectionTensor param=PyMMS.SolveProjection(imagePointsT,modelPointsT);
             params[j]=param;
         }
-
-        shapeX=PyMMS.SolveMultiShape(params,imageMarks,modelMarks,angles,PyMMS.FM.SB,Lambdas[iter]);
+        shapeX=PyMMS.SolveMultiShape(params,landMarks,visdual2Ds,modelMarkTs,visdual3Ds,yawAngles,PyMMS.FM.SB,Lambdas[iter%8]);
+        torch::Tensor FaceS = torch::matmul(PyMMS.FM.SB , shapeX);
+        torch::Tensor S=FaceS.view({-1,3});
+        torch::Tensor currentModelPoint =PyMMS.FM.Face+S;
         #pragma omp parallel for
         for(int j=0;j<imageNum;j++)
         {
-            torch::Tensor FaceS = torch::matmul(PyMMS.FM.SB , shapeX);
-            torch::Tensor FaceFullS =torch::matmul( PyMMS.FMFull.SB , shapeX);
-            torch::Tensor S=FaceS.view({-1,3});
-            torch::Tensor FullS=FaceFullS.view({-1,3});
-            torch::Tensor currentModelPoint =PyMMS.FM.Face+S;
             modelMarkTs[j]=(currentModelPoint);
-            torch::Tensor currentMesh =PyMMS.FMFull.Face+FullS;
-            torch::Tensor modelPointsT=modelMarkTs[j].index_select(0,visdual3Ds[j].squeeze(-1));
-            blendShapeXs[j]=PyMMS.SolveShape(params[j],imageMarks[j],modelPointsT,PyMMS.FM.EB,eLambdas[iter]);
+            blendShapeXs[j]=PyMMS.SolveSelectShape(params[j],landMarks[j],visdual2Ds[j],modelMarkTs[j],visdual3Ds[j],PyMMS.FM.EB,eLambdas[iter%8]);
+            torch::Tensor FaceES = torch::matmul(PyMMS.FM.EB , blendShapeXs[j]);
+            torch::Tensor ES=FaceES.view({-1,3});
+//            modelMarkTs[j]=currentModelPoint+ES;
             //if(iter%2==0){
 //                string name=std::to_string(j);
 //                PyMMS.params=params[j];
@@ -132,9 +113,9 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
 //                cv::imshow(name,m);
 //                cv::waitKey();
             //}
-
         }
     }
+
     return params;
 }
 
