@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
         blendShapeX.div_((int64_t)images.size());
         PyMMS.EX=blendShapeX;
         PyMMS.SX=shapeX;
-        cv::Mat texture=MultiFitting::render(images,params,shapeX,blendShapeXs,contour,PyMMS,5.0f);
+        cv::Mat texture=MultiFitting::render(images,params,shapeX,blendShapeX,blendShapeXs,contour,PyMMS,5.0f);
         MMSObjWithTexture(texture, PyMMS, outfolder, filename);
     }else{
         PyMMS.params=params[0];

@@ -156,7 +156,7 @@ public:
     }
 
 
-    void Generate(torch::Tensor SX, torch::Tensor EX)
+    torch::Tensor Generate(torch::Tensor SX, torch::Tensor EX)
     {
         torch::Tensor FaceS = torch::matmul(SB , SX);
         torch::Tensor S = FaceS.view({-1,3});
@@ -164,7 +164,9 @@ public:
         torch::Tensor FaceE = torch::matmul(EB , EX);
         torch::Tensor E = FaceE.view({-1, 3});
 
-        GeneratedFace =  std::move(Face + S + E);
+        torch::Tensor result=  Face + S + E;
+        GeneratedFace=result.clone();
+        return std::move(result);
     }
 };
 
@@ -435,8 +437,8 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMTensorSolver &MMS,const torch::Tensor &KP
     auto imagePoints=KP.clone();
     torch::Tensor projected = Projection(params, MMS.FMFull.GeneratedFace);
     if(flip){
-        imagePoints.select(1,1)=orig.rows-imagePoints.select(1,1);
-        projected.select(1,1)=orig.rows-projected.select(1,1);
+        imagePoints.select(1,1)=orig.rows-1-imagePoints.select(1,1);
+        projected.select(1,1)=orig.rows-1-projected.select(1,1);
     }
     auto image = orig.clone();
     auto image2 = orig.clone();
@@ -562,7 +564,7 @@ inline cv::Mat MMSTexture(cv::Mat orig, MMTensorSolver &MMS, int W, int H, bool 
     MMS.FMFull.Generate(MMS.SX, MMS.EX);
     torch::Tensor projected = Projection(params, MMS.FMFull.GeneratedFace);
     if(flip){
-        projected.select(1,1)=orig.rows-projected.select(1,1);
+        projected.select(1,1)=orig.rows-1-projected.select(1,1);
     }
 
     auto TRI = MMS.FMFull.TRIUV;

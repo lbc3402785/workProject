@@ -16,9 +16,10 @@ public:
                                 std::vector<torch::Tensor> &blendShapeXs,int iterNum=4);
     static std::tuple<torch::Tensor, torch::Tensor> getContourCorrespondences(ProjectionTensor& param,ContourLandmarks& contour,torch::Tensor &modelMarkT,torch::Tensor& landMarkT,float& yawAngle);
 
-    static cv::Mat render(std::vector<cv::Mat>& images,std::vector<ProjectionTensor>& params,torch::Tensor &shapeX,std::vector<torch::Tensor> &blendShapeXs,ContourLandmarks &contour,MMTensorSolver& PyMMS,float offset=5.0f);
+    static cv::Mat render(std::vector<cv::Mat>& images,std::vector<ProjectionTensor>& params,torch::Tensor &shapeX,torch::Tensor &blendShapeX,std::vector<torch::Tensor> &blendShapeXs,ContourLandmarks &contour,MMTensorSolver& PyMMS,float offset=5.0f);
 private:
-    static cv::Mat merge(std::vector<cv::Mat>& images,std::vector<torch::Tensor> projecteds,std::vector<torch::Tensor>& weightTs,MMTensorSolver& PyMMS,int H,int W);
+    static cv::Mat merge(std::vector<cv::Mat> &images,std::vector<torch::Tensor> projecteds, std::vector<torch::Tensor> &weightTs,MMTensorSolver& PyMMS,int H,int W);
+    static cv::Mat merge2(std::vector<cv::Mat> &images,std::vector<torch::Tensor> projecteds,std::vector<torch::Tensor>& weightTs,MMTensorSolver& PyMMS,int H,int W);
     static void selectContour(ContourLandmarks& contour,float& yawAngle,torch::Tensor &modelContourMask,float frontalRangeThreshold = 7.5f);
     static std::tuple<torch::Tensor, torch::Tensor> getNearestContourCorrespondences(ProjectionTensor& param,torch::Tensor &modelMarkT,torch::Tensor &landMarkT,torch::Tensor &modelContourMask);
     static void innerSelect(torch::Tensor modelMask,ContourLandmarks& contour);
