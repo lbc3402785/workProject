@@ -1,26 +1,20 @@
 #pragma once
 
-#include"cnpy.h"
+
 #include<iostream>
 #include<string>
-
-
-
 #include <Eigen/Dense>
-#include "EigenUtil.h"
-
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/opencv.hpp>
 #include <torch/torch.h>
-using namespace std;
-using namespace Eigen;
+
+#include"cnpy.h"
+
 using namespace cnpy;
 
-typedef Eigen::Matrix<float, Dynamic, Dynamic, RowMajor> MatF;
-typedef Eigen::Matrix<int, Dynamic, Dynamic, RowMajor> MatI;
-typedef Eigen::Matrix<float, Dynamic, Dynamic, ColMajor> MatFC;
-typedef Eigen::Matrix<int, Dynamic, Dynamic, ColMajor> MatIC;
+typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> MatF;
+typedef Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> MatI;
+typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> MatFC;
+typedef Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> MatIC;
 inline torch::Tensor ToTensor(NpyArray &np)
 {
     if (np.data_holder == nullptr)
@@ -32,7 +26,7 @@ inline torch::Tensor ToTensor(NpyArray &np)
     auto L = np.shape.size();
     if (L > 2)
     {
-        cout << "Error" << endl;
+        std::cout << "Error" << std::endl;
     }
 
     if (L == 1)
@@ -56,7 +50,7 @@ inline torch::Tensor ToTensor(std::vector<cv::Point> imagePoints)
 
         return std::move(b);
 }
-inline Map<MatF> ToEigen(NpyArray &np)
+inline Eigen::Map<MatF> ToEigen(NpyArray &np)
 {
 	if (np.data_holder == nullptr)
 	{
@@ -67,16 +61,16 @@ inline Map<MatF> ToEigen(NpyArray &np)
 	auto L = np.shape.size();
 	if (L > 2)
 	{
-		cout << "Error" << endl;
+        std::cout << "Error" << std::endl;
 	}
 
 	if (L == 1)
 	{
-		return Map<MatF>(np.data<float>(), shape[0], 1);
+        return Eigen::Map<MatF>(np.data<float>(), shape[0], 1);
 	}
 	else
 	{
-		return Map<MatF>(np.data<float>(), shape[0], shape[1]);
+        return Eigen::Map<MatF>(np.data<float>(), shape[0], shape[1]);
 	}
 }
 inline MatF ToEigen(std::vector<cv::Point> image_points)
@@ -103,16 +97,16 @@ inline MatF ToEigenC(NpyArray &np)
 	auto L = np.shape.size();
 	if (L > 2)
 	{
-		cout << "Error" << endl;
+        std::cout << "Error" << std::endl;
 	}
 
 	if (L == 1)
 	{
-		return Map<MatFC>(np.data<float>(), shape[0], 1);
+        return Eigen::Map<MatFC>(np.data<float>(), shape[0], 1);
 	}
 	else
 	{
-		return Map<MatFC>(np.data<float>(), shape[0], shape[1]);
+        return Eigen::Map<MatFC>(np.data<float>(), shape[0], shape[1]);
 	}
 }
 
@@ -127,7 +121,7 @@ inline torch::Tensor ToTensorInt(NpyArray &np)
     auto L = np.shape.size();
     if (L > 2)
     {
-        cout << "Error" << endl;
+        std::cout << "Error" << std::endl;
     }
 
     if (L == 1)
@@ -139,7 +133,7 @@ inline torch::Tensor ToTensorInt(NpyArray &np)
         return std::move(torch::from_blob(np.data<int>(), {(int64_t)shape[0], (int64_t)shape[1]},at::TensorOptions().dtype(torch::kInt)).clone());
     }
 }
-inline Map<MatI> ToEigenInt(NpyArray &np)
+inline Eigen::Map<MatI> ToEigenInt(NpyArray &np)
 {
 	if (np.data_holder == nullptr)
 	{
@@ -150,20 +144,20 @@ inline Map<MatI> ToEigenInt(NpyArray &np)
 	auto L = np.shape.size();
 	if (L > 2)
 	{
-		cout << "Error" << endl;
+        std::cout << "Error" << std::endl;
 	}
 
 	if (L == 1)
 	{
-		return Map<MatI>(np.data<int>(), shape[0], 1);
+        return Eigen::Map<MatI>(np.data<int>(), shape[0], 1);
 	}
 	else
 	{
-		return Map<MatI>(np.data<int>(), shape[0], shape[1]);
+        return Eigen::Map<MatI>(np.data<int>(), shape[0], shape[1]);
 	}
 }
 
-inline MatF Slice(MatF A, vector<int> indexes)
+inline MatF Slice(MatF A, std::vector<int> indexes)
 {
 
 	MatF Y = MatF::Zero(indexes.size() * 3, A.cols());
@@ -178,13 +172,13 @@ inline MatF Slice(MatF A, vector<int> indexes)
 	return Y;
 }
 
-inline vector<int> ToVector(MatI &mat)
+inline std::vector<int> ToVector(MatI &mat)
 {
-	vector<int> vec(mat.data(), mat.data() + mat.size());
+    std::vector<int> vec(mat.data(), mat.data() + mat.size());
 	return vec;
 }
 
-inline Map<MatF> Reshape(MatF &vec, int cols)
+inline Eigen::Map<MatF> Reshape(MatF &vec, int cols)
 {
-	return Map<MatF>((float*)vec.data(), Eigen::Index(vec.size() / cols), Eigen::Index(cols));
+    return Eigen::Map<MatF>((float*)vec.data(), Eigen::Index(vec.size() / cols), Eigen::Index(cols));
 }

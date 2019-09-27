@@ -13,26 +13,26 @@ TorchFunctions::TorchFunctions()
  * @param theta 3x1
  * @return      3x3
  */
-at::Tensor TorchFunctions::rodrigues(at::Tensor &theta)
+at::Tensor TorchFunctions::rodrigues(at::Tensor theta)
 {
     assert(theta.dim()==2);
     assert(theta.sizes() == torch::IntList({3,1}));
     torch::Tensor angle=theta.norm(2,0);//1
-    float f=angle.data<float>()[0];
+    float f=angle.item().toFloat();
     if(f<1e-6){
-        return std::move(torch::eye(3));
+        return std::move(torch::eye(3,theta.type()));
     }
 
     torch::Tensor normalized=torch::div(theta,angle);//3x1
     torch::Tensor nxs=normalized[0];//1
     torch::Tensor nys=normalized[1];//1
     torch::Tensor nzs=normalized[2];//1
-    torch::Tensor stick=torch::zeros(1);//1
+    torch::Tensor stick=torch::zeros(1,theta.type());//1
     torch::Tensor lr=torch::stack({stick,-nzs,nys,
                                   nzs,stick,-nxs,
                                   -nys,nxs,stick},1);//1x9
     torch::Tensor k=torch::reshape(lr,{3,3});//3x3
-    torch::Tensor I=torch::eye(3);
+    torch::Tensor I=torch::eye(3,theta.type());
     torch::Tensor dot=torch::matmul(normalized,normalized.t());
     torch::Tensor cos=torch::cos(angle);//1
     torch::Tensor sin=torch::sin(angle);//1

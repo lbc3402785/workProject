@@ -22,8 +22,8 @@ void testMul()
 
 void InitMMS(std::string fmkp, std::string fmfull)
 {
-    cout << fmkp << endl;
-    cout << fmfull << endl;
+    std::cout << fmkp << std::endl;
+    std::cout << fmfull << std::endl;
     PyMMS.Initialize(fmkp, fmfull);
 }
 void readfolder(boost::filesystem::path& imageDir,std::vector<std::string>& result) {
@@ -52,7 +52,7 @@ bool KeypointDetectgion(cv::Mat image, torch::Tensor &KP)
 
     if (keypoints.size() <= 0)
     {
-        std::cout << "NO POINTS" << endl;
+        std::cout << "NO POINTS" << std::endl;
         return false;
     }
     KP = ToTensor(keypoints[0]) * (1.0 / S);
@@ -116,24 +116,22 @@ int main(int argc, char *argv[])
         std::cout<<"no avaliable image!";
         exit(EXIT_FAILURE);
     }
-
-
     torch::Tensor shapeX;
+    torch::Tensor blendShapeX;
     std::vector<torch::Tensor> blendShapeXs;
-    std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeXs,4);
+    std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeX,blendShapeXs,2);
+    std::cout<<"fitShapeAndPose done!"<<std::endl;
     string outfolder = "./output/";
     string filename = "TestObj";
     MakeDir(outfolder);
     if(images.size()>1){
-        torch::Tensor blendShapeX=blendShapeXs[0];
-        for(size_t j=1;j<images.size();j++){
-           blendShapeX+= blendShapeXs[j];
-        }
-        blendShapeX.div_((int64_t)images.size());
         PyMMS.EX=blendShapeX;
         PyMMS.SX=shapeX;
+        std::cout<<"begin render ..."<<std::endl;
         cv::Mat texture=MultiFitting::render(images,params,shapeX,blendShapeX,blendShapeXs,contour,PyMMS,5.0f);
+         std::cout<<"render done!"<<std::endl;
         MMSObjWithTexture(texture, PyMMS, outfolder, filename);
+        std::cout<<"MMSObjWithTexture done!"<<std::endl;
     }else{
         PyMMS.params=params[0];
         PyMMS.EX=blendShapeXs[0];

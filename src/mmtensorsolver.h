@@ -231,7 +231,7 @@ public:
             torch::Tensor meanI=esI.mean();
             torch::Tensor stdvarI=esI.var().sqrt();
 
-            torch::Tensor maskI= esI.lt(meanI+0.5*stdvarI) ;
+            torch::Tensor maskI= esI.lt(meanI+0.1*stdvarI) ;
             errorI=errorI.index_select(0,maskI.nonzero().squeeze(-1)).view({-1,1});//MiX2-->2MiX1
 //            std::cout << errorI.sizes() << std::endl;
 
@@ -267,6 +267,7 @@ public:
         torch::Tensor modelPoints=modelMarkT.index_select(0,visdual3D.squeeze(-1));
         torch::Tensor project = Projection(p, modelPoints);
         torch::Tensor error=imagePoints-project;
+        //std::cout<<"error:"<<error<<std::endl;
         torch::Tensor es=error.norm(2,1);
         torch::Tensor mean=es.mean();
         torch::Tensor stdvar=es.var().sqrt();
@@ -498,7 +499,7 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMTensorSolver &MMS,const torch::Tensor &KP
 
 
 // Apply affine transform calculated using srcTri and dstTri to src
-inline void applyAffineTransform(cv::Mat &warpImage, cv::Mat &src, vector<cv::Point2f> &srcTri, vector<cv::Point2f> &dstTri)
+inline void applyAffineTransform(cv::Mat &warpImage, cv::Mat &src, std::vector<cv::Point2f> &srcTri, std::vector<cv::Point2f> &dstTri)
 {
     // Given a pair of triangles, find the affine transform.
     cv::Mat warpMat = getAffineTransform(srcTri, dstTri);
@@ -509,7 +510,7 @@ inline void applyAffineTransform(cv::Mat &warpImage, cv::Mat &src, vector<cv::Po
 
 
 // Warps and alpha blends triangular regions from img1 and img2 to img
-inline void warpTriangle(cv::Mat &img1, cv::Mat &img2, vector<cv::Point2f> &t1, vector<cv::Point2f> &t2)
+inline void warpTriangle(cv::Mat &img1, cv::Mat &img2, std::vector<cv::Point2f> &t1, std::vector<cv::Point2f> &t2)
 {
     try
     {
@@ -518,8 +519,8 @@ inline void warpTriangle(cv::Mat &img1, cv::Mat &img2, vector<cv::Point2f> &t1, 
 
         //cout << r1 << r2 << endl;
         // Offset points by left top corner of the respective rectangles
-        vector<cv::Point2f> t1Rect, t2Rect;
-        vector<cv::Point> t2RectInt;
+        std::vector<cv::Point2f> t1Rect, t2Rect;
+        std::vector<cv::Point> t2RectInt;
         for (int i = 0; i < 3; i++)
         {
 
@@ -573,8 +574,8 @@ inline cv::Mat MMSTexture(cv::Mat orig, MMTensorSolver &MMS, int W, int H, bool 
     for (size_t t = 0; t < TRI.size(0); t++)
     {
 
-        vector<cv::Point2f> t1;
-        vector<cv::Point2f> t2;
+        std::vector<cv::Point2f> t1;
+        std::vector<cv::Point2f> t2;
         for (size_t i = 0; i < 3; i++)
         {
             int j = TRI[t][i].item().toInt();
@@ -622,8 +623,8 @@ inline cv::Mat MMSNormal(cv::Mat orig, MMTensorSolver &MMS, int W, int H)
     for (size_t t = 0; t < TRI.size(0); t++)
     {
 
-        vector<cv::Point3f> t1;
-        vector<cv::Point> t2;
+        std::vector<cv::Point3f> t1;
+        std::vector<cv::Point> t2;
         for (size_t i = 0; i < 3; i++)
         {
             int j = TRI[t][i].item().toInt();
@@ -672,7 +673,7 @@ inline void FMObj(cv::Mat texture, FaceModelTensor &FM, string folder, string fi
     //Mat texture = MMSTexture(orig, MMS, 1024, 1024);
     imwrite(filename + ".png", texture);
 
-    //cout << Shape(MMS.SX) << Shape(MMS.EX) << endl;
+    //cout << Shape(MMS.SX) << Shape(MMS.EX) << std::endl;
     auto Face = FM.GeneratedFace;
     auto TRI = FM.TRI;
     auto TRIUV = FM.TRIUV;
@@ -688,23 +689,23 @@ inline void FMObj(cv::Mat texture, FaceModelTensor &FM, string folder, string fi
         std::stringstream ss;
 
 
-        ss << "mtllib " << filename0 << ".mtl" << endl;
-        ss << "o FaceObject" << endl;
+        ss << "mtllib " << filename0 << ".mtl" << std::endl;
+        ss << "o FaceObject" << std::endl;
 
         int N = Face.size(0);
         for (size_t i = 0; i < N; i++)
         {
-            ss << "v " << Face[i][0].item().toFloat() << " " << Face[i][1].item().toFloat() << " " << Face[i][2].item().toFloat() << endl;
+            ss << "v " << Face[i][0].item().toFloat() << " " << Face[i][1].item().toFloat() << " " << Face[i][2].item().toFloat() << std::endl;
         }
 
         N = UV.size(0);
         for (size_t i = 0; i < N; i++)
         {
-            ss << "vt " << UV[i][0].item().toFloat() << " " << UV[i][1].item().toFloat() << endl;
+            ss << "vt " << UV[i][0].item().toFloat() << " " << UV[i][1].item().toFloat() << std::endl;
         }
 
-        ss << "usemtl material_0" << endl;
-        ss << "s 1" << endl;
+        ss << "usemtl material_0" << std::endl;
+        ss << "s 1" << std::endl;
 
         N = TRI.size(0);
         for (size_t i = 0; i < N; i++)
@@ -712,7 +713,7 @@ inline void FMObj(cv::Mat texture, FaceModelTensor &FM, string folder, string fi
             ss << "f " << TRI[i][0].item().toInt()  + 1 << "/" << TRIUV[i][0].item().toInt() + 1 << " "
                << TRI[i][1].item().toInt()  + 1 << "/" << TRIUV[i][1].item().toInt() + 1 << " "
                << TRI[i][2].item().toInt()  + 1 << "/" << TRIUV[i][2].item().toInt() + 1 << " "
-               << endl;
+               << std::endl;
         }
 
 
@@ -727,19 +728,19 @@ inline void FMObj(cv::Mat texture, FaceModelTensor &FM, string folder, string fi
         std::stringstream ss;
 
 
-        ss << "mtllib " << filename0 << ".mtl" << endl;
-        ss << "o FaceObject" << endl;
+        ss << "mtllib " << filename0 << ".mtl" << std::endl;
+        ss << "o FaceObject" << std::endl;
 
-        ss << "newmtl material_0" << endl;
-        ss << "	Ns 0.000000" << endl;
-        ss << "Ka 0.200000 0.200000 0.200000" << endl;
-        ss << "Kd 0.639216 0.639216 0.639216" << endl;
-        ss << "Ks 1.000000 1.000000 1.000000" << endl;
-        ss << "Ke 0.000000 0.000000 0.000000" << endl;
-        ss << "Ni 1.000000" << endl;
-        ss << "d 1.000000" << endl;
-        ss << "illum 2" << endl;
-        ss << "map_Kd " << filename0 + ".png" << endl;
+        ss << "newmtl material_0" << std::endl;
+        ss << "	Ns 0.000000" << std::endl;
+        ss << "Ka 0.200000 0.200000 0.200000" << std::endl;
+        ss << "Kd 0.639216 0.639216 0.639216" << std::endl;
+        ss << "Ks 1.000000 1.000000 1.000000" << std::endl;
+        ss << "Ke 0.000000 0.000000 0.000000" << std::endl;
+        ss << "Ni 1.000000" << std::endl;
+        ss << "d 1.000000" << std::endl;
+        ss << "illum 2" << std::endl;
+        ss << "map_Kd " << filename0 + ".png" << std::endl;
 
 
 
@@ -775,18 +776,18 @@ inline void MMSObjWithTexture(cv::Mat texture , MMTensorSolver &MMS, string fold
         std::stringstream ss;
 
 
-        ss << "mtllib " << filename0 << ".mtl" << endl;
-        ss << "o FaceObject" << endl;
+        ss << "mtllib " << filename0 << ".mtl" << std::endl;
+        ss << "o FaceObject" << std::endl;
 
         int N = Face.size(0);
         for (size_t i = 0; i < N; i++)
         {
-            ss << "v " << Face[i][0].item().toFloat() << " " << Face[i][1].item().toFloat() << " " << Face[i][2].item().toFloat() << endl;
-            ss << "vt " << UV[i][0].item().toFloat()<< " " << UV[i][1].item().toFloat() << endl;
+            ss << "v " << Face[i][0].item().toFloat() << " " << Face[i][1].item().toFloat() << " " << Face[i][2].item().toFloat() << std::endl;
+            ss << "vt " << UV[i][0].item().toFloat()<< " " << UV[i][1].item().toFloat() << std::endl;
         }
 
-        ss << "usemtl material_0" << endl;
-        ss << "s 1" << endl;
+        ss << "usemtl material_0" << std::endl;
+        ss << "s 1" << std::endl;
 
         N = TRI.size(0);
         for (size_t i = 0; i < N; i++)
@@ -794,7 +795,7 @@ inline void MMSObjWithTexture(cv::Mat texture , MMTensorSolver &MMS, string fold
             ss << "f " << TRI[i][0].item().toInt() + 1 << "/" << TRIUV[i][0].item().toInt()  + 1 << " "
                << TRI[i][1].item().toInt() + 1 << "/" << TRIUV[i][1].item().toInt()  + 1 << " "
                << TRI[i][2].item().toInt() + 1 << "/" << TRIUV[i][2].item().toInt()  + 1 << " "
-               << endl;
+               << std::endl;
         }
 
 
@@ -809,19 +810,19 @@ inline void MMSObjWithTexture(cv::Mat texture , MMTensorSolver &MMS, string fold
         std::stringstream ss;
 
 
-        ss << "mtllib " << filename0 << ".mtl" << endl;
-        ss << "o FaceObject" << endl;
+        ss << "mtllib " << filename0 << ".mtl" << std::endl;
+        ss << "o FaceObject" << std::endl;
 
-        ss << "newmtl material_0" << endl;
-        ss << "	Ns 0.000000" << endl;
-        ss << "Ka 0.200000 0.200000 0.200000" << endl;
-        ss << "Kd 0.639216 0.639216 0.639216" << endl;
-        ss << "Ks 1.000000 1.000000 1.000000" << endl;
-        ss << "Ke 0.000000 0.000000 0.000000" << endl;
-        ss << "Ni 1.000000" << endl;
-        ss << "d 1.000000" << endl;
-        ss << "illum 2" << endl;
-        ss << "map_Kd " << filename0 + ".png" << endl;
+        ss << "newmtl material_0" << std::endl;
+        ss << "	Ns 0.000000" << std::endl;
+        ss << "Ka 0.200000 0.200000 0.200000" << std::endl;
+        ss << "Kd 0.639216 0.639216 0.639216" << std::endl;
+        ss << "Ks 1.000000 1.000000 1.000000" << std::endl;
+        ss << "Ke 0.000000 0.000000 0.000000" << std::endl;
+        ss << "Ni 1.000000" << std::endl;
+        ss << "d 1.000000" << std::endl;
+        ss << "illum 2" << std::endl;
+        ss << "map_Kd " << filename0 + ".png" << std::endl;
 
 
 
@@ -858,18 +859,18 @@ inline void MMSObj(cv::Mat orig, MMTensorSolver &MMS, string folder, string file
         std::stringstream ss;
 
 
-        ss << "mtllib " << filename0 << ".mtl" << endl;
-        ss << "o FaceObject" << endl;
+        ss << "mtllib " << filename0 << ".mtl" << std::endl;
+        ss << "o FaceObject" << std::endl;
 
         int N = Face.size(0);
         for (size_t i = 0; i < N; i++)
         {
-            ss << "v " << Face[i][0].item().toFloat() << " " << Face[i][1].item().toFloat() << " " << Face[i][2].item().toFloat() << endl;
-            ss << "vt " << UV[i][0].item().toFloat()<< " " << UV[i][1].item().toFloat() << endl;
+            ss << "v " << Face[i][0].item().toFloat() << " " << Face[i][1].item().toFloat() << " " << Face[i][2].item().toFloat() << std::endl;
+            ss << "vt " << UV[i][0].item().toFloat()<< " " << UV[i][1].item().toFloat() << std::endl;
         }
 
-        ss << "usemtl material_0" << endl;
-        ss << "s 1" << endl;
+        ss << "usemtl material_0" << std::endl;
+        ss << "s 1" << std::endl;
 
         N = TRI.size(0);
         for (size_t i = 0; i < N; i++)
@@ -877,7 +878,7 @@ inline void MMSObj(cv::Mat orig, MMTensorSolver &MMS, string folder, string file
             ss << "f " << TRI[i][0].item().toInt() + 1 << "/" << TRIUV[i][0].item().toInt()  + 1 << " "
                << TRI[i][1].item().toInt() + 1 << "/" << TRIUV[i][1].item().toInt()  + 1 << " "
                << TRI[i][2].item().toInt() + 1 << "/" << TRIUV[i][2].item().toInt()  + 1 << " "
-               << endl;
+               << std::endl;
         }
 
 
@@ -892,19 +893,19 @@ inline void MMSObj(cv::Mat orig, MMTensorSolver &MMS, string folder, string file
         std::stringstream ss;
 
 
-        ss << "mtllib " << filename0 << ".mtl" << endl;
-        ss << "o FaceObject" << endl;
+        ss << "mtllib " << filename0 << ".mtl" << std::endl;
+        ss << "o FaceObject" << std::endl;
 
-        ss << "newmtl material_0" << endl;
-        ss << "	Ns 0.000000" << endl;
-        ss << "Ka 0.200000 0.200000 0.200000" << endl;
-        ss << "Kd 0.639216 0.639216 0.639216" << endl;
-        ss << "Ks 1.000000 1.000000 1.000000" << endl;
-        ss << "Ke 0.000000 0.000000 0.000000" << endl;
-        ss << "Ni 1.000000" << endl;
-        ss << "d 1.000000" << endl;
-        ss << "illum 2" << endl;
-        ss << "map_Kd " << filename0 + ".png" << endl;
+        ss << "newmtl material_0" << std::endl;
+        ss << "	Ns 0.000000" << std::endl;
+        ss << "Ka 0.200000 0.200000 0.200000" << std::endl;
+        ss << "Kd 0.639216 0.639216 0.639216" << std::endl;
+        ss << "Ks 1.000000 1.000000 1.000000" << std::endl;
+        ss << "Ke 0.000000 0.000000 0.000000" << std::endl;
+        ss << "Ni 1.000000" << std::endl;
+        ss << "d 1.000000" << std::endl;
+        ss << "illum 2" << std::endl;
+        ss << "map_Kd " << filename0 + ".png" << std::endl;
 
 
 

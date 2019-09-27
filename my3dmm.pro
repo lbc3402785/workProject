@@ -2,6 +2,7 @@ QT -= gui
 
 CONFIG += c++14 console
 CONFIG -= app_bundle
+DEFINES += QT_DEPRECATED_WARNINGS GLOG_NO_ABBREVIATED_SEVERITIES GLM_FORCE_UNRESTRICTED_GENTYPE
 QMAKE_CXXFLAGS+=/openmp
 OBJECTS_DIR=$${PWD}/build
 TORCH_LIBRARY_DIRS=D:\soft\libtorch\lib
@@ -19,7 +20,7 @@ FLANN_INCLUDE_DIRS=D:\soft\flann-1.8.4-src\src\cpp
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 
-DEFINES += QT_DEPRECATED_WARNINGS
+
 INCLUDEPATH+=D:\soft\boost_1_69_0 \
                 D:\soft\opencv3\build\include \
                 $$(DLIB_ROOT)\include \
@@ -32,7 +33,15 @@ INCLUDEPATH+=$$CUDA_INCLUDE_DIRS
 INCLUDEPATH+=$$TORCH_INCLUDE_DIRS
 INCLUDEPATH+=$$TORCH_INCLUDE_DIRS\torch\csrc\api\include
 INCLUDEPATH+=D:\soft\glm
-message($$INCLUDEPATH)
+
+INCLUDEPATH+="C:\Program Files (x86)\Ceres\include" \
+                 "C:\Program Files (x86)\glog\include" \
+                 "C:\Program Files (x86)\gflags\include"
+
+LIBS+=-L"C:\Program Files (x86)\Ceres\lib" -lceres
+LIBS+=-L"C:\Program Files (x86)\glog\lib" -lglog
+LIBS+=-L"C:\Program Files (x86)\gflags\lib" -lgflags
+
 
 QMAKE_CFLAGS_DEBUG += -MD
 
@@ -69,6 +78,7 @@ SOURCES += \
         glmfunctions.cpp \
         main.cpp \
         multifitting.cpp \
+        priorcostcallback.cpp \
         src/Dlib.cpp \
         src/cnpy.cpp
 
@@ -78,6 +88,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    ceresnonlinear.hpp \
     common/dataconvertor.h \
     common/eigenfunctions.h \
     common/knnsearch.h \
@@ -87,6 +98,7 @@ HEADERS += \
     facemorph.h \
     glmfunctions.h \
     multifitting.h \
+    priorcostcallback.h \
     src/Dlib.h \
     src/EigenUtil.h \
     src/NumpyUtil.h \

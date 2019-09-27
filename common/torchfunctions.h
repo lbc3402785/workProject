@@ -6,7 +6,7 @@ class TorchFunctions
 {
 public:
     TorchFunctions();
-    static torch::Tensor rodrigues(torch::Tensor& theta);
+    static torch::Tensor rodrigues(torch::Tensor theta);
    static torch::Tensor batchRodrigues(torch::Tensor& thetas);
     static torch::Tensor unRodrigues(torch::Tensor& R);
     static void saveObj(std::string name,torch::Tensor m,torch::Tensor state);
