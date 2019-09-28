@@ -63,6 +63,8 @@ public:
     torch::Tensor R;
     float tx,ty;
     float s;
+    float centerX,centerY;
+    float height;
 };
 /**
  * @brief Projection
@@ -82,7 +84,14 @@ inline torch::Tensor Projection(ProjectionTensor p, torch::Tensor model_points)
 
     rotated.select(1,0)+= sTx;
     rotated.select(1,1)+= sTy;
-
+    return std::move(rotated);
+}
+inline torch::Tensor ProjectionCenter(ProjectionTensor p, torch::Tensor model_points)
+{
+    torch::Tensor rotated=Projection(p,model_points);
+    rotated.select(1,0)+= p.centerX;
+    rotated.select(1,1)+= p.centerY;
+    rotated.select(1,1)= p.height-rotated.select(1,1);
     return std::move(rotated);
 }
 inline torch::Tensor Rotation(ProjectionTensor p, torch::Tensor model_points)
@@ -218,15 +227,23 @@ public:
         torch::Tensor pSB=SB.view({-1,3,SB.size(1)});
         //#pragma omp parallel for
         for(int i=0;i<imageNum;i++)
-        {
+        {   
             float weightI=std::abs(std::cos(angles[i]));
             torch::Tensor Ri = params[i].R.transpose(0,1)  * params[i].s;
             Ri=Ri.slice(0,0,2);//2X3
             torch::Tensor imagePointsT=landMarks[i].index_select(0,visdual2Ds[i].squeeze(-1));
+            //*****************
+            float centerX=params[i].centerX;
+            float centerY=params[i].centerY;
+            float height=params[i].height;
+            imagePointsT.select(1,1)=  height-imagePointsT.select(1,1);
+            imagePointsT.select(1,0)-=centerX;
+            imagePointsT.select(1,1)-=centerY;
+            //*****************
             torch::Tensor modelPointsT=modelMarkTs[i].index_select(0,visdual3Ds[i].squeeze(-1));
             torch::Tensor projectI = Projection(params[i], modelPointsT);
             torch::Tensor errorI=imagePointsT-projectI;
-//             std::cout << errorI.sizes() << std::endl;
+
             torch::Tensor esI=errorI.norm(2,1);
             torch::Tensor meanI=esI.mean();
             torch::Tensor stdvarI=esI.var().sqrt();
@@ -264,6 +281,14 @@ public:
         torch::Tensor R = p.R.transpose(0,1)  * p.s;
         R = R.slice(0,0,2);
         torch::Tensor imagePoints=landMark.index_select(0,visdual2D.squeeze(-1));
+        //*****************
+        float centerX=p.centerX;
+        float centerY=p.centerY;
+        float height=p.height;
+        imagePoints.select(1,1)=  height-imagePoints.select(1,1);
+        imagePoints.select(1,0)-=centerX;
+        imagePoints.select(1,1)-=centerY;
+        //*****************
         torch::Tensor modelPoints=modelMarkT.index_select(0,visdual3D.squeeze(-1));
         torch::Tensor project = Projection(p, modelPoints);
         torch::Tensor error=imagePoints-project;
@@ -282,13 +307,18 @@ public:
         SBX=torch::matmul(R,SBX).view({-1,L});//2X3 MX3X199-->MX2X199 --> 2MX199
         return SolveLinear(SBX, error, lambda);
     }
-    torch::Tensor SolveShape(ProjectionTensor& p, torch::Tensor& imagePoints, torch::Tensor M, torch::Tensor SB, float lambda)
+    torch::Tensor SolveShape(ProjectionTensor& p, torch::Tensor& imagePoints, torch::Tensor M, torch::Tensor SB, float lambda,bool center=false)
     {
         //cout << Shape(SB) << endl;
         //        std::cout << p.R << endl;
         torch::Tensor R = p.R.transpose(0,1)  * p.s;
-
-        torch::Tensor rotated = Projection(p, M);
+        torch::Tensor rotated ;
+        if(center){
+           rotated=ProjectionCenter(p,M);
+        }
+        else{
+           rotated = Projection(p, M);
+        }
 
         torch::Tensor error = imagePoints - rotated;
         error = error.view({-1, 1});
@@ -320,14 +350,25 @@ public:
         }
         return SolveLinear(SBX, error, lambda);
     }
-
+    ProjectionTensor SolveProjectionCenter(torch::Tensor& imagePoints, torch::Tensor& modelPoints,int rows,int cols){
+        torch::Tensor landMark=imagePoints.clone();
+        float centerX=cols%2==0?cols/2:cols/2+0.5;
+        float centerY=rows%2==0?rows/2:rows/2+0.5;
+        float height=rows;
+        landMark.select(1,1)=  height-landMark.select(1,1);
+        landMark.select(1,0)-=centerX;
+        landMark.select(1,1)-=centerY;
+        ProjectionTensor param=SolveProjection(landMark,modelPoints);
+        param.centerX=centerX;
+        param.centerY=centerY;
+        param.height=height;
+        return std::move(param);
+    }
     ProjectionTensor SolveProjection(torch::Tensor& imagePoints, torch::Tensor& modelPoints)
     {
         //########## Mean should be subtracted from model_points ############
         int N = imagePoints.size(0);
-
         torch::Tensor vmodelPoints=torch::cat({modelPoints,torch::ones({modelPoints.size(0),1})},1);
-
         torch::Tensor A = torch::zeros({(int64_t)2 * N, (int64_t)8});
         for (int i = 0; i < N; ++i)
         {
@@ -369,14 +410,13 @@ public:
 
         //sTx += Mean(0);
         //sTy += Mean(1);
-
         const auto s = (R1.norm(2,1).item().toFloat() + R2.norm(2,1).item().toFloat()) / 2.0f;
 
         torch::Tensor R_ortho = Orthogonalize(R);
         // Remove the scale from the translations:
         const auto t1 = sTx / s /*- T(0)*/;
         const auto t2 = sTy / s/* - T(1)*/;
-        return std::move(ProjectionTensor{ std::move(R_ortho), t1, t2, s });
+        return std::move(ProjectionTensor{ std::move(R_ortho), t1, t2, s,0.0,0.0,0.0});
     }
 
     torch::Tensor SX;
@@ -430,17 +470,12 @@ public:
     }
 };
 
-inline cv::Mat MMSDraw(cv::Mat orig, MMTensorSolver &MMS,const torch::Tensor &KP,bool flip=true)
+inline cv::Mat MMSDraw(cv::Mat orig, MMTensorSolver &MMS,const torch::Tensor &KP)
 {
-
     auto params = MMS.params;
     MMS.FMFull.Generate(MMS.SX, MMS.EX);
     auto imagePoints=KP.clone();
-    torch::Tensor projected = Projection(params, MMS.FMFull.GeneratedFace);
-    if(flip){
-        imagePoints.select(1,1)=orig.rows-1-imagePoints.select(1,1);
-        projected.select(1,1)=orig.rows-1-projected.select(1,1);
-    }
+    torch::Tensor projected = ProjectionCenter(params, MMS.FMFull.GeneratedFace);
     auto image = orig.clone();
     auto image2 = orig.clone();
 
@@ -462,10 +497,7 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMTensorSolver &MMS,const torch::Tensor &KP
     }
 
     MMS.FM.Generate(MMS.SX, MMS.EX);
-    projected = Projection(params, MMS.FM.GeneratedFace);
-    if(flip){
-        projected.select(1,1)=orig.rows-projected.select(1,1);
-    }
+    projected = ProjectionCenter(params, MMS.FM.GeneratedFace);
     for (size_t i = 0; i < projected.size(0); i++)
     {
         auto x = projected[i][0].item().toFloat();
@@ -556,18 +588,14 @@ inline void warpTriangle(cv::Mat &img1, cv::Mat &img2, std::vector<cv::Point2f> 
 }
 
 
-inline cv::Mat MMSTexture(cv::Mat orig, MMTensorSolver &MMS, int W, int H, bool doubleface = false,bool flip=true)
+inline cv::Mat MMSTexture(cv::Mat orig, MMTensorSolver &MMS, int W, int H)
 {
     auto image = orig.clone();
     cv::Mat texture = cv::Mat::zeros(H, W, CV_8UC3);
 
     auto params = MMS.params;
     MMS.FMFull.Generate(MMS.SX, MMS.EX);
-    torch::Tensor projected = Projection(params, MMS.FMFull.GeneratedFace);
-    if(flip){
-        projected.select(1,1)=orig.rows-1-projected.select(1,1);
-    }
-
+    torch::Tensor projected = ProjectionCenter(params, MMS.FMFull.GeneratedFace);
     auto TRI = MMS.FMFull.TRIUV;
     auto UV = MMS.FMFull.UV;
     bool ignore=false;

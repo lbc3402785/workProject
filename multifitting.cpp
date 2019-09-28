@@ -51,12 +51,13 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
        torch::Tensor selectIds=modelMask.nonzero();
        torch::Tensor relia2D=landMarks[i].index_select(0,selectIds.squeeze(-1));
        torch::Tensor relia3D=PyMMS.FM.Face.index_select(0,selectIds.squeeze(-1));
-       ProjectionTensor param=PyMMS.SolveProjection(relia2D,relia3D);
+       ProjectionTensor param=PyMMS.SolveProjectionCenter(relia2D,relia3D,images[i].rows,images[i].cols);
 //       ProjectionTensor param=PyMMS.SolveProjection(landMarks[i],PyMMS.FM.Face);
        float yawRadian=glm::eulerAngles(GlmFunctions::RotationToQuat(param.R))[1];
        yawAngles[i] =glm::degrees(yawRadian);
        params.emplace_back(param);
-       torch::Tensor currentEX=PyMMS.SolveShape(param,landMarks[i],PyMMS.FM.Face,PyMMS.FM.EB,10.0f);
+       std::cout<<"yawAngles[i]:"<<yawAngles[i]<<std::endl;
+       torch::Tensor currentEX=PyMMS.SolveShape(param,landMarks[i],PyMMS.FM.Face,PyMMS.FM.EB,10.0f,true);
        blendShapeXs.emplace_back(currentEX);
        torch::Tensor FaceS =torch::matmul( PyMMS.FM.EB , currentEX);
        torch::Tensor S=FaceS.view({-1,3});
@@ -71,6 +72,7 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
     for(int j=0;j<imageNum;j++){
         modelMarks[j]=currentModelPoint;
     }
+    PyMMS.USEWEIGHT=false;
     blendShapeX=PyMMS.SolveMultiShape(params,landMarks,visdual2Ds,modelMarks,visdual3Ds,yawAngles,PyMMS.FM.EB,5.0);
 
 //    blendShapeX=blendShapeXs[0];
@@ -78,7 +80,7 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
 //       blendShapeX+= blendShapeXs[j];
 //    }
 //    blendShapeX.div_((int64_t)images.size());
-    fitShapeAndPoseNonlinear(params,PyMMS,landMarks,visdual2Ds,visdual3Ds,yawAngles,shapeX,blendShapeX,iterNum);
+    //fitShapeAndPoseNonlinear(params,PyMMS,landMarks,visdual2Ds,visdual3Ds,yawAngles,shapeX,blendShapeX,iterNum);
     return params;
 }
 
@@ -106,9 +108,10 @@ std::tuple<std::vector<torch::Tensor>,std::vector<torch::Tensor>> MultiFitting::
             visdual3Ds[j]=visual3DIndex;
             torch::Tensor imagePointsT=landMarks[j].index_select(0,visual2DIndex.squeeze(-1));
             torch::Tensor modelPointsT=modelMarks[j].index_select(0,visual3DIndex.squeeze(-1));
-            ProjectionTensor param=PyMMS.SolveProjection(imagePointsT,modelPointsT);
+            ProjectionTensor param=PyMMS.SolveProjectionCenter(imagePointsT,modelPointsT,images[j].rows,images[j].cols);
             params[j]=param;
         }
+        PyMMS.USEWEIGHT=true;
         shapeX=PyMMS.SolveMultiShape(params,landMarks,visdual2Ds,modelMarks,visdual3Ds,yawAngles,PyMMS.FM.SB,Lambdas[iter%8]);
         torch::Tensor FaceS = torch::matmul(PyMMS.FM.SB , shapeX);
         torch::Tensor S=FaceS.view({-1,3});
@@ -122,14 +125,17 @@ std::tuple<std::vector<torch::Tensor>,std::vector<torch::Tensor>> MultiFitting::
             torch::Tensor ES=FaceES.view({-1,3});
             modelMarks[j]=currentModelPoint+ES;
             if(iter%2==0){
-//                string name=std::to_string(j);
-//                PyMMS.params=params[j];
-//                PyMMS.EX=blendShapeXs[j];
-//                PyMMS.SX=shapeX;
-//                cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
-                //cv::imwrite(name+".jpg",m);
-//                cv::imshow(name,m);
-//                cv::waitKey();
+                string name=std::to_string(j);
+                PyMMS.params=params[j];
+                PyMMS.EX=blendShapeXs[j];
+                PyMMS.SX=shapeX;
+                PyMMS.params.centerX=images[j].cols%2==0?images[j].cols/2:images[j].cols/2+0.5;
+                PyMMS.params.centerY=images[j].rows%2==0?images[j].rows/2:images[j].rows/2+0.5;
+                PyMMS.params.height=images[j].rows;
+                cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
+                cv::imwrite(name+".jpg",m);
+                cv::imshow(name,m);
+                cv::waitKey();
             }
         }
     }
@@ -357,8 +363,7 @@ cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<Projection
     for(int j=0;j<imageNum;j++){
         glm::tvec3<float> euler=glm::eulerAngles(GlmFunctions::RotationToQuat(params[j].R));
         yawAngles[j]=glm::degrees(euler.y);    
-        torch::Tensor projected = Projection(params[j], model);
-        projected.select(1,1)=images[j].rows-1-projected.select(1,1);
+        torch::Tensor projected = ProjectionCenter(params[j], model);
         projecteds[j]=projected;
     }
     std::vector<at::Tensor> weightTs=computeTextureWeights(imageNum,frontModel,frontNormals,yawAngles,axisMetrics,PyMMS);
@@ -490,7 +495,7 @@ void MultiFitting::selectContour(ContourLandmarks &contour, float &yawAngle,torc
 std::tuple<torch::Tensor, torch::Tensor> MultiFitting::getNearestContourCorrespondences(ProjectionTensor &param, torch::Tensor &modelMarkT,torch::Tensor &landMarkT, at::Tensor &modelContourMask)
 {
    at::Tensor indexes=modelContourMask.nonzero();
-   torch::Tensor projected=Projection(param,modelMarkT);
+   torch::Tensor projected=ProjectionCenter(param,modelMarkT);
    torch::Tensor corIndex=torch::zeros({indexes.size(0),1},torch::dtype(torch::kLong));
    for(int i=0;i<indexes.size(0);i++){
        long long index=indexes[i].item().toLong();

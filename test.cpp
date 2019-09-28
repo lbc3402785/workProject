@@ -65,7 +65,7 @@ bool KeypointDetectgion(cv::Mat image, torch::Tensor &KP,std::string pts="")
     return readNpyKeyPonts(pts,KP);
 }
 
-std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::vector<cv::Mat>& images,std::vector<torch::Tensor>& landMarks,bool flip=true)
+std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::vector<cv::Mat>& images,std::vector<torch::Tensor>& landMarks)
 {
     std::vector<std::string> outputImages;
     for(const auto& imageFile:imageFiles){
@@ -76,9 +76,6 @@ std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::ve
         bool success = KeypointDetectgion(image, KP,pts);
         if(success){
             images.emplace_back(image);
-            if(flip){
-                KP.select(1,1)=image.rows-KP.select(1,1);
-            }
             landMarks.emplace_back(KP);
             outputImages.push_back(imageFile);
         }
@@ -114,7 +111,6 @@ void Test::testCeres(std::string modelPath, std::string imagePath)
         std::cout<<"no avaliable image!";
         exit(EXIT_FAILURE);
     }
-     std::cout<<"image size:"<<landMarks.size()<<std::endl;
     torch::Tensor shapeX;
     torch::Tensor blendShapeX;
     std::vector<torch::Tensor> blendShapeXs;
