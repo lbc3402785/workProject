@@ -216,7 +216,7 @@ public:
         std::vector<torch::Tensor> errorV;
         errorV.resize(imageNum);
         torch::Tensor pSB=SB.view({-1,3,SB.size(1)});
-        #pragma omp parallel for
+        //#pragma omp parallel for
         for(int i=0;i<imageNum;i++)
         {
             float weightI=std::abs(std::cos(angles[i]));
@@ -332,7 +332,7 @@ public:
         for (int i = 0; i < N; ++i)
         {
             torch::Tensor P = vmodelPoints.select(0,i);// .transpose();//Eigen::Vector4f();
-            A[2*i].slice(0,0,4) = P;       // even row - copy to left side (first row is row 0)
+            A[2*i].slice(0,0,4) =  P;       // even row - copy to left side (first row is row 0)
             A[2*i+1].slice(0,4,8) = P; // odd row - copy to right side
         } // 4th coord (homogeneous) is already 1
 

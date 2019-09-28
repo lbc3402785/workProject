@@ -10,6 +10,7 @@
 #include "common/knnsearch.h"
 #include "ceresnonlinear.hpp"
 #include "facemorph.h"
+#include "priorcostcallback.h"
 template <class T>
 inline auto concat(const std::vector<T>& vec_a, const std::vector<T>& vec_b)
 {
@@ -63,24 +64,33 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
        modelMarks.emplace_back(currentModelPoint);
     }
     std::vector<torch::Tensor> visdual2Ds,visdual3Ds;
-    std::tie(visdual2Ds,visdual3Ds)=fitShapeAndPoseLinear(params,contour,allModelMask,PyMMS,landMarks,modelMarks,yawAngles,shapeX,blendShapeXs,iterNum);
-    blendShapeX=blendShapeXs[0];
-    for(size_t j=1;j<images.size();j++){
-       blendShapeX+= blendShapeXs[j];
+    std::tie(visdual2Ds,visdual3Ds)=fitShapeAndPoseLinear(images,params,contour,allModelMask,PyMMS,landMarks,modelMarks,yawAngles,shapeX,blendShapeXs,iterNum);
+    torch::Tensor FaceS = torch::matmul(PyMMS.FM.SB , shapeX);
+    torch::Tensor S=FaceS.view({-1,3});
+    torch::Tensor currentModelPoint =PyMMS.FM.Face+S;
+    for(int j=0;j<imageNum;j++){
+        modelMarks[j]=currentModelPoint;
     }
-    blendShapeX.div_((int64_t)images.size());
+    blendShapeX=PyMMS.SolveMultiShape(params,landMarks,visdual2Ds,modelMarks,visdual3Ds,yawAngles,PyMMS.FM.EB,5.0);
+
+//    blendShapeX=blendShapeXs[0];
+//    for(size_t j=1;j<images.size();j++){
+//       blendShapeX+= blendShapeXs[j];
+//    }
+//    blendShapeX.div_((int64_t)images.size());
     fitShapeAndPoseNonlinear(params,PyMMS,landMarks,visdual2Ds,visdual3Ds,yawAngles,shapeX,blendShapeX,iterNum);
     return params;
 }
 
-std::tuple<std::vector<torch::Tensor>,std::vector<torch::Tensor>> MultiFitting::fitShapeAndPoseLinear(std::vector<ProjectionTensor>& params,ContourLandmarks& contour,torch::Tensor &allModelMask,MMTensorSolver& PyMMS,std::vector<torch::Tensor>& landMarks,
+std::tuple<std::vector<torch::Tensor>,std::vector<torch::Tensor>> MultiFitting::fitShapeAndPoseLinear(std::vector<cv::Mat> &images,std::vector<ProjectionTensor>& params,ContourLandmarks& contour,torch::Tensor &allModelMask,MMTensorSolver& PyMMS,std::vector<torch::Tensor>& landMarks,
                                                                                                       std::vector<torch::Tensor>& modelMarks,std::vector<float>& yawAngles,torch::Tensor &shapeX,std::vector<torch::Tensor> &blendShapeXs,int iterNum)
 {
     int imageNum = static_cast<int>(landMarks.size());
+    std::cout<<"image size:"<<imageNum<<std::endl;
     std::vector<torch::Tensor> visdual2Ds,visdual3Ds;
     visdual2Ds.resize(imageNum);
     visdual3Ds.resize(imageNum);
-    float eLambdas[8] = { 10.0, 10.0, 8.0,8.0 , 6.0 ,6.0 , 4.0 ,4.0 };
+    float eLambdas[8] = { 25.0, 25.0, 15.0,15.0 , 10.0 ,10.0 , 8.0 ,8.0 };
     float Lambdas[8] = {10.0, 10.0,15.0,15.0 ,20 , 20 ,25.0 , 25.0 };
     for(int iter=0;iter<iterNum;iter++){
         //#pragma omp parallel for
@@ -107,21 +117,20 @@ std::tuple<std::vector<torch::Tensor>,std::vector<torch::Tensor>> MultiFitting::
         for(int j=0;j<imageNum;j++)
         {
             modelMarks[j]=(currentModelPoint);
-            if(j>0)continue;
             blendShapeXs[j]=PyMMS.SolveSelectShape(params[j],landMarks[j],visdual2Ds[j],modelMarks[j],visdual3Ds[j],PyMMS.FM.EB,eLambdas[iter%8]);
             torch::Tensor FaceES = torch::matmul(PyMMS.FM.EB , blendShapeXs[j]);
             torch::Tensor ES=FaceES.view({-1,3});
-            //modelMarks[j]=currentModelPoint+ES;
-            //if(iter%2==0){
+            modelMarks[j]=currentModelPoint+ES;
+            if(iter%2==0){
 //                string name=std::to_string(j);
 //                PyMMS.params=params[j];
 //                PyMMS.EX=blendShapeXs[j];
 //                PyMMS.SX=shapeX;
 //                cv::Mat m=MMSDraw(images[j],PyMMS,landMarks[j]);
-//                cv::imwrite(name+".jpg",m);
+                //cv::imwrite(name+".jpg",m);
 //                cv::imshow(name,m);
 //                cv::waitKey();
-            //}
+            }
         }
     }
 
@@ -141,8 +150,7 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
         torch::Tensor camera=torch::cat({axis,t}).squeeze(-1).toType(torch::kDouble);
         cameras[i]=camera;
     }
-//    std::cout<<"params[0].R:"<<params[0].R<<std::endl;
-//    std::cout<<"blendShapeX.sizes():"<<blendShapeX.sizes()<<std::endl;
+
     at::Tensor oldShapeX=shapeX.clone();
     at::Tensor tmpShapeX=shapeX.clone().toType(torch::kDouble);
     at::Tensor tmpBlendShapeX=blendShapeX.clone().toType(torch::kDouble);
@@ -151,8 +159,7 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
     parameters[0]=cameras.data<double>();
     parameters[1]=tmpShapeX.data<double>();
     parameters[2]=tmpBlendShapeX.data<double>();
-    // std::cout<<"before tmpShapeX:"<<std::endl;
-    // std::cout<<tmpShapeX<<std::endl;
+
     for(int i=0;i<imageNum;i++){
         for(int j=0;j<visdual2Ds[i].size(0);j++){
             long long observedId=visdual2Ds[i][j].item().toLong();
@@ -162,11 +169,11 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
              costFunction->AddParameterBlock(numOfShapeCoef);
              costFunction->AddParameterBlock(numOfBlendShapeCoef);
              costFunction->SetNumResiduals(2);
-             fittingCostfunction.AddResidualBlock(costFunction,NULL,parameters);
+             fittingCostfunction.AddResidualBlock(costFunction, new ceres::CauchyLoss(0.5),parameters);
         }
     }
     // Shape prior:
-    fitting::PriorCost *shapePrior=new fitting::PriorCost(numOfShapeCoef, 10.0);
+    fitting::PriorCost *shapePrior=new fitting::PriorCost(numOfShapeCoef, 8.0);
     ceres::CostFunction* shapePriorCost =
             new ceres::AutoDiffCostFunction<fitting::PriorCost, 199 /* num residuals */,
             199 /* shape-coeffs */>(
@@ -184,7 +191,7 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
     solverOptions.linear_solver_type = ceres::DENSE_QR;
     solverOptions.num_threads = 1;
     solverOptions.max_num_iterations=200;
-
+    solverOptions.callbacks.push_back(new PriorCostCallBack(shapePrior));
     solverOptions.minimizer_progress_to_stdout = true;
     ceres::Solver::Summary solverSummary;
     Solve(solverOptions, &fittingCostfunction, &solverSummary);
@@ -283,7 +290,7 @@ std::vector<torch::Tensor> computeTextureWeights(size_t imageNum,torch::Tensor& 
     torch::Tensor cosNormalToLeftAxiss=cosNormalToZs*cosLeftZs+sinNormalToZs*sinLeftZs;
     torch::Tensor maxLefts=torch::max(cosPosToLeftAxiss,cosNormalToLeftAxiss);
     maxLefts=maxLefts*maxLefts.gt(0).toType(torch::kFloat);
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int j=0;j<imageNum;j++)
     {
 
@@ -346,7 +353,7 @@ cv::Mat MultiFitting::render(std::vector<cv::Mat>& images,std::vector<Projection
     projecteds.resize(imageNum);
     yawAngles.resize(imageNum);
     torch::Tensor model=PyMMS.FMFull.Generate(shapeX, blendShapeX);
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int j=0;j<imageNum;j++){
         glm::tvec3<float> euler=glm::eulerAngles(GlmFunctions::RotationToQuat(params[j].R));
         yawAngles[j]=glm::degrees(euler.y);    
@@ -398,7 +405,7 @@ cv::Mat MultiFitting::merge(std::vector<cv::Mat> &images,std::vector<torch::Tens
     torch::TensorList tv(triProjecteds.data(),triProjecteds.size());
     torch::Tensor ts=torch::stack(tv,1);//tximageNumx3x2
 //    std::cout<<"ts.sizes():"<<ts.sizes()<<std::endl;
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int t = 0; t < TRI.size(0); t++)
     {
         torch::Tensor srcTris=ts[t];
@@ -431,7 +438,7 @@ cv::Mat MultiFitting::merge2(std::vector<cv::Mat> &images,std::vector<torch::Ten
     }
     at::Tensor triUVs=UV.index_select(0,TRIUV.toType(torch::kLong).view(-1)).view({-1,3,2});//tx3x2
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int t = 0; t < TRI.size(0); t++)
     {
         std::vector<cv::Point2f> dstTri;

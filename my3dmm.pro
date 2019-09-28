@@ -80,7 +80,8 @@ SOURCES += \
         multifitting.cpp \
         priorcostcallback.cpp \
         src/Dlib.cpp \
-        src/cnpy.cpp
+        src/cnpy.cpp \
+        test.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -105,4 +106,5 @@ HEADERS += \
     src/Poisson.h \
     src/cnpy.h \
     src/mmtensorsolver.h \
-    src/stdafx.h
+    src/stdafx.h \
+    test.h

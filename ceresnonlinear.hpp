@@ -89,13 +89,13 @@ bool MultiLandmarkCost::operator()(T const* const* parameters,T *residuals) cons
     double proY=(pro[1].item().toDouble()+ty)*scale;
     double difX=proX-double(observed[0].item().toFloat());
     double difY=proY-double(observed[1].item().toFloat());
-    if(std::abs(difX)>10.0||std::abs(difY)>10.0){
-        residuals[0]=T(0);
-        residuals[1]=T(0);
-    }else{
+//    if(std::abs(difX)>10.0||std::abs(difY)>10.0){
+//        residuals[0]=T(0);
+//        residuals[1]=T(0);
+//    }else{
         residuals[0]=T(difX);
         residuals[1]=T(difY);
-    }
+//    }
 //    residuals[0]=T(proX-double(observed[0].item().toFloat()));
 //    residuals[1]=T(proY-double(observed[1].item().toFloat()));
     return true;
