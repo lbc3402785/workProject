@@ -52,6 +52,8 @@ public:
     MultiLandmarkCost(FaceModelTensor& keyFace,FaceModelTensor& fullFace,torch::Tensor observed,int viewIndex,int vertexId,int stride):keyFace(keyFace),fullFace(fullFace),observed(observed),viewIndex(viewIndex),vertexId(vertexId),stride(stride){};
     template <typename T>
     bool operator()(T const* const* parameters, T* residuals)const;
+    double centerX,centerY;
+    double height;
 private:
     FaceModelTensor keyFace;
     FaceModelTensor fullFace;
@@ -59,6 +61,7 @@ private:
     int viewIndex;
     int vertexId;
     int stride;
+
 };
 template<typename T>
 bool MultiLandmarkCost::operator()(T const* const* parameters,T *residuals) const
@@ -85,8 +88,9 @@ bool MultiLandmarkCost::operator()(T const* const* parameters,T *residuals) cons
     torch::Tensor R=TorchFunctions::rodrigues(axis.unsqueeze(-1));
 //    std::cout<<"R:"<<R<<std::endl;
     torch::Tensor pro=torch::matmul(R,keyPoint);//3
-    double proX=(pro[0].item().toDouble()+tx)*scale;
-    double proY=(pro[1].item().toDouble()+ty)*scale;
+    double proX=(pro[0].item().toDouble()+tx)*scale+centerX;
+    proX=height-proX;
+    double proY=(pro[1].item().toDouble()+ty)*scale+centerY;
     double difX=proX-double(observed[0].item().toFloat());
     double difY=proY-double(observed[1].item().toFloat());
 //    if(std::abs(difX)>10.0||std::abs(difY)>10.0){

@@ -80,20 +80,22 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
 //       blendShapeX+= blendShapeXs[j];
 //    }
 //    blendShapeX.div_((int64_t)images.size());
-    //fitShapeAndPoseNonlinear(params,PyMMS,landMarks,visdual2Ds,visdual3Ds,yawAngles,shapeX,blendShapeX,iterNum);
+    fitShapeAndPoseNonlinear(params,PyMMS,landMarks,visdual2Ds,visdual3Ds,yawAngles,shapeX,blendShapeX,iterNum);
     return params;
 }
 
 std::tuple<std::vector<torch::Tensor>,std::vector<torch::Tensor>> MultiFitting::fitShapeAndPoseLinear(std::vector<cv::Mat> &images,std::vector<ProjectionTensor>& params,ContourLandmarks& contour,torch::Tensor &allModelMask,MMTensorSolver& PyMMS,std::vector<torch::Tensor>& landMarks,
-                                                                                                      std::vector<torch::Tensor>& modelMarks,std::vector<float>& yawAngles,torch::Tensor &shapeX,std::vector<torch::Tensor> &blendShapeXs,int iterNum)
+                                                                                                      std::vector<torch::Tensor>& modelMarks,std::vector<float>& yawAngles,torch::Tensor &shapeX,std::vector<torch::Tensor> &blendShapeXs,int iterNum,bool show)
 {
     int imageNum = static_cast<int>(landMarks.size());
     std::cout<<"image size:"<<imageNum<<std::endl;
     std::vector<torch::Tensor> visdual2Ds,visdual3Ds;
     visdual2Ds.resize(imageNum);
     visdual3Ds.resize(imageNum);
-    float eLambdas[8] = { 25.0, 25.0, 15.0,15.0 , 10.0 ,10.0 , 8.0 ,8.0 };
-    float Lambdas[8] = {10.0, 10.0,15.0,15.0 ,20 , 20 ,25.0 , 25.0 };
+//    float eLambdas[8] = { 25.0, 25.0, 15.0,15.0 , 10.0 ,10.0 , 8.0 ,8.0 };
+//    float Lambdas[8] = {10.0, 10.0,15.0,15.0 ,20 , 20 ,25.0 , 25.0 };
+    float eLambdas[8] = { 10.0, 10.0, 8.0,8.0 , 6.0 ,6.0 , 4.0 ,4.0 };
+    float Lambdas[8] = {5.0, 5.0,10.0,10.0 ,15 , 15 , 20.0 , 20.0 };
     for(int iter=0;iter<iterNum;iter++){
         //#pragma omp parallel for
         for(int j=0;j<imageNum;j++){
@@ -124,7 +126,7 @@ std::tuple<std::vector<torch::Tensor>,std::vector<torch::Tensor>> MultiFitting::
             torch::Tensor FaceES = torch::matmul(PyMMS.FM.EB , blendShapeXs[j]);
             torch::Tensor ES=FaceES.view({-1,3});
             modelMarks[j]=currentModelPoint+ES;
-            if(iter%2==0){
+            if(show&&iter%2==0){
                 string name=std::to_string(j);
                 PyMMS.params=params[j];
                 PyMMS.EX=blendShapeXs[j];
@@ -148,7 +150,8 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
     int imageNum = static_cast<int>(landMarks.size());
     int numOfShapeCoef=PyMMS.FM.SB.size(1);
     int numOfBlendShapeCoef=PyMMS.FM.EB.size(1);
-    torch::Tensor cameras=torch::zeros({imageNum,6},torch::TensorOptions().dtype(torch::kDouble));
+    int numOfCameraParam=6;
+    torch::Tensor cameras=torch::zeros({imageNum,numOfCameraParam},torch::TensorOptions().dtype(torch::kDouble));
     for(int i=0;i<imageNum;i++){
         torch::Tensor axis=TorchFunctions::unRodrigues(params[i].R);
         torch::Tensor t=torch::zeros({3,1});
@@ -170,7 +173,11 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
         for(int j=0;j<visdual2Ds[i].size(0);j++){
             long long observedId=visdual2Ds[i][j].item().toLong();
             long long vertexId=visdual3Ds[i][j].item().toLong();
-             ceres::DynamicAutoDiffCostFunction<fitting::MultiLandmarkCost,4>* costFunction=new ceres::DynamicAutoDiffCostFunction<fitting::MultiLandmarkCost,4>(new fitting::MultiLandmarkCost(PyMMS.FM,PyMMS.FMFull,landMarks[i][observedId],i,vertexId,4));
+            fitting::MultiLandmarkCost* cost=new fitting::MultiLandmarkCost(PyMMS.FM,PyMMS.FMFull,landMarks[i][observedId],i,vertexId,4);
+            cost->centerX=params[i].centerX;
+            cost->centerY=params[i].centerY;
+            cost->height=params[i].height;
+             ceres::DynamicAutoDiffCostFunction<fitting::MultiLandmarkCost,4>* costFunction=new ceres::DynamicAutoDiffCostFunction<fitting::MultiLandmarkCost,4>(cost);
              costFunction->AddParameterBlock(6*imageNum);
              costFunction->AddParameterBlock(numOfShapeCoef);
              costFunction->AddParameterBlock(numOfBlendShapeCoef);
