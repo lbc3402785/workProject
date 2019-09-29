@@ -47,23 +47,23 @@ bool readNpyKeyPonts(std::string filename,torch::Tensor& KP)
 }
 bool KeypointDetectgion(cv::Mat image, torch::Tensor &KP,std::string pts="")
 {
-    std::vector<std::vector<cv::Point>> keypoints;
-    double S = 0.5;
-    cv::Mat simage;
-    cv::resize(image, simage, cv::Size(), S, S);
+//    std::vector<std::vector<cv::Point>> keypoints;
+//    double S = 0.5;
+//    cv::Mat simage;
+//    cv::resize(image, simage, cv::Size(), S, S);
 
-    std::vector<cv::Rect> rectangles;
-    DlibInit(dir_path + "shape_predictor_68_face_landmarks.dat");
-    if(!DlibFace(simage, rectangles, keypoints))return false;
+//    std::vector<cv::Rect> rectangles;
+//    DlibInit(dir_path + "shape_predictor_68_face_landmarks.dat");
+//    if(!DlibFace(simage, rectangles, keypoints))return false;
 
-    if (keypoints.size() <= 0)
-    {
-        std::cout << "NO POINTS" << std::endl;
-        return false;
-    }
-    KP = ToTensor(keypoints[0]) * (1.0 / S);
-    return true;
-    //return readNpyKeyPonts(pts,KP);
+//    if (keypoints.size() <= 0)
+//    {
+//        std::cout << "NO POINTS" << std::endl;
+//        return false;
+//    }
+//    KP = ToTensor(keypoints[0]) * (1.0 / S);
+//    return true;
+    return readNpyKeyPonts(pts,KP);
 }
 
 std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::vector<cv::Mat>& images,std::vector<torch::Tensor>& landMarks)
