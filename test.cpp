@@ -39,6 +39,9 @@ bool readNpyKeyPonts(std::string filename,torch::Tensor& KP)
     try {
         NpyArray npy=cnpy::npy_load(filename);
         KP=ToTensor(npy);
+        KP[61][1]=KP[67][1]=(KP[61][1]+KP[67][1])/2;
+        KP[62][1]=KP[66][1]=(KP[62][1]+KP[66][1])/2;
+        KP[63][1]=KP[65][1]=(KP[63][1]+KP[65][1])/2;
         return true;
     } catch (std::exception&e) {
         std::cout<<e.what()<<std::endl;
@@ -47,23 +50,23 @@ bool readNpyKeyPonts(std::string filename,torch::Tensor& KP)
 }
 bool KeypointDetectgion(cv::Mat image, torch::Tensor &KP,std::string pts="")
 {
-    std::vector<std::vector<cv::Point>> keypoints;
-    double S = 0.5;
-    cv::Mat simage;
-    cv::resize(image, simage, cv::Size(), S, S);
+//    std::vector<std::vector<cv::Point>> keypoints;
+//    double S = 0.5;
+//    cv::Mat simage;
+//    cv::resize(image, simage, cv::Size(), S, S);
 
-    std::vector<cv::Rect> rectangles;
-    DlibInit(dir_path + "shape_predictor_68_face_landmarks.dat");
-    if(!DlibFace(simage, rectangles, keypoints))return false;
+//    std::vector<cv::Rect> rectangles;
+//    DlibInit(dir_path + "shape_predictor_68_face_landmarks.dat");
+//    if(!DlibFace(simage, rectangles, keypoints))return false;
 
-    if (keypoints.size() <= 0)
-    {
-        std::cout << "NO POINTS" << std::endl;
-        return false;
-    }
-    KP = ToTensor(keypoints[0]) * (1.0 / S);
-    return true;
-    //return readNpyKeyPonts(pts,KP);
+//    if (keypoints.size() <= 0)
+//    {
+//        std::cout << "NO POINTS" << std::endl;
+//        return false;
+//    }
+//    KP = ToTensor(keypoints[0]) * (1.0 / S);
+//    return true;
+    return readNpyKeyPonts(pts,KP);
 }
 
 std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::vector<cv::Mat>& images,std::vector<torch::Tensor>& landMarks)
@@ -115,7 +118,7 @@ void Test::testCeres(std::string modelPath, std::string imagePath)
     torch::Tensor shapeX;
     torch::Tensor blendShapeX;
     std::vector<torch::Tensor> blendShapeXs;
-    std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeX,blendShapeXs,4);
+    std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeX,blendShapeXs,16);
     std::cout<<"fitShapeAndPose done!"<<std::endl;
     string outfolder = "./output/";
     string filename = "TestObj";

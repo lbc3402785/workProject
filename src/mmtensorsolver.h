@@ -187,7 +187,7 @@ public:
     //vector<int> SkipList = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,  11, 12, 13, 14, 15, 16 };
     //vector<int> SkipList = { 0, 1, 2, 3, 4,   5, 6, 7,    9,10,  11, 12,  13, 14, 15, 16 };
     std::vector<int> SkipList = {8, };
-
+    std::vector<int> mouth = {60,61,62,63,64,65,66,67 };
 
     FaceModelTensor FM;
     FaceModelTensor FMFull;
@@ -297,7 +297,7 @@ public:
         torch::Tensor mean=es.mean();
         torch::Tensor stdvar=es.var().sqrt();
 
-        torch::Tensor mask= es.lt(mean+0.5*stdvar) ;
+        torch::Tensor mask= es.lt(mean+5*stdvar) ;
         error=error.index_select(0,mask.nonzero().squeeze(-1)).view({-1,1});//MX2-->2MX1
 
         torch::Tensor  filter2DIndexI=visdual2D.squeeze(-1).masked_select(mask);
@@ -344,6 +344,10 @@ public:
             {
                 W[2 * SkipList[i] + 0] = WEIGHT;
                 W[2 * SkipList[i] + 1] = WEIGHT;
+            }
+            for(size_t i=0;i<mouth.size();i++){
+                W[2 * mouth[i] + 0] = WEIGHT*5;
+                W[2 * mouth[i] + 1] = WEIGHT*5;
             }
             SBX = torch::matmul(W.diag(), SBX);
             error =torch::matmul( W.diag(), error);
@@ -469,7 +473,45 @@ public:
 
     }
 };
+#define COLOR Scalar(255, 200,0)
+inline void drawPolyline
+(
+  cv::Mat &im,
+  const std::vector<cv::Point2f> &landmarks,
+  const int start,
+  const int end,
+  bool isClosed = false
+)
+{
+    // Gather all points between the start and end indices
+    std::vector <cv::Point> points;
+    for (int i = start; i <= end; i++)
+    {
+        points.push_back(cv::Point(landmarks[i].x, landmarks[i].y));
+    }
+    // Draw polylines.
+    polylines(im, points, isClosed, cv::COLOR, 2, 16);
 
+}
+inline void drawPolyline
+(
+  cv::Mat &im,
+  const torch::Tensor &landmarks,
+  const int start,
+  const int end,cv::Scalar scalar,
+  bool isClosed = false
+)
+{
+    // Gather all points between the start and end indices
+    std::vector <cv::Point> points;
+    for (int i = start; i <= end; i++)
+    {
+        points.push_back(cv::Point(landmarks[i][0].item().toFloat(), landmarks[i][1].item().toFloat()));
+    }
+    // Draw polylines.
+    polylines(im, points, isClosed, scalar, 2, 16);
+
+}
 inline cv::Mat MMSDraw(cv::Mat orig, MMTensorSolver &MMS,const torch::Tensor &KP)
 {
     auto params = MMS.params;
@@ -491,19 +533,32 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMTensorSolver &MMS,const torch::Tensor &KP
         auto x2 = projected[i2][0].item().toFloat();
         auto y2 = projected[i2][1].item().toFloat();
 
-        cv::line(image, cv::Point(x, y), cv::Point(x2, y2), cv::Scalar(0, 0, 255, 255), 1);
+        cv::line(image, cv::Point(x, y), cv::Point(x2, y2), cv::Scalar(255, 255, 0, 255), 1);
         //image.at<Vec3b>(y, x) = Vec3b(0, 0, 255);
         //circle(image, Point(x, y), 1, Scalar(0, 0, 255), -1);
     }
 
     MMS.FM.Generate(MMS.SX, MMS.EX);
     projected = ProjectionCenter(params, MMS.FM.GeneratedFace);
-    for (size_t i = 0; i < projected.size(0); i++)
-    {
-        auto x = projected[i][0].item().toFloat();
-        auto y = projected[i][1].item().toFloat();
-        circle(image, cv::Point(x, y), 2, cv::Scalar(255, 0, 0, 255), -1, CV_AA);
+    if (projected.size(0) == 68){
+        drawPolyline(image, projected, 0, 16,cv::Scalar(255, 0, 0, 255));           // Jaw line
+        drawPolyline(image, projected, 17, 21,cv::Scalar(255, 0, 0, 255));          // Left eyebrow
+        drawPolyline(image, projected, 22, 26,cv::Scalar(255, 0, 0, 255));          // Right eyebrow
+        drawPolyline(image, projected, 27, 30,cv::Scalar(255, 0, 0, 255));          // Nose bridge
+        drawPolyline(image, projected, 30, 35,cv::Scalar(255, 0, 0, 255), true);    // Lower nose
+        drawPolyline(image, projected, 36, 41,cv::Scalar(255, 0, 0, 255), true);    // Left eye
+        drawPolyline(image, projected, 42, 47,cv::Scalar(255, 0, 0, 255), true);    // Right Eye
+        //drawPolyline(image, projected, 48, 59,cv::Scalar(255, 0, 0, 255), true);    // Outer lip
+        drawPolyline(image, projected, 60, 67,cv::Scalar(255, 0, 0, 255), true);    // Inner lip
+    }else{
+        for (size_t i = 0; i < projected.size(0); i++)
+        {
+            auto x = projected[i][0].item().toFloat();
+            auto y = projected[i][1].item().toFloat();
+            circle(image, cv::Point(x, y), 2, cv::Scalar(255, 0, 0, 255), 1);
+        }
     }
+
 
     if (MMS.USEWEIGHT)
     {
@@ -515,14 +570,28 @@ inline cv::Mat MMSDraw(cv::Mat orig, MMTensorSolver &MMS,const torch::Tensor &KP
             cv::circle(image, cv::Point(x, y), 6, cv::Scalar(255, 0, 0, 255), 1, CV_AA);
         }
     }
+    //std::cout<<"imagePoints.size(0):"<<imagePoints.size(0)<<std::endl;
+    if (imagePoints.size(0) == 68)
+        {
+          drawPolyline(image, imagePoints, 0, 16, cv::Scalar(0, 255, 255,255));           // Jaw line
+          drawPolyline(image, imagePoints, 17, 21, cv::Scalar(0, 255, 255,255));          // Left eyebrow
+          drawPolyline(image, imagePoints, 22, 26, cv::Scalar(0, 255, 255,255));          // Right eyebrow
+          drawPolyline(image, imagePoints, 27, 30, cv::Scalar(0, 255, 255,255));          // Nose bridge
+          drawPolyline(image, imagePoints, 30, 35, cv::Scalar(0, 255, 255,255), true);    // Lower nose
+          drawPolyline(image, imagePoints, 36, 41, cv::Scalar(0, 255, 255,255), true);    // Left eye
+          drawPolyline(image, imagePoints, 42, 47, cv::Scalar(0, 255, 255,255), true);    // Right Eye
+          //drawPolyline(image, imagePoints, 48, 59, cv::Scalar(0, 255, 255,255), true);    // Outer lip
+          drawPolyline(image, imagePoints, 60, 67, cv::Scalar(0, 255, 0,120), true);    // Inner lip
+    }else{
+        for (size_t i = 0; i < imagePoints.size(0); i++)
+        {
+            auto x = imagePoints[i][0].item().toFloat();
+            auto y = imagePoints[i][1].item().toFloat();
 
-    for (size_t i = 0; i < imagePoints.size(0); i++)
-    {
-        auto x = imagePoints[i][0].item().toFloat();
-        auto y = imagePoints[i][1].item().toFloat();
-
-        circle(image, cv::Point(x, y), 2, cv::Scalar(0, 255, 0, 255), -1, CV_AA);
+            circle(image, cv::Point(x, y), 2, cv::Scalar(0, 255, 255,255), 1);
+        }
     }
+
 
     //imshow("IMG", image / 2 + image2 / 2);
     return image / 2 + image2 / 2;
