@@ -73,13 +73,13 @@ std::vector<ProjectionTensor> MultiFitting::fitShapeAndPose(std::vector<cv::Mat>
         modelMarks[j]=currentModelPoint;
     }
     PyMMS.USEWEIGHT=false;
-    blendShapeX=PyMMS.SolveMultiShape(params,landMarks,visdual2Ds,modelMarks,visdual3Ds,yawAngles,PyMMS.FM.EB,5.0);
+    //blendShapeX=PyMMS.SolveMultiShape(params,landMarks,visdual2Ds,modelMarks,visdual3Ds,yawAngles,PyMMS.FM.EB,5.0);
 
-//    blendShapeX=blendShapeXs[0];
-//    for(size_t j=1;j<images.size();j++){
-//       blendShapeX+= blendShapeXs[j];
-//    }
-//    blendShapeX.div_((int64_t)images.size());
+    blendShapeX=blendShapeXs[0];
+    for(size_t j=1;j<images.size();j++){
+       blendShapeX+= blendShapeXs[j];
+    }
+    blendShapeX.div_((int64_t)images.size());
     fitShapeAndPoseNonlinear(params,PyMMS,landMarks,visdual2Ds,visdual3Ds,yawAngles,shapeX,blendShapeX,iterNum);
     return params;
 }
@@ -94,8 +94,8 @@ std::tuple<std::vector<torch::Tensor>,std::vector<torch::Tensor>> MultiFitting::
     visdual3Ds.resize(imageNum);
 //    float eLambdas[8] = { 25.0, 25.0, 15.0,15.0 , 10.0 ,10.0 , 8.0 ,8.0 };
 //    float Lambdas[8] = {10.0, 10.0,15.0,15.0 ,20 , 20 ,25.0 , 25.0 };
-    float eLambdas[8] = { 10.0, 10.0, 8.0,8.0 , 6.0 ,6.0 , 4.0 ,4.0 };
-    float Lambdas[8] = {5.0, 5.0,10.0,10.0 ,15 , 15 , 20.0 , 20.0 };
+    float eLambdas[8] = { 5.0, 5.0, 4.0,4.0 , 3.0 ,3.0 , 2.0 ,2.0 };
+    float Lambdas[8] = {5.0, 5.0,6.0,6.0 ,7 , 7 , 8.0 , 8.0 };
     for(int iter=0;iter<iterNum;iter++){
         //#pragma omp parallel for
         for(int j=0;j<imageNum;j++){
@@ -161,24 +161,31 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
     }
 
     at::Tensor oldShapeX=shapeX.clone();
+    at::Tensor centers=torch::zeros({imageNum,2},torch::TensorOptions().dtype(torch::kDouble));
+    for(int i=0;i<imageNum;i++){
+        centers[i][0]=params[i].centerX;
+        centers[i][1]=params[i].centerY;
+    }
     at::Tensor tmpShapeX=shapeX.clone().toType(torch::kDouble);
     at::Tensor tmpBlendShapeX=blendShapeX.clone().toType(torch::kDouble);
     ceres::Problem fittingCostfunction;
-    std::vector<double*> parameters(3,0);
+    std::vector<double*> parameters(4,0);
     parameters[0]=cameras.data<double>();
-    parameters[1]=tmpShapeX.data<double>();
-    parameters[2]=tmpBlendShapeX.data<double>();
+    parameters[1]=centers.data<double>();
+    parameters[2]=tmpShapeX.data<double>();
+    parameters[3]=tmpBlendShapeX.data<double>();
 
     for(int i=0;i<imageNum;i++){
         for(int j=0;j<visdual2Ds[i].size(0);j++){
             long long observedId=visdual2Ds[i][j].item().toLong();
             long long vertexId=visdual3Ds[i][j].item().toLong();
             fitting::MultiLandmarkCost* cost=new fitting::MultiLandmarkCost(PyMMS.FM,PyMMS.FMFull,landMarks[i][observedId],i,vertexId,4);
-            cost->centerX=params[i].centerX;
-            cost->centerY=params[i].centerY;
+//            cost->centerX=params[i].centerX;
+//            cost->centerY=params[i].centerY;
             cost->height=params[i].height;
              ceres::DynamicAutoDiffCostFunction<fitting::MultiLandmarkCost,4>* costFunction=new ceres::DynamicAutoDiffCostFunction<fitting::MultiLandmarkCost,4>(cost);
              costFunction->AddParameterBlock(6*imageNum);
+             costFunction->AddParameterBlock(2*imageNum);
              costFunction->AddParameterBlock(numOfShapeCoef);
              costFunction->AddParameterBlock(numOfBlendShapeCoef);
              costFunction->SetNumResiduals(2);
@@ -186,22 +193,22 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
         }
     }
     // Shape prior:
-    fitting::PriorCost *shapePrior=new fitting::PriorCost(numOfShapeCoef, 8.0);
+    fitting::PriorCost *shapePrior=new fitting::PriorCost(numOfShapeCoef, 6.0);
     ceres::CostFunction* shapePriorCost =
             new ceres::AutoDiffCostFunction<fitting::PriorCost, 199 /* num residuals */,
             199 /* shape-coeffs */>(
                 shapePrior);
-    fittingCostfunction.AddResidualBlock(shapePriorCost, NULL, parameters[1]);
+    fittingCostfunction.AddResidualBlock(shapePriorCost, NULL, parameters[2]);
     // Prior and constraints on blendshapes:
-    fitting::PriorCost *blendShapePrior=new fitting::PriorCost(numOfBlendShapeCoef, 5.0);
+    fitting::PriorCost *blendShapePrior=new fitting::PriorCost(numOfBlendShapeCoef, 4.0);
         ceres::CostFunction* blendshapesPriorCost =
             new ceres::AutoDiffCostFunction<fitting::PriorCost, 100 /* num residuals */,
                 100 /* bs-coeffs */>(
                 blendShapePrior);
-    fittingCostfunction.AddResidualBlock(blendshapesPriorCost, NULL, parameters[2]);
+    fittingCostfunction.AddResidualBlock(blendshapesPriorCost, NULL, parameters[3]);
 
     ceres::Solver::Options solverOptions;
-    solverOptions.linear_solver_type = ceres::DENSE_QR;
+    solverOptions.linear_solver_type = ceres::SPARSE_SCHUR;
     solverOptions.num_threads = 1;
     solverOptions.max_num_iterations=200;
     solverOptions.callbacks.push_back(new PriorCostCallBack(shapePrior));
@@ -211,6 +218,11 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
     std::cout << solverSummary.BriefReport() << "\n";
     //std::cout<<"after tmpShapeX:"<<std::endl;
     //std::cout<<tmpShapeX<<std::endl;
+    centers=centers.toType(torch::kFloat);
+    for(int i=0;i<imageNum;i++){
+        params[i].centerX=centers[i][0].item().toFloat();
+        params[i].centerY=centers[i][1].item().toFloat();
+    }
     shapeX=std::move(tmpShapeX.toType(torch::kFloat));
     blendShapeX=std::move(tmpBlendShapeX.toType(torch::kFloat));
     std::cout<<(shapeX-oldShapeX).norm()<<std::endl;

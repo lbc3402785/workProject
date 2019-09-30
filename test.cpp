@@ -39,6 +39,7 @@ bool readNpyKeyPonts(std::string filename,torch::Tensor& KP)
     try {
         NpyArray npy=cnpy::npy_load(filename);
         KP=ToTensor(npy);
+
         return true;
     } catch (std::exception&e) {
         std::cout<<e.what()<<std::endl;
@@ -115,7 +116,7 @@ void Test::testCeres(std::string modelPath, std::string imagePath)
     torch::Tensor shapeX;
     torch::Tensor blendShapeX;
     std::vector<torch::Tensor> blendShapeXs;
-    std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeX,blendShapeXs,4);
+    std::vector<ProjectionTensor> params=MultiFitting::fitShapeAndPose(images,contour,PyMMS,landMarks,shapeX,blendShapeX,blendShapeXs,8);
     std::cout<<"fitShapeAndPose done!"<<std::endl;
     string outfolder = "./output/";
     string filename = "TestObj";

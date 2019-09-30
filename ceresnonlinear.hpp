@@ -52,7 +52,7 @@ public:
     MultiLandmarkCost(FaceModelTensor& keyFace,FaceModelTensor& fullFace,torch::Tensor observed,int viewIndex,int vertexId,int stride):keyFace(keyFace),fullFace(fullFace),observed(observed),viewIndex(viewIndex),vertexId(vertexId),stride(stride){};
     template <typename T>
     bool operator()(T const* const* parameters, T* residuals)const;
-    double centerX,centerY;
+    //double centerX,centerY;
     double height;
 private:
     FaceModelTensor keyFace;
@@ -67,8 +67,9 @@ template<typename T>
 bool MultiLandmarkCost::operator()(T const* const* parameters,T *residuals) const
 {
     const T * const cameras=parameters[0];
-    const T * const shapeCoeffs=parameters[1];
-    const T * const blendshapeCoeffs=parameters[2];
+    const T * const centers=parameters[1];
+    const T * const shapeCoeffs=parameters[2];
+    const T * const blendshapeCoeffs=parameters[3];
     torch::Tensor tmp=torch::from_blob((void*)shapeCoeffs,{keyFace.SB.size(1),1+stride},at::TensorOptions().dtype(torch::kDouble));
     torch::Tensor shapeX=tmp.select(1,0).toType(torch::kFloat);
 
@@ -79,12 +80,16 @@ bool MultiLandmarkCost::operator()(T const* const* parameters,T *residuals) cons
     torch::Tensor keyPoint=(keyFace.Face[vertexId]+pS+pE).toType(torch::kDouble);//3
     torch::Tensor tmpC=torch::from_blob((void*)(cameras+6*viewIndex),{6,1+stride},at::TensorOptions().dtype(torch::kDouble));
     torch::Tensor camera=tmpC.select(1,0);//6
+    torch::Tensor centerC=torch::from_blob((void*)(centers+2*viewIndex),{2,1+stride},at::TensorOptions().dtype(torch::kDouble));
+    torch::Tensor center=centerC.select(1,0);//2
 //    std::cout<<"camera:"<<camera<<std::endl;
     torch::Tensor axis=camera.slice(0,0,3);//3
     double tx=camera[3].item().toDouble();
     double ty=camera[4].item().toDouble();
     double scale=camera[5].item().toDouble();
-//        std::cout<<"tx:"<<tx<<" ty:"<<ty<<" scale:"<<scale<<std::endl;
+    double centerX=center[0].item().toDouble();
+    double centerY=center[1].item().toDouble();
+    //        std::cout<<"tx:"<<tx<<" ty:"<<ty<<" scale:"<<scale<<std::endl;
     torch::Tensor R=TorchFunctions::rodrigues(axis.unsqueeze(-1));
 //    std::cout<<"R:"<<R<<std::endl;
     torch::Tensor pro=torch::matmul(R,keyPoint);//3
