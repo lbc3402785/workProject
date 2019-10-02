@@ -1,18 +1,18 @@
 QT -= gui
 
-CONFIG += c++14 console
+CONFIG += console
 CONFIG -= app_bundle
-DEFINES += QT_DEPRECATED_WARNINGS GLOG_NO_ABBREVIATED_SEVERITIES GLM_FORCE_UNRESTRICTED_GENTYPE
-QMAKE_CXXFLAGS+=/openmp
+DEFINES += QT_DEPRECATED_WARNINGS GLOG_NO_ABBREVIATED_SEVERITIES GLM_FORCE_UNRESTRICTED_GENTYPE _HAS_CXX17=1
+QMAKE_CXXFLAGS+=/openmp /std:c++17
 OBJECTS_DIR=$${PWD}/build
-TORCH_LIBRARY_DIRS=D:\soft\libtorch\lib
-TORCH_INCLUDE_DIRS=D:\soft\libtorch\include
-CUDA_INCLUDE_DIRS="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"
-CUDA_LIBRARY_DIRS="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64"
-BOOST_LIBRARY_DIRS=D:\soft\boost_1_69_0\stage-static\lib
-OPENCV_LIBRARY_DIRS=D:\soft\opencv3\build\x64\vc14\lib
-FLANN_LIBRARY_DIRS=D:\soft\flann-1.8.4-src\lib
-FLANN_INCLUDE_DIRS=D:\soft\flann-1.8.4-src\src\cpp
+TORCH_LIBRARY_DIRS=G:\soft\libtorch\lib
+TORCH_INCLUDE_DIRS=G:\soft\libtorch\include
+#CUDA_INCLUDE_DIRS="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"
+#CUDA_LIBRARY_DIRS="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64"
+
+OPENCV_LIBRARY_DIRS=g:\soft\opencv3\build\x64\vc14\lib
+#FLANN_LIBRARY_DIRS=D:\soft\flann-1.8.4-src\lib
+#FLANN_INCLUDE_DIRS=D:\soft\flann-1.8.4-src\src\cpp
 #FLANN_LIBRARY_DIRS=D:\soft\flann\build-vs2015\lib\Release
 #FLANN_INCLUDE_DIRS=D:\soft\flann\src\cpp
 # The following define makes your compiler emit warnings if you use
@@ -21,18 +21,17 @@ FLANN_INCLUDE_DIRS=D:\soft\flann-1.8.4-src\src\cpp
 # deprecated API in order to know how to port your code away from it.
 
 
-INCLUDEPATH+=D:\soft\boost_1_69_0 \
-                D:\soft\opencv3\build\include \
+INCLUDEPATH+=G:\soft\opencv3\build\include \
                 $$(DLIB_ROOT)\include \
-                D:\soft\eigen-eigen-323c052e1731 \
-                D:\soft\OpenMesh8.0\include \
-                D:\soft\zlib\include \
+                G:\soft\eigen-eigen-323c052e1731 \
+#                D:\soft\OpenMesh8.0\include \
+                G:\soft\zlib\include \
                 $${PWD}\src
 INCLUDEPATH+=$$FLANN_INCLUDE_DIRS
-INCLUDEPATH+=$$CUDA_INCLUDE_DIRS
+#INCLUDEPATH+=$$CUDA_INCLUDE_DIRS
 INCLUDEPATH+=$$TORCH_INCLUDE_DIRS
 INCLUDEPATH+=$$TORCH_INCLUDE_DIRS\torch\csrc\api\include
-INCLUDEPATH+=D:\soft\glm
+INCLUDEPATH+=G:\soft\glm
 
 INCLUDEPATH+="C:\Program Files (x86)\Ceres\include" \
                  "C:\Program Files (x86)\glog\include" \
@@ -47,22 +46,13 @@ QMAKE_CFLAGS_DEBUG += -MD
 
 QMAKE_CXXFLAGS_DEBUG += -MD
 
-LIBS+= -L$$BOOST_LIBRARY_DIRS -llibboost_filesystem-vc141-mt-x64-1_69
 LIBS+=-L$$OPENCV_LIBRARY_DIRS -lopencv_world344
-LIBS+= -L$$BOOST_LIBRARY_DIRS -llibboost_system-vc141-mt-x64-1_69
-LIBS+=-L$$BOOST_LIBRARY_DIRS -llibboost_filesystem-vc141-mt-x64-1_69
-LIBS+=-L$$BOOST_LIBRARY_DIRS -llibboost_program_options-vc141-mt-x64-1_69
-LIBS+=-L$$(DLIB_ROOT)\lib -ldlib19.16.99_release_64bit_msvc1900
-LIBS+=-L$$FLANN_LIBRARY_DIRS -lflann
+LIBS+=-L$$(DLIB_ROOT)\lib -ldlib19.16.99_release_64bit_msvc1916
+#LIBS+=-L$$FLANN_LIBRARY_DIRS -lflann
 LIBS+= -l$$TORCH_LIBRARY_DIRS\torch \
     -l$$TORCH_LIBRARY_DIRS\c10_cuda \
-    -l$$TORCH_LIBRARY_DIRS\c10 \
-    -l$$CUDA_LIBRARY_DIRS\cudart \
-    -l$$CUDA_LIBRARY_DIRS\cudart \
-    -l$$CUDA_LIBRARY_DIRS\cublas \
-    -l$$CUDA_LIBRARY_DIRS\cufft \
-    -l$$CUDA_LIBRARY_DIRS\curand \
-    -l$$CUDA_LIBRARY_DIRS\cudnn
+    -l$$TORCH_LIBRARY_DIRS\c10
+
 
 LIBS+=-l$$TORCH_LIBRARY_DIRS\caffe2_gpu
 LIBS+=-l$$TORCH_LIBRARY_DIRS\caffe2
@@ -72,7 +62,6 @@ LIBS+=-l$$TORCH_LIBRARY_DIRS\caffe2
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 message($$LIBS)
 SOURCES += \
-        common/knnsearch.cpp \
         common/torchfunctions.cpp \
         facemorph.cpp \
         glmfunctions.cpp \
@@ -92,7 +81,6 @@ HEADERS += \
     ceresnonlinear.hpp \
     common/dataconvertor.h \
     common/eigenfunctions.h \
-    common/knnsearch.h \
     common/raytriangleintersect.h \
     common/torchfunctions.h \
     contour.h \

@@ -1,5 +1,5 @@
 #include "test.h"
-#include "boost/filesystem.hpp"
+#include <filesystem>
 #include <vector>
 
 #include <fstream>
@@ -21,16 +21,17 @@ void InitMMS(std::string fmkp, std::string fmfull)
     std::cout << fmfull << std::endl;
     PyMMS.Initialize(fmkp, fmfull);
 }
-void readfolder(boost::filesystem::path& imageDir,std::vector<std::string>& result) {
-    boost::filesystem::directory_iterator endIter;
-    for (boost::filesystem::directory_iterator iter(imageDir); iter != endIter; iter++) {
-      if (boost::filesystem::is_directory(*iter)) {
+void readfolder(std::experimental::filesystem::path& imageDir,std::vector<std::string>& result) {
+    std::experimental::filesystem::path::iterator endIter=imageDir.end();
+    for (std::experimental::filesystem::path::iterator iter=imageDir.begin(); iter != endIter; iter++) {
+      if (std::experimental::filesystem::is_directory(*iter)) {
         //cout << "is dir" << endl;
         //cout << iter->path().string() << endl;
       } else {
         //cout << "is a file" << endl;
-        //std::cout << iter->path().string() << std::endl;
-        result.emplace_back(iter->path().string());
+        std::cout << iter->string() << std::endl;
+
+        result.emplace_back(iter->string());
       }
     }
 }
@@ -87,8 +88,10 @@ std::vector<std::string> loadImages(std::vector<std::string>& imageFiles,std::ve
 
 void MakeDir(string path)
 {
-    boost::filesystem::path dir(path);
-    boost::filesystem::create_directory(dir);
+    std::experimental::filesystem::path dir(path);
+    std::experimental::filesystem::create_directory(dir);
+//    boost::filesystem::path dir(path);
+//    boost::filesystem::create_directory(dir);
 }
 void Test::testCeres(std::string modelPath, std::string imagePath)
 {
@@ -102,7 +105,7 @@ void Test::testCeres(std::string modelPath, std::string imagePath)
 
     ContourLandmarks contour=ContourLandmarks::load(mappingsfile);
 
-    boost::filesystem::path imageDir(imagePath);
+    std::experimental::filesystem::path imageDir(imagePath);
     std::vector<std::string> imageFiles;
     readfolder(imageDir,imageFiles);
 

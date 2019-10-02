@@ -7,7 +7,6 @@
 #include "ceres/cubic_interpolation.h"
 #include "ceres/rotation.h"
 #include "common/torchfunctions.h"
-#include "common/knnsearch.h"
 #include "ceresnonlinear.hpp"
 #include "facemorph.h"
 #include "priorcostcallback.h"
