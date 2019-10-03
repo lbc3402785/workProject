@@ -22,16 +22,16 @@ void InitMMS(std::string fmkp, std::string fmfull)
     PyMMS.Initialize(fmkp, fmfull);
 }
 void readfolder(std::experimental::filesystem::path& imageDir,std::vector<std::string>& result) {
-    std::experimental::filesystem::path::iterator endIter=imageDir.end();
-    for (std::experimental::filesystem::path::iterator iter=imageDir.begin(); iter != endIter; iter++) {
+    std::experimental::filesystem::directory_iterator endIter;
+    for (std::experimental::filesystem::directory_iterator iter(imageDir); iter != endIter; iter++) {
       if (std::experimental::filesystem::is_directory(*iter)) {
-        //cout << "is dir" << endl;
-        //cout << iter->path().string() << endl;
+        std::cout << "is dir" << std::endl;
+        std::cout << iter->path().string() << std::endl;
       } else {
-        //cout << "is a file" << endl;
-        std::cout << iter->string() << std::endl;
+        std::cout << "is a file" << std::endl;
+        std::cout << iter->path().string() << std::endl;
 
-        result.emplace_back(iter->string());
+        result.emplace_back(iter->path().string());
       }
     }
 }

@@ -179,8 +179,6 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
             long long observedId=visdual2Ds[i][j].item().toLong();
             long long vertexId=visdual3Ds[i][j].item().toLong();
             fitting::MultiLandmarkCost* cost=new fitting::MultiLandmarkCost(PyMMS.FM,PyMMS.FMFull,landMarks[i][observedId],i,vertexId,4);
-//            cost->centerX=params[i].centerX;
-//            cost->centerY=params[i].centerY;
             cost->height=params[i].height;
              ceres::DynamicAutoDiffCostFunction<fitting::MultiLandmarkCost,4>* costFunction=new ceres::DynamicAutoDiffCostFunction<fitting::MultiLandmarkCost,4>(cost);
              costFunction->AddParameterBlock(6*imageNum);
@@ -191,6 +189,22 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
              fittingCostfunction.AddResidualBlock(costFunction, new ceres::CauchyLoss(0.5),parameters);
         }
     }
+
+    torch::Tensor model=PyMMS.FMFull.Generate(shapeX,blendShapeX);
+    torch::Tensor frontNormals=TorchFunctions::computeFaceNormals(PyMMS.FMFull.GeneratedFace,PyMMS.FMFull.TRI);
+    for(int i=0;i<imageNum;i++){
+
+        fitting::ImageCost* cost0=new fitting::ImageCost(PyMMS,frontNormals,i,4);
+        cost0->height=params[i].height;
+        ceres::DynamicAutoDiffCostFunction<fitting::ImageCost,4>* costFunction0=new ceres::DynamicAutoDiffCostFunction<fitting::ImageCost,4>(cost0);
+        costFunction0->AddParameterBlock(6*imageNum);
+        costFunction0->AddParameterBlock(2*imageNum);
+        costFunction0->AddParameterBlock(numOfShapeCoef);
+        costFunction0->AddParameterBlock(numOfBlendShapeCoef);
+        costFunction0->SetNumResiduals(2);
+        fittingCostfunction.AddResidualBlock(costFunction0, new ceres::CauchyLoss(0.5),parameters);
+    }
+
     // Shape prior:
     fitting::PriorCost *shapePrior=new fitting::PriorCost(numOfShapeCoef, 6.0);
     ceres::CostFunction* shapePriorCost =
@@ -208,11 +222,12 @@ void MultiFitting::fitShapeAndPoseNonlinear(std::vector<ProjectionTensor> &param
 
     ceres::Solver::Options solverOptions;
     solverOptions.linear_solver_type = ceres::SPARSE_SCHUR;
-    solverOptions.num_threads = 1;
-    solverOptions.max_num_iterations=200;
+    solverOptions.num_threads = 8;
+    solverOptions.max_num_iterations=10;
     solverOptions.callbacks.push_back(new PriorCostCallBack(shapePrior));
     solverOptions.minimizer_progress_to_stdout = true;
     ceres::Solver::Summary solverSummary;
+    std::cout<<"begin solve:"<<std::endl;
     Solve(solverOptions, &fittingCostfunction, &solverSummary);
     std::cout << solverSummary.BriefReport() << "\n";
     //std::cout<<"after tmpShapeX:"<<std::endl;

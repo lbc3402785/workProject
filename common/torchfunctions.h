@@ -13,7 +13,7 @@ public:
     static void saveObj(std::string name,torch::Tensor m,std::vector<int64_t> faceIds);
     static void saveObj(std::string name,torch::Tensor m,torch::Tensor n,std::vector<int64_t> faceIds);
     static at::Tensor computeSingleNormal( at::Tensor &model,  std::vector<int64_t>& faceIds);
-    static at::Tensor computeFaceNormals( at::Tensor &model, at::Tensor &f);
+    static at::Tensor computeFaceNormals( at::Tensor model, at::Tensor f);
     static Eigen::SparseMatrix<float,Eigen::RowMajor> computeFaceNormalsWeight(int64_t& vnum, at::Tensor &f);
     static at::Tensor computeVertNormals( at::Tensor &model, at::Tensor &f);
     static at::Tensor computeVertNormals( at::Tensor &model, at::Tensor &f,Eigen::SparseMatrix<float, Eigen::RowMajor>& weigths);

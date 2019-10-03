@@ -5,12 +5,12 @@ CONFIG -= app_bundle
 DEFINES += QT_DEPRECATED_WARNINGS GLOG_NO_ABBREVIATED_SEVERITIES GLM_FORCE_UNRESTRICTED_GENTYPE _HAS_CXX17=1
 QMAKE_CXXFLAGS+=/openmp /std:c++17
 OBJECTS_DIR=$${PWD}/build
-TORCH_LIBRARY_DIRS=G:\soft\libtorch\lib
-TORCH_INCLUDE_DIRS=G:\soft\libtorch\include
+TORCH_LIBRARY_DIRS=d:\soft\libtorch\lib
+TORCH_INCLUDE_DIRS=d:\soft\libtorch\include
 #CUDA_INCLUDE_DIRS="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include"
 #CUDA_LIBRARY_DIRS="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\lib\x64"
 
-OPENCV_LIBRARY_DIRS=g:\soft\opencv3\build\x64\vc14\lib
+OPENCV_LIBRARY_DIRS=D:\soft\opencv3\build\x64\vc14\lib
 #FLANN_LIBRARY_DIRS=D:\soft\flann-1.8.4-src\lib
 #FLANN_INCLUDE_DIRS=D:\soft\flann-1.8.4-src\src\cpp
 #FLANN_LIBRARY_DIRS=D:\soft\flann\build-vs2015\lib\Release
@@ -21,17 +21,17 @@ OPENCV_LIBRARY_DIRS=g:\soft\opencv3\build\x64\vc14\lib
 # deprecated API in order to know how to port your code away from it.
 
 
-INCLUDEPATH+=G:\soft\opencv3\build\include \
+INCLUDEPATH+=d:\soft\opencv3\build\include \
                 $$(DLIB_ROOT)\include \
-                G:\soft\eigen-eigen-323c052e1731 \
+                d:\soft\eigen-eigen-323c052e1731 \
 #                D:\soft\OpenMesh8.0\include \
-                G:\soft\zlib\include \
+                d:\soft\zlib\include \
                 $${PWD}\src
 INCLUDEPATH+=$$FLANN_INCLUDE_DIRS
 #INCLUDEPATH+=$$CUDA_INCLUDE_DIRS
 INCLUDEPATH+=$$TORCH_INCLUDE_DIRS
 INCLUDEPATH+=$$TORCH_INCLUDE_DIRS\torch\csrc\api\include
-INCLUDEPATH+=G:\soft\glm
+INCLUDEPATH+=d:\soft\glm
 
 INCLUDEPATH+="C:\Program Files (x86)\Ceres\include" \
                  "C:\Program Files (x86)\glog\include" \
@@ -47,7 +47,7 @@ QMAKE_CFLAGS_DEBUG += -MD
 QMAKE_CXXFLAGS_DEBUG += -MD
 
 LIBS+=-L$$OPENCV_LIBRARY_DIRS -lopencv_world344
-LIBS+=-L$$(DLIB_ROOT)\lib -ldlib19.16.99_release_64bit_msvc1916
+LIBS+=-L$$(DLIB_ROOT)\lib -ldlib19.16.99_release_64bit_msvc1900
 #LIBS+=-L$$FLANN_LIBRARY_DIRS -lflann
 LIBS+= -l$$TORCH_LIBRARY_DIRS\torch \
     -l$$TORCH_LIBRARY_DIRS\c10_cuda \

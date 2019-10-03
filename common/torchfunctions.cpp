@@ -191,7 +191,7 @@ at::Tensor TorchFunctions::computeSingleNormal( at::Tensor &model,  std::vector<
  * @param f         fnumx3
  * @return          fnumx3
  */
-at::Tensor TorchFunctions::computeFaceNormals(at::Tensor &model, at::Tensor &f)
+at::Tensor TorchFunctions::computeFaceNormals(at::Tensor model, at::Tensor f)
 {
     at::Tensor index=f.toType(torch::kLong);
     at::Tensor i0=index.select(1,0);

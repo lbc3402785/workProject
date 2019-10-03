@@ -163,7 +163,18 @@ public:
             UV = ToTensor(npz["UV"]);
         }
     }
+    torch::Tensor Generate(torch::Tensor SX, torch::Tensor EX) const
+    {
+        torch::Tensor FaceS = torch::matmul(SB , SX);
+        torch::Tensor S = FaceS.view({-1,3});
 
+        torch::Tensor FaceE = torch::matmul(EB , EX);
+        torch::Tensor E = FaceE.view({-1, 3});
+
+        torch::Tensor result=  Face + S + E;
+       // GeneratedFace=result.clone();
+        return std::move(result);
+    }
 
     torch::Tensor Generate(torch::Tensor SX, torch::Tensor EX)
     {
@@ -596,7 +607,7 @@ inline cv::Mat MMSTexture(cv::Mat orig, MMTensorSolver &MMS, int W, int H)
     auto params = MMS.params;
     MMS.FMFull.Generate(MMS.SX, MMS.EX);
     torch::Tensor projected = ProjectionCenter(params, MMS.FMFull.GeneratedFace);
-    auto TRI = MMS.FMFull.TRIUV;
+    auto TRI = MMS.FMFull.TRI;
     auto UV = MMS.FMFull.UV;
     bool ignore=false;
     for (size_t t = 0; t < TRI.size(0); t++)

@@ -109,6 +109,87 @@ bool MultiLandmarkCost::operator()(T const* const* parameters,T *residuals) cons
 //    residuals[1]=T(proY-double(observed[1].item().toFloat()));
     return true;
 }
+struct ImageCost
+{
+public:
+    ImageCost(MMTensorSolver PyMMS,torch::Tensor frontNormals,int viewIndex,int stride):PyMMS(PyMMS),frontNormals(frontNormals),viewIndex(viewIndex),stride(stride){};
+    double height;
+    template <typename T>
+    bool operator()(T const* const* parameters, T* residuals)const;
+private:
+    MMTensorSolver PyMMS;
+    int viewIndex;
+    int stride;
+    torch::Tensor frontNormals;
+
+};
+template<typename T>
+bool ImageCost::operator()(const T * const *parameters, T *residuals) const
+{
+    const T * const cameras=parameters[0];
+    const T * const centers=parameters[1];
+    const T * const shapeCoeffs=parameters[2];
+    const T * const blendshapeCoeffs=parameters[3];
+    torch::Tensor tmp=torch::from_blob((void*)shapeCoeffs,{PyMMS.FMFull.SB.size(1),1+stride},at::TensorOptions().dtype(torch::kDouble));
+    torch::Tensor shapeX=tmp.select(1,0).toType(torch::kFloat);
+
+    torch::Tensor tmp1=torch::zeros({PyMMS.FMFull.EB.size(1),stride+1},at::TensorOptions().dtype(torch::kDouble));
+    torch::Tensor blendShapeX=tmp1.select(1,0).toType(torch::kFloat);
+    torch::Tensor model=PyMMS.FMFull.Generate(shapeX,blendShapeX);
+
+    torch::Tensor tmpC=torch::from_blob((void*)(cameras+6*viewIndex),{6,1+stride},at::TensorOptions().dtype(torch::kDouble));
+    torch::Tensor camera=tmpC.select(1,0);//6
+    torch::Tensor centerC=torch::from_blob((void*)(centers+2*viewIndex),{2,1+stride},at::TensorOptions().dtype(torch::kDouble));
+    torch::Tensor center=centerC.select(1,0);//2
+    torch::Tensor axis=camera.slice(0,0,3);//3
+    double tx=camera[3].item().toDouble();
+    double ty=camera[4].item().toDouble();
+    double scale=camera[5].item().toDouble();
+    double centerX=center[0].item().toDouble();
+    double centerY=center[1].item().toDouble();
+    torch::Tensor R=TorchFunctions::rodrigues(axis.unsqueeze(-1));
+
+    ProjectionTensor p;
+    p.R=R.toType(torch::kFloat);
+    p.s=scale;
+    p.tx=tx;
+    p.ty=ty;
+    p.centerX=centerX;
+    p.centerY=centerY;
+    p.height=height;
+    torch::Tensor projected=ProjectionCenter(p,model);
+
+
+    float sumX=0;
+    float sumY=0;
+    int n=0;
+    torch::Tensor viewNormals=torch::matmul(R.toType(torch::kFloat),frontNormals.unsqueeze(-1)).squeeze(-1);
+    for(int i=0;i<PyMMS.FMFull.TRI.size(0);i++){
+        if(viewNormals[i][2].item().toFloat()<0)continue;
+        int v0=PyMMS.FMFull.TRI[i][0].item().toInt();
+        int v1=PyMMS.FMFull.TRI[i][1].item().toInt();
+        int v2=PyMMS.FMFull.TRI[i][2].item().toInt();
+        torch::Tensor v=(projected[v0]+projected[v1]+projected[v2])/3;
+        float proX=v[0].item().toFloat();
+        float proY=v[0].item().toFloat();
+        float difX=(proX-std::round(proX));
+        float difY=(proY-std::round(proY));
+        sumX+=difX;
+        sumY+=difY;
+        n++;
+    }
+    if(n==0){
+        sumX=0;
+        sumY=0;
+    }else{
+        sumX/=n;
+        sumY/=n;
+    }
+    residuals[0]=T(sumX);
+    residuals[1]=T(sumY);
+    return true;
+}
+
 /**
  * Cost function for a prior on the parameters.
  *
@@ -161,10 +242,6 @@ private:
     int numVariables;
     double weight;
 };
-
-
-
-
 
 }
 #endif // CERESNONLINEAR_HPP
